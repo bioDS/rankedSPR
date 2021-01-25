@@ -50,7 +50,7 @@ if __name__ == '__main__':
     num_leaves = tree_list.trees[0].num_leaves
     rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
 
-    # # Plotting RNNI distances
+    # Plotting RNNI distances
     # distances_rnni,num_leaves = rnni_distances_tree_pairs(tree_list)
     # plt.hist(distances_rnni, bins = rnni_diameter, range = (0, rnni_diameter))
     # plt.show()
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     # num_trees = 2*len(distances_rnni)
     index = np.random.randint(0,num_trees)
     focal_dist = rnni_distance_focal(tree_list, index)
-    plt.hist(focal_dist, range = (0, rnni_diameter))
+    plt.hist(focal_dist, bins = rnni_diameter ,range = (0, rnni_diameter))
     plt.show()
 
     # # Plotting RF distances:
