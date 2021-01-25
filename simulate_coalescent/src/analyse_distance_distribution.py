@@ -7,7 +7,6 @@ from dct_parser.tree_io import *
 from ete3 import Tree
 import matplotlib.pyplot as plt
 
-print(sys.path)
 
 def read_ete_nexus(file_handle):
     # Read trees from nexus file and save as list fo ete tree
@@ -79,8 +78,8 @@ def read_ete_nexus(file_handle):
 
 def rnni_distances_tree_pairs(filename):
     # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    print("Read trees")
     tree_list = read_nexus(filename, ranked = True)[0]
-    print(tree_to_cluster_string(tree_list.trees[0]))
     distances = []
     progress = 0.05 #for printing progress
     print("Computing RNNI distances")
@@ -96,6 +95,7 @@ def rnni_distances_tree_pairs(filename):
 
 def rf_distances_tree_pairs(filename):
     # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    print("Read trees")
     tree_list = read_ete_nexus(filename)[0]
     num_trees = len(tree_list)
     print('number of trees: ', num_trees)
