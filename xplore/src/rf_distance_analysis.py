@@ -76,10 +76,8 @@ def read_ete_nexus(file_handle):
     return(trees, name_dict)
 
 
-def rf_distances_tree_pairs(filename):
+def rf_distances_tree_pairs(tree_list):
     # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
-    print("Read trees")
-    tree_list = read_ete_nexus(filename)[0]
     num_trees = len(tree_list)
     print('number of trees: ', num_trees)
     distances = []
