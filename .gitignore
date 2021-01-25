@@ -1,0 +1,10 @@
+# C
+*.o
+*.so
+
+# R
+.RData
+.Rhistory
+
+# Python
+__pycache__
