@@ -13,7 +13,11 @@ bd_tree_sim <- function(num_leaves, num_trees) {
   for (i in 1:num_trees){
     trees[[i]] <- sim.bdtree(b=1, d=0, stop="taxa", n=num_leaves)
   }
-  write.nexus(trees, file = paste("bd_trees_", num_leaves, "_n_", num_trees, "_N.nex", sep = ""))
+  write.nexus(trees, file = paste("bd/bd_trees_", num_leaves, "_n_", num_trees, "_N.nex", sep = ""))
 }
 
-bd_tree_sim(100,20000)
+# bd_tree_sim(100,20000)
+
+for(num_leaves in 3:40){
+  bd_tree_sim(num_leaves,2000)
+}
