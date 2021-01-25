@@ -92,3 +92,18 @@ def rf_distances_tree_pairs(filename):
             print('Progress: ' + "{:.2f}".format(progress))
             progress += 0.05
     return(distances, num_leaves)
+
+def rf_distance_focal(tree_list, index):
+    # returns array of distances from chosen focal tree (tree number i in nexus file)
+    distances = []
+    progress = 0.05 #for printing progress
+    num_trees = len(tree_list)
+    num_leaves = len(tree_list[0])
+    print("Computing RNNI distances")
+    for i in range(0, num_trees):
+        if (i != index):
+            distances.append(tree_list[index].robinson_foulds(tree_list[i])[0])
+        if (i/num_trees > progress):
+            print('Progress: ' + "{:.2f}".format(progress))
+            progress += 0.05
+    return(distances, int(num_leaves))

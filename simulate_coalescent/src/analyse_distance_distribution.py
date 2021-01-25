@@ -41,14 +41,14 @@ def rnni_distance_focal(tree_list, index):
 
 
 if __name__ == '__main__':
-    # Get input trees:
-    filename = input("What is the file with trees?\n")
-    print("Read trees")
-    tree_list = read_nexus(filename, ranked = True)[0]
-    print("Done reading trees")
-    num_trees = tree_list.num_trees
-    num_leaves = tree_list.trees[0].num_leaves
-    rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+    # # Get input trees:
+    # filename = input("What is the file with trees?\n")
+    # print("Read trees")
+    # tree_list = read_nexus(filename, ranked = True)[0]
+    # print("Done reading trees")
+    # num_trees = tree_list.num_trees
+    # num_leaves = tree_list.trees[0].num_leaves
+    # rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
 
     # Plotting RNNI distances
     # distances_rnni,num_leaves = rnni_distances_tree_pairs(tree_list)
@@ -56,14 +56,24 @@ if __name__ == '__main__':
     # plt.show()
 
     # # Plotting RNNI distances to random focal tree
-    # num_trees = 2*len(distances_rnni)
-    index = np.random.randint(0,num_trees)
-    focal_dist = rnni_distance_focal(tree_list, index)
-    plt.hist(focal_dist, bins = rnni_diameter ,range = (0, rnni_diameter))
-    plt.show()
+    # index = np.random.randint(0,num_trees)
+    # focal_dist = rnni_distance_focal(tree_list, index)
+    # plt.hist(focal_dist, bins = rnni_diameter ,range = (0, rnni_diameter))
+    # plt.show()
 
     # # Plotting RF distances:
     # distances_rf, num_leaves = rf.rf_distances_tree_pairs(filename)
     # rf_diameter = int(2*(num_leaves - 1))
     # plt.hist(distances_rf, bins = rf_diameter, range = (0, rf_diameter))
     # plt.show()
+
+    # Plotting RNNI distances to random focal tree
+    filename = input("What is the file with trees?\n")
+    print("Read trees")
+    tree_list, num_leaves = rf.read_ete_nexus(filename)
+    num_trees = len(tree_list)
+    index = np.random.randint(0,num_trees)
+    focal_dist, num_leaves = rf.rf_distance_focal(tree_list, index)
+    rf_diameter = int(2*(num_leaves - 1))
+    plt.hist(focal_dist, bins = rf_diameter ,range = (0, rf_diameter))
+    plt.show()
