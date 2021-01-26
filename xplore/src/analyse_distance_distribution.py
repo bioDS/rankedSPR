@@ -47,9 +47,9 @@ def rnni_mean_dist_n(n,N,model='coal'):
     for i in range(3,n):
         print('Trees on '+ str(i) + ' leaves')
         if model == 'coal':
-            filename = '../simulated_trees/coal/coal_trees_' + str(i) + '_n_' + str(N) + '_N.nex'
+            filename = '../simulated_trees/coal/' + str(N) + '/coal_trees_' + str(i) + '_n.nex'
         elif model == 'bd':
-            filename = '../simulated_trees/bd/bd_trees_' + str(i) + '_n_' + str(N) + '_N.nex'
+            filename = '../simulated_trees/bd/' + str(N) + '/bd_trees_' + str(i) + '_n.nex'
         tree_list = read_nexus(filename, ranked = True)[0]
         distances, num_leaves = rnni_distances_tree_pairs(tree_list)
         diameter = (num_leaves-1)*(num_leaves-2)/2
@@ -59,8 +59,10 @@ def rnni_mean_dist_n(n,N,model='coal'):
 
 if __name__ == '__main__':
 
-    plt.plot(rnni_mean_dist_n(40, 2000, model = 'bd'), linestyle = 'None', marker = 'o', markersize = 6)
+    # plt.plot(rnni_mean_dist_n(40, 20000), linestyle = 'None', marker = 'o', markersize = 6) # coalescent
+    plt.plot(rnni_mean_dist_n(40, 20000, model = 'bd'), linestyle = 'None', marker = 'o', markersize = 6) # birth-death
     plt.show()
+
     # Get input trees:
     # filename = input("What is the file with trees?\n")
     # # Read trees in C format (for RNNI distance computation)
