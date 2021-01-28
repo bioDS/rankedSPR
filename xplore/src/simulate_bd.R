@@ -18,6 +18,6 @@ bd_tree_sim <- function(num_leaves, num_trees) {
 
 # bd_tree_sim(100,20000)
 
-for(num_leaves in 3:40){
-  bd_tree_sim(num_leaves,20000)
+for(num_leaves in 3:100){
+  bd_tree_sim(num_leaves,2000)
 }

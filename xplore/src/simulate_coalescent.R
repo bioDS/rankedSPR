@@ -18,6 +18,6 @@ coalescent_tree_sim <- function(num_leaves, num_trees) {
 
 # coalescent_tree_sim(50,20000)
 
-for(num_leaves in 3:40){
+for(num_leaves in 3:100){
   coalescent_tree_sim(num_leaves,20000)
 }
