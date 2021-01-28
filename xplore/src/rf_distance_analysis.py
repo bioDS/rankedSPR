@@ -94,7 +94,7 @@ def rf_distances_tree_pairs(tree_list):
 
 
 def rf_distances_consecutive_tree_pairs(tree_list):
-    # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    # returns array of distances between every pair of trees i,i+1 in given file and number of leaves
     num_trees = len(tree_list)
     print('number of trees: ', num_trees)
     distances = []
