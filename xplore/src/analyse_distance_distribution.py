@@ -27,6 +27,20 @@ def rnni_distances_tree_pairs(tree_list, prgr = False):
         # print(i, tree_to_cluster_string(tree_list.trees[i]), i+1, tree_to_cluster_string(tree_list.trees[i+1]))
     return(distances, int(tree_list.trees[0].num_leaves))
 
+def rnni_distances_consecutive_tree_pairs(tree_list, prgr = False):
+    # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    distances = []
+    if (prgr == True):
+        progress = 0.05 #for printing progress
+    print("Computing RNNI distances")
+    for i in range(0, tree_list.num_trees - 1):
+        distances.append(findpath_distance(tree_list.trees[i],tree_list.trees[i+1]))
+        if prgr == True and (i/(tree_list.num_trees) > progress):
+            print('Progress: ' + "{:.2f}".format(progress))
+            progress += 0.05
+        # print(i, tree_to_cluster_string(tree_list.trees[i]), i+1, tree_to_cluster_string(tree_list.trees[i+1]))
+    return(distances, int(tree_list.trees[0].num_leaves))
+
 def rnni_distance_focal(tree_list, index, prgr = False):
     # returns array of distances from chosen focal tree (tree number i in nexus file)
     distances = []
@@ -59,21 +73,29 @@ def rnni_mean_dist_n(n,N,model='coal'):
 
 if __name__ == '__main__':
 
-    # plt.plot(rnni_mean_dist_n(40, 20000), linestyle = 'None', marker = 'o', markersize = 6) # coalescent
-    plt.plot(rnni_mean_dist_n(40, 20000, model = 'bd'), linestyle = 'None', marker = 'o', markersize = 6) # birth-death
-    plt.show()
+    # plt.plot(rnni_mean_dist_n(100, 20000), linestyle = 'None', marker = 'o', markersize = 6) # coalescent
+    # plt.plot(rnni_mean_dist_n(40, 20000, model = 'bd'), linestyle = 'None', marker = 'o', markersize = 6) # birth-death
+    # plt.show()
 
     # Get input trees:
-    # filename = input("What is the file with trees?\n")
-    # # Read trees in C format (for RNNI distance computation)
-    # print("Read trees")
-    # tree_list = read_nexus(filename, ranked = True)[0]
-    # print("Done reading trees")
-    # num_trees = tree_list.num_trees
-    # num_leaves = tree_list.trees[0].num_leaves
-    # rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+    filename = input("What is the file with trees?\n")
+    # Read trees in C format (for RNNI distance computation)
+    print("Read trees")
+    tree_list = read_nexus(filename, ranked = True)[0]
+    print("Done reading trees")
+    num_trees = tree_list.num_trees
+    num_leaves = tree_list.trees[0].num_leaves
+    rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
 
-    # Plotting RNNI distances
+    # Plotting RNNI (consecutive pairs) distances
+    print(num_leaves)
+    distances_rnni,num_leaves = rnni_distances_consecutive_tree_pairs(tree_list)
+    print(np.mean(distances_rnni))
+    print(distances_rnni)
+    plt.plot(distances_rnni)
+    plt.show()
+
+    # # Plotting RNNI pw distances
     # distances_rnni,num_leaves = rnni_distances_tree_pairs(tree_list)
     # print(np.mean(distances_rnni))
     # plt.hist(distances_rnni, bins = rnni_diameter, range = (0, rnni_diameter))
