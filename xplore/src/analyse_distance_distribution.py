@@ -29,7 +29,7 @@ def rnni_distances_tree_pairs(tree_list, prgr = False):
 
 
 def rnni_distances_consecutive_tree_pairs(tree_list, prgr = False):
-    # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    # returns array of distances between every pair of trees i,i+1 in given file and number of leaves
     distances = []
     if (prgr == True):
         progress = 0.05 #for printing progress
