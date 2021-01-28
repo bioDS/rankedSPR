@@ -6,6 +6,7 @@ from tree_structs import *
 import re
 from ete3 import Tree
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def read_ete_nexus(file_handle):
@@ -84,12 +85,29 @@ def rf_distances_tree_pairs(tree_list):
     progress = 0.05 #for printing progress
     num_leaves = len(tree_list[0])
     print("Computing RF distances")
-    for i in range(0, num_trees, 2):
+    for i in range(0, num_trees - 1, 2):
         distances.append(tree_list[i].robinson_foulds(tree_list[i+1])[0])
         if (i/(num_trees) > progress):
             print('Progress: ' + "{:.2f}".format(progress))
             progress += 0.05
     return(distances, num_leaves)
+
+
+def rf_distances_consecutive_tree_pairs(tree_list):
+    # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    num_trees = len(tree_list)
+    print('number of trees: ', num_trees)
+    distances = []
+    progress = 0.05 #for printing progress
+    num_leaves = len(tree_list[0])
+    print("Computing RF distances")
+    for i in range(0, num_trees - 1):
+        distances.append(tree_list[i].robinson_foulds(tree_list[i+1])[0])
+        if (i/(num_trees) > progress):
+            print('Progress: ' + "{:.2f}".format(progress))
+            progress += 0.05
+    return(distances, num_leaves)
+
 
 def rf_distance_focal(tree_list, index):
     # returns array of distances from chosen focal tree (tree number i in nexus file)
@@ -105,3 +123,12 @@ def rf_distance_focal(tree_list, index):
             print('Progress: ' + "{:.2f}".format(progress))
             progress += 0.05
     return(distances, int(num_leaves))
+
+
+def pw_rf_dist(tree_list):
+    num_trees = len(tree_list)
+    distances = np.zeros(shape=(num_trees,num_trees),dtype=np.int32)
+    for i in range(0,num_trees):
+        for j in range(i,num_trees):
+            distances[i][j] = (tree_list[i].robinson_foulds(tree_list[j])[0])
+    return distances
