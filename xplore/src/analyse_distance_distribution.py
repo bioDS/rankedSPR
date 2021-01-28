@@ -27,6 +27,7 @@ def rnni_distances_tree_pairs(tree_list, prgr = False):
         # print(i, tree_to_cluster_string(tree_list.trees[i]), i+1, tree_to_cluster_string(tree_list.trees[i+1]))
     return(distances, int(tree_list.trees[0].num_leaves))
 
+
 def rnni_distances_consecutive_tree_pairs(tree_list, prgr = False):
     # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
     distances = []
@@ -41,6 +42,7 @@ def rnni_distances_consecutive_tree_pairs(tree_list, prgr = False):
         # print(i, tree_to_cluster_string(tree_list.trees[i]), i+1, tree_to_cluster_string(tree_list.trees[i+1]))
     return(distances, int(tree_list.trees[0].num_leaves))
 
+
 def rnni_distance_focal(tree_list, index, prgr = False):
     # returns array of distances from chosen focal tree (tree number i in nexus file)
     distances = []
@@ -54,6 +56,16 @@ def rnni_distance_focal(tree_list, index, prgr = False):
             print('Progress: ' + "{:.2f}".format(progress))
             progress += 0.05
     return(distances, int(tree_list.trees[0].num_leaves))
+
+
+def pw_rnni_dist(tree_list):
+    num_trees = tree_list.num_trees
+    # Create empty distance matrix as input for pw_distances
+    distances = np.zeros(shape=(num_trees,num_trees),dtype=np.int32)
+    pw_distances(tree_list, distances)
+    # Write computed distance matrix to file -- this can be done way more efficient (at least half the matrix is 0)
+    return distances
+
 
 def rnni_mean_dist_n(n,N,model='coal'):
     # plots the mean distance between trees given in a file in the folder (as computed in rnni_distances_tree_pairs) against n (for varying n)
@@ -79,23 +91,29 @@ if __name__ == '__main__':
 
     # Get input trees:
     filename = input("What is the file with trees?\n")
-    # Read trees in C format (for RNNI distance computation)
-    print("Read trees")
-    tree_list = read_nexus(filename, ranked = True)[0]
-    print("Done reading trees")
-    num_trees = tree_list.num_trees
-    num_leaves = tree_list.trees[0].num_leaves
-    rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
 
-    # Plotting RNNI (consecutive pairs) distances
-    print(num_leaves)
-    distances_rnni,num_leaves = rnni_distances_consecutive_tree_pairs(tree_list)
-    print(np.mean(distances_rnni))
-    print(distances_rnni)
-    plt.plot(distances_rnni)
-    plt.show()
+    # # Read trees in C format (for RNNI distance computation)
+    # print("Read trees")
+    # tree_list = read_nexus(filename, ranked = True)[0]
+    # print("Done reading trees")
+    # num_trees = tree_list.num_trees
+    # num_leaves = tree_list.trees[0].num_leaves
+    # rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
 
-    # # Plotting RNNI pw distances
+    # # Plotting RNNI (consecutive pairs) distances
+    # print(num_leaves)
+    # distances_rnni,num_leaves = rnni_distances_consecutive_tree_pairs(tree_list)
+    # print(np.mean(distances_rnni))
+    # print(distances_rnni)
+    # plt.plot(distances_rnni)
+    # plt.show()
+
+    # # all PW RNNI distances:
+    # pw_distances_rnni = pw_rnni_dist(tree_list)
+    # plt.hist(pw_distances_rnni, bins = rnni_diameter, range = (0, rnni_diameter))
+    # plt.show()
+
+    # # Plotting RNNI pw distances (between pairs of trees T_i, T_{i+1} for even i)
     # distances_rnni,num_leaves = rnni_distances_tree_pairs(tree_list)
     # print(np.mean(distances_rnni))
     # plt.hist(distances_rnni, bins = rnni_diameter, range = (0, rnni_diameter))
@@ -107,12 +125,28 @@ if __name__ == '__main__':
     # plt.hist(focal_dist, bins = rnni_diameter ,range = (0, rnni_diameter))
     # plt.show()
 
-    # # Read trees in ete3 format (for RF distance)
-    # tree_list, num_leaves = rf.read_ete_nexus(filename)
+    # Read trees in ete3 format (for RF distance)
+    tree_list, leaf_labels = rf.read_ete_nexus(filename)
+    num_leaves = len(leaf_labels)
+
+    # all PW RF distances:
+    pw_distances_rf = rf.pw_rf_dist(tree_list)
+    rf_diameter = int(2*(num_leaves - 1))
+    bins = np.arange(0,rf_diameter,2)
+    plt.hist(pw_distances_rf, bins)
+    plt.show()
 
     # # Plotting RF distances:
-    # distances_rf, num_leaves = rf.rf_distances_tree_pairs(filename)
+    # distances_rf, num_leaves = rf.rf_distances_tree_pairs(tree_list)
     # rf_diameter = int(2*(num_leaves - 1))
+    # plt.hist(distances_rf, bins = rf_diameter, range = (0, rf_diameter))
+    # plt.show()
+
+    # # Plotting RF (consecutive pairs) distances:
+    # distances_rf, num_leaves = rf.rf_distances_consecutive_tree_pairs(tree_list)
+    # rf_diameter = int(2*(num_leaves - 1))
+    # plt.plot(distances_rf)
+    # plt.show()
     # plt.hist(distances_rf, bins = rf_diameter, range = (0, rf_diameter))
     # plt.show()
 

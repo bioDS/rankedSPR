@@ -35,4 +35,8 @@ Resulting trees have 20 leaves and alignments have length 10,000
 (2) Simulate alignments along those trees using simSeq and JC model. Alignments are saved in same folder as trees as *coal_alignment_20_sequences_10000_length.nex* / *bd_alignment_b1_d0_20_sequences_10000_length.nex* (coal/bd).
 (3) Run Beast using the xml file (produced by Beauti) in the same folder as generating tree and alignment  
 Settings for beast: JC model, strict clock, coal/bd prior, 1,000,000 trees, saving every 1,000st tree.
-(4) Analyse pw distances between each tree and the following one (d(T_i,T_{i+1}) for all i) with function *rnni_distances_consecutive_tree_pairs* and plot distances to *rnni_consecutive_pairs_dist.eps* in the same folder
+(4)
+- Analyse pw distances between each tree and the following one (d(T_i,T_{i+1}) for all i) with function *rnni_distances_consecutive_tree_pairs* and plot distances to *rnni_consecutive_pairs_dist.eps* in the same folder  
+This can also been done with the RF distance (functions in *src/rf_distance_analysis.py*)  
+- Plot hist of all pw distances (RNNI and RF) with pw_rnni_dist/pw_rf_dist -- output in (*simulations/posterior/D* for distribution D=coal/bd) as *rnni_all_pw_dist.eps*/*rf_all_pw_dist.eps*  
+  This is to get an impression of how 'dense' the chain is for the corresponding distance measure (RNNI vs RF)
