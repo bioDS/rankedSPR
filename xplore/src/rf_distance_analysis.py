@@ -125,10 +125,17 @@ def rf_distance_focal(tree_list, index):
     return(distances, int(num_leaves))
 
 
-def pw_rf_dist(tree_list):
+def pw_rf_dist(tree_list, list = False):
+    # Return either a np.matrix of pw distances (if list=False; this is an upper diagonal matrix!), or a sequence containing distances (excluding diagonal entries)
     num_trees = len(tree_list)
-    distances = np.zeros(shape=(num_trees,num_trees),dtype=np.int32)
+    if list == False:
+        distances = np.zeros(shape=(num_trees,num_trees),dtype=np.int32)
+    else:
+        distances = []
     for i in range(0,num_trees):
-        for j in range(i,num_trees):
-            distances[i][j] = (tree_list[i].robinson_foulds(tree_list[j])[0])
+        for j in range(i + 1,num_trees):
+            if list == False:
+                distances[i][j] = (tree_list[i].robinson_foulds(tree_list[j])[0])
+            else:
+                distances.append(tree_list[i].robinson_foulds(tree_list[j])[0])
     return distances
