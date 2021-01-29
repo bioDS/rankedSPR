@@ -104,7 +104,7 @@ def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 
 
 
 def consec_trees_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
-    # Plotting the distances of all tree pairs T_i, T_i+1 and save plot (if filehandle given) in ouput_file
+    # Plotting the distances of all tree pairs T_i, T_i+1 and save plot (if filehandle given) in output_file
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
@@ -138,6 +138,50 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
         if os.path.exists(distances_file):
             distances = np.loadtxt(distances_file, delimiter = ' ')
         else:
+            distances = rf.rf_distances_consecutive_tree_pairs(tree_list)[0]
+            print(distances)
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        plts.plot_dots(distances, output_file)
+        if output_file != '':
+            plt.savefig(output_file)
+
+
+def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
+    # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
+    if metric == 'RNNI':
+        # Read trees in C format (for RNNI distance computation)
+        print("Read trees")
+        tree_list = read_nexus(input_file, ranked = True)[0]
+        print("Done reading trees")
+        num_trees = tree_list.num_trees
+        num_leaves = tree_list.trees[0].num_leaves
+        rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+
+        # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            distances = rnni.rnni_distances_tree_pairs(tree_list)[0]
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        plts.plot_dots(distances, output_file)
+        if output_file != '':
+            plt.savefig(output_file)
+
+    elif metric == 'RF':
+        # Read trees in ete3 format:
+        print("Read trees")
+        tree_list, leaf_labels = rf.read_ete_nexus(input_file)
+        print("Done reading trees")
+        num_leaves = len(leaf_labels)
+        num_trees = len(tree_list)
+        rf_diameter = int(2*(num_leaves - 1))
+
+        # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
             distances = rf.rf_distances_tree_pairs(tree_list)[0]
             print(distances)
             if distances_file != '':
@@ -148,34 +192,6 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
 
 
 if __name__ == '__main__':
-    
-    consec_trees_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RF')
 
-    # plt.plot(rnni_mean_dist_n(100, 20000), linestyle = 'None', marker = 'o', markersize = 6) # coalescent
-    # plt.plot(rnni_mean_dist_n(40, 20000, model = 'bd'), linestyle = 'None', marker = 'o', markersize = 6) # birth-death
-    # plt.show()
-
-
-    # # Plotting RNNI pw distances (between pairs of trees T_i, T_{i+1} for even i)
-    # distances_rnni,num_leaves = rnni_distances_tree_pairs(tree_list)
-    # print(np.mean(distances_rnni))
-    # plt.hist(distances_rnni, bins = rnni_diameter, range = (0, rnni_diameter))
-    # plt.show()
-
-
-
-    # # Read trees in ete3 format (for RF distance)
-    # tree_list, leaf_labels = rf.read_ete_nexus(filehandle)
-    # num_leaves = len(leaf_labels)
-
-
-    # # Save/load pw distance matrix:
-    # np.savetxt('../simulations/posterior/coal/pw_RF_distance_matrix.txt', pw_distances_rf, delimiter = ' ')
-    # pw_distances_rf = np.loadtxt('../simulations/posterior/coal/pw_RF_distance_matrix.txt', delimiter = ' ')
-    # plts.plot_hist(pw_distances_rf, '../simulations/posterior/coal/rf_all_pw_dist.eps')
-
-    # # Plotting RF distances:
-    # distances_rf, num_leaves = rf.rf_distances_tree_pairs(tree_list)
-    # rf_diameter = int(2*(num_leaves - 1))
-    # plt.hist(distances_rf, bins = rf_diameter, range = (0, rf_diameter))
-    # plt.show()
+    pw_tree_list_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
+    consec_trees_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
