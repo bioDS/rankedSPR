@@ -1,5 +1,6 @@
 __author__ = 'Lena Collienne'
 
+import os.path
 import sys
 sys.path.append('../..')
 
@@ -16,8 +17,8 @@ import rnni_distances as rnni
 import plots as plts
 
 
-def all_pw_distances(input_file, output_file = '', matrix_file = '', metric = 'RNNI'):
-    # plot and save histogram of all pw distances ('RNNI' od 'RF'). inpput_file is filehandle to file with input trees, matrix_file (if specified) is either file to read the matrix from (if already exists), or file to save matrix in (make sure it didn't exist before!), output_file is filehandle for saving the plot (histoogram).
+def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
+    # plot and save histogram of all pw distances ('RNNI' od 'RF'). inpput_file is filehandle to file with input trees, distances_file (if specified) is either file to read the matrix from (if already exists), or file to save matrix in (make sure it didn't exist before!), output_file is filehandle for saving the plot (histoogram).
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
@@ -27,19 +28,16 @@ def all_pw_distances(input_file, output_file = '', matrix_file = '', metric = 'R
         num_leaves = tree_list.trees[0].num_leaves
         rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
 
-        # Plotting RF distances for all pairs T_i, T_j, i<j
-        try:
-            f = open(matrix_file)
-            f.close()
-            pw_distances_rnni = np.loadtxt(matrix_file, delimiter = ' ')
-        except IOError:
-            pw_distances_rnni = rnni.pw_rnni_dist(tree_list)
-            if matrix_file != '':
-                np.savetxt(matrix_file, pw_distances_rnni, delimiter = ' ')
-        finally:
-            plts.plot_hist(pw_distances_rnni, output_file)
-            if output_file != '':
-                plt.savefig(output_file)
+        # Plotting RNNI distances for all pairs T_i, T_j, i<j
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            distances = rnni.pw_rnni_dist(tree_list)
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        plts.plot_hist(distances, output_file, bins = rnni_diameter)
+        if output_file != '':
+            plt.savefig(output_file)
     
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -50,23 +48,66 @@ def all_pw_distances(input_file, output_file = '', matrix_file = '', metric = 'R
         rf_diameter = int(2*(num_leaves - 1))
 
         # Plotting RF distances for all pairs T_i, T_j, i<j
-        try:
-            f = open(matrix_file)
-            f.close()
-            pw_distances_rf = np.loadtxt(matrix_file, delimiter = ' ')
-        except IOError:
-            pw_distances_rf = rf.pw_rf_dist(tree_list, list = True)
-            if matrix_file != '':
-                np.savetxt(matrix_file, pw_distances_rf, delimiter = ' ')
-        finally:
-            plts.plot_hist(pw_distances_rf, output_file)
-            if output_file != '':
-                plt.savefig(output_file)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            distances = rf.pw_rf_dist(tree_list, list = True)
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        plts.plot_hist(distances, output_file, bins = rf_diameter)
+        if output_file != '':
+            plt.savefig(output_file)
+
+
+def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
+    if metric == 'RNNI':
+        # Read trees in C format (for RNNI distance computation)
+        print("Read trees")
+        tree_list = read_nexus(input_file, ranked = True)[0]
+        print("Done reading trees")
+        num_trees = tree_list.num_trees
+        num_leaves = tree_list.trees[0].num_leaves
+        rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+
+        # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            index = np.random.randint(0,num_trees)
+            distances = rnni.rnni_distance_focal(tree_list, index)[0]
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        print(distances)
+        plts.plot_hist(distances, output_file, bins = rnni_diameter)
+        if output_file != '':
+            plt.savefig(output_file)
+
+    elif metric == 'RF':
+        # Read trees in ete3 format:
+        print("Read trees")
+        tree_list, leaf_labels = rf.read_ete_nexus(input_file)
+        print("Done reading trees")
+        num_leaves = len(leaf_labels)
+        num_trees = len(tree_list)
+        rf_diameter = int(2*(num_leaves - 1))
+
+        # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            index = np.random.randint(0,num_trees)
+            distances = rf.rf_distance_focal(tree_list, index)[0]
+            print(distances)
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        plts.plot_hist(distances, output_file, bins = rf_diameter)
+        if output_file != '':
+            plt.savefig(output_file)
 
 
 if __name__ == '__main__':
     
-    all_pw_distances('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RF')
+    focal_tree_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
 
     # plt.plot(rnni_mean_dist_n(100, 20000), linestyle = 'None', marker = 'o', markersize = 6) # coalescent
     # plt.plot(rnni_mean_dist_n(40, 20000, model = 'bd'), linestyle = 'None', marker = 'o', markersize = 6) # birth-death
