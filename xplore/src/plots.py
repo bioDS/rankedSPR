@@ -15,6 +15,6 @@ def plot_hist(d, filehandle, bins):
 
 def plot_dots(d, filehandle):
     # Shows and saves values (to specified file)
-    plt.plot(distances_rf)
+    plt.plot(d, linestyle = 'None', marker = 'o', markersize = 6)
     plt.savefig(filehandle)
     plt.show()
