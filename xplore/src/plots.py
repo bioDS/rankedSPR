@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-def plot_hist(d, filehandle):
+def plot_hist(d, filehandle, bins):
     # Shows and saves histogram (to specified file)
     df = pd.DataFrame(data = d)
-    sns.histplot(data=df)
+    sns.histplot(data=df, bins = bins)
     plt.savefig(filehandle)
     plt.show()
 
