@@ -1,5 +1,6 @@
 # RNNI distance Distributions
 
+
 ## Simulate trees
 
 ### Coalescent
@@ -24,6 +25,11 @@
 ### Mean distance vs. n
 
 - Plotting mean distance (mean of the ones produced by rnni_distances_tree_pairs as described above) vs. number of leaves (n=1:40) -- saved as *simulations/distance_distribution/D/rnni_meanVSn_x_n_y_N*, where D is the prior distribution (coalescent or bd)
+
+### Uniform distances
+
+- exact distance distributions on up to 6 leaves, using the RNNI_code repo (test_distance_distribution)
+- distance distributions saved in *distance_distribution/uniform/all_rnni_dist_x_n.eps*, where x is the number of leaves (x=4,5,6)
 
 
 ## Simulate posterior sample
