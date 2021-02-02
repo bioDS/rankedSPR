@@ -165,7 +165,7 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
             distances = rnni.rnni_distances_tree_pairs(tree_list)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_dots(distances, output_file)
+        plts.plot_hist(distances, output_file, bins = np.arange(-.5, rnni_diameter + 1.5, 1))
         if output_file != '':
             plt.savefig(output_file)
 
@@ -193,5 +193,5 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
 
 if __name__ == '__main__':
 
-    pw_tree_list_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
-    consec_trees_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
+    pw_tree_list_dist('../simulations/simulated_trees/coal/20000/coal_trees_6_n.nex', '../simulations/distance_distribution/coalescent/rnni_distribution_6_n_20000_N.eps', metric = 'RNNI')
+    # consec_trees_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
