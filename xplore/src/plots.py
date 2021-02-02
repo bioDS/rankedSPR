@@ -11,10 +11,12 @@ def plot_hist(d, filehandle, bins):
     df = pd.DataFrame(data = d)
     sns.histplot(data=df, bins = bins)
     plt.savefig(filehandle)
+    plt.tight_layout()
     plt.show()
 
 def plot_dots(d, filehandle):
     # Shows and saves values (to specified file)
     plt.plot(d, linestyle = 'None', marker = 'o', markersize = 6)
     plt.savefig(filehandle)
+    plt.tight_layout()
     plt.show()
