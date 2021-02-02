@@ -56,7 +56,7 @@ def read_ete_nexus(file_handle):
             leaf_labels = True
         # Start reading leaf labels after 'translate' (signals start of this sequence)
         if leaf_labels == True:
-            re_label = re.search(r'\s*(.+)\s(.+),', line)
+            re_label = re.search(r'\s*(.+)\s(.+)', line)
             re_stop = re.search(r';', line)
             if re_stop != None:
                 break
@@ -118,7 +118,7 @@ def rf_distance_focal(tree_list, index):
     print("Computing RNNI distances")
     for i in range(0, num_trees):
         if (i != index):
-            distances.append(tree_list[index].robinson_foulds(tree_list[i])[0])
+            distances.append(tree_list[i].robinson_foulds(tree_list[index])[0])
         if (i/num_trees > progress):
             print('Progress: ' + "{:.2f}".format(progress))
             progress += 0.05
