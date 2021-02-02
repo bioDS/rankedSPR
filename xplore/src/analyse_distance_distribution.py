@@ -35,7 +35,8 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
             distances = rnni.pw_rnni_dist(tree_list)
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_hist(distances, output_file, bins = rnni_diameter)
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
     
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -52,7 +53,8 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
             distances = rf.pw_rf_dist(tree_list, list = True)
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_hist(distances, output_file, bins = rf_diameter)
+        bins = np.arange(-.5, rf_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
 
 def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
     if metric == 'RNNI':
@@ -72,7 +74,8 @@ def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 
             distances = rnni.rnni_distance_focal(tree_list, index)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_hist(distances, output_file, bins = rnni_diameter)
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
 
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -91,7 +94,8 @@ def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 
             distances = rf.rf_distance_focal(tree_list, index)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_hist(distances, output_file, bins = rf_diameter)
+        bins = np.arange(-.5, rf_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
 
 
 def consec_trees_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
@@ -172,10 +176,12 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
             print(distances)
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_dots(distances, output_file)
+        bins = np.arange(-.5, rf_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
 
 
 if __name__ == '__main__':
 
-    pw_tree_list_dist('../simulations/simulated_trees/coal/20000/coal_trees_6_n.nex', '../simulations/distance_distribution/coalescent/rnni_distribution_6_n_20000_N.eps', metric = 'RNNI')
+    all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
+    all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # consec_trees_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
