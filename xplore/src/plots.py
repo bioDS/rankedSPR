@@ -9,7 +9,7 @@ import seaborn as sns
 def plot_hist(d, filehandle, bins):
     # Shows and saves histogram (to specified file)
     df = pd.DataFrame(data = d)
-    sns.histplot(data=df, bins = bins)
+    sns.histplot(data=df, bins = bins, stat = 'density', legend = False)
     plt.savefig(filehandle)
     plt.tight_layout()
     plt.show()
