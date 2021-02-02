@@ -32,16 +32,19 @@
 - distance distributions saved in *distance_distribution/uniform/all_rnni_dist_x_n.eps*, where x is the number of leaves (x=4,5,6)
 
 
-## Simulate posterior sample
+## Posterior sample
 
-### Alignments
+### Simulation
 
-(1) Simulate **generating trees** with R: rcoal/sim.bdtree (coalescent/birth-death) and save in *simulations/posterior/bd/D/*, where D is the prior (coal or bd). Name of files: *coal_20_leaves.new* / *bd_tree_b1_d0_20_leaves.new* (coal/bd)  
-Resulting trees have 20 leaves and alignments have length 10,000
-(2) Simulate alignments along those trees using simSeq and JC model. Alignments are saved in same folder as trees as *coal_alignment_20_sequences_10000_length.nex* / *bd_alignment_b1_d0_20_sequences_10000_length.nex* (coal/bd).
+(1) Simulate **generating trees** with R: rcoal/sim.bdtree (coalescent/birth-death) and save in *simulations/posterior/bd/D/*, where D is the prior (coal or bd). Name of files: *coal_20_leaves.new* / *bd_tree_b1_d0_20_leaves.new* (coal/bd)
+Resulting trees have 20 leaves and alignments have length 10,000  
+(2) Simulate alignments along those trees using simSeq and JC model. Alignments are saved in same folder as trees as *coal_alignment_20_sequences_10000_length.nex* / *bd_alignment_b1_d0_20_sequences_10000_length.nex* (coal/bd).  
 (3) Run Beast using the xml file (produced by Beauti) in the same folder as generating tree and alignment  
 Settings for beast: JC model, strict clock, coal/bd prior, 1,000,000 trees, saving every 1,000st tree.
-(4)
+
+### Analysis
+
+- We do currently not discard a burn-in!
 - Analyse pw distances between each tree and the following one (d(T_i,T_{i+1}) for all i) with function *rnni_distances_consecutive_tree_pairs* and plot distances to *rnni_consecutive_pairs_dist.eps* in the same folder  
 This can also been done with the RF distance (functions in *src/rf_distance_analysis.py*)  
 - Plot hist of all pw distances (RNNI and RF) with pw_rnni_dist/pw_rf_dist -- output in (*simulations/posterior/D* for distribution D=coal/bd) as *rnni_all_pw_dist.eps*/*rf_all_pw_dist.eps*  
