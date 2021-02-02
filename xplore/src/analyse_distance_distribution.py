@@ -36,8 +36,6 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_hist(distances, output_file, bins = rnni_diameter)
-        if output_file != '':
-            plt.savefig(output_file)
     
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -55,9 +53,6 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_hist(distances, output_file, bins = rf_diameter)
-        if output_file != '':
-            plt.savefig(output_file)
-
 
 def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
     if metric == 'RNNI':
@@ -78,8 +73,6 @@ def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_hist(distances, output_file, bins = rnni_diameter)
-        if output_file != '':
-            plt.savefig(output_file)
 
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -99,8 +92,6 @@ def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_hist(distances, output_file, bins = rf_diameter)
-        if output_file != '':
-            plt.savefig(output_file)
 
 
 def consec_trees_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
@@ -122,8 +113,6 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_dots(distances, output_file)
-        if output_file != '':
-            plt.savefig(output_file)
 
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -143,8 +132,6 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_dots(distances, output_file)
-        if output_file != '':
-            plt.savefig(output_file)
 
 
 def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
@@ -165,9 +152,8 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
             distances = rnni.rnni_distances_tree_pairs(tree_list)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        plts.plot_hist(distances, output_file, bins = np.arange(-.5, rnni_diameter + 1.5, 1))
-        if output_file != '':
-            plt.savefig(output_file)
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
 
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -187,8 +173,6 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
         plts.plot_dots(distances, output_file)
-        if output_file != '':
-            plt.savefig(output_file)
 
 
 if __name__ == '__main__':
