@@ -22,7 +22,7 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
-        tree_list = read_nexus(input_file, ranked = True)[0]
+        tree_list = read_nexus(input_file, ranked = True)
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -60,7 +60,7 @@ def random_focal_tree_dist(input_file, output_file = '', distances_file = '', me
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
-        tree_list = read_nexus(input_file, ranked = True)[0]
+        tree_list = read_nexus(input_file, ranked = True)
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -103,7 +103,7 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
-        tree_list = read_nexus(input_file, ranked = True)[0]
+        tree_list = read_nexus(input_file, ranked = True)
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -143,7 +143,7 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
-        tree_list = read_nexus(input_file, ranked = True)[0]
+        tree_list = read_nexus(input_file, ranked = True)
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -184,13 +184,14 @@ def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation) -- does not contain focal tree yet.
         print("Read trees")
-        init_tree_list = read_nexus(input_file, ranked = True)[0]
+        init_tree_list = read_nexus(input_file, ranked = True)
         index = init_tree_list.num_trees # index that the focal tree will have in tree_list (focal tree is last tree in that list)
         trees = (TREE * (index + 1))() # list of trees containing focal tree as last tree
         for i in range(0, index):
             trees[i] = init_tree_list.trees[i]
         trees[index] = focal_tree
         tree_list = TREE_LIST(trees, index + 1)
+        tree_list.num_trees = index + 1
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -200,6 +201,8 @@ def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '
         if os.path.exists(distances_file):
             distances = np.loadtxt(distances_file, delimiter = ' ')
         else:
+            print(index)
+            print(tree_list.num_trees)
             distances = rnni.rnni_distance_focal(tree_list, index)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
@@ -240,11 +243,12 @@ if __name__ == '__main__':
     # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
     # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # read MCC tree:
-    f = open('../simulations/posterior/coal/mcc_summary.new')
-    tree_str = f.readline()
-    # mcc_tree = read_newick(tree_str, ranked = True)
-    mcc_ete_tree = Tree(tree_str)
-    # focal_tree_dist(mcc_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_mcc_dist.eps', metric = 'RNNI')
-    focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', output_file = '../simulations/posterior/coal/rf_mcc_dist.eps', metric = 'RF')
+    # f = open('../simulations/posterior/coal/mcc_summary.new')
+    # tree_str = f.readline()
+    mcc_tree = read_nexus('../simulations/posterior/coal/mcc_summary.tree', ranked = True).trees[0]
+    print(mcc_tree.num_leaves)
+    # mcc_ete_tree = Tree(tree_str)
+    focal_tree_dist(mcc_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_mcc_dist.eps', metric = 'RNNI')
+    # focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', output_file = '../simulations/posterior/coal/rf_mcc_dist.eps', metric = 'RF')
     
-    f.close()
+    # f.close()
