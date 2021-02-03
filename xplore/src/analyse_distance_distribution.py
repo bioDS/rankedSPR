@@ -213,14 +213,6 @@ def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '
         # Read trees in ete3 format:
         print("Read trees")
         tree_list, leaf_labels = rf.read_ete_nexus(input_file)
-        # Correct the leaf labels in focal tree:
-        inv_leaf_labels = dict() # inverse of leaf_label dict
-        for key in leaf_labels.keys():
-            inv_leaf_labels[leaf_labels[key]] = key
-        for node in mcc_ete_tree.get_leaves(): # Replace leaf labels
-            if "t" in node.name:
-                newname = inv_leaf_labels[node.name]
-                node.name = newname
         tree_list.append(focal_tree) # add focal tree as last tree to tree_lists
         print("Done reading trees")
         num_leaves = len(leaf_labels)
@@ -240,15 +232,13 @@ def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '
 
 if __name__ == '__main__':
 
-    # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
+    # all_pw_dist('../simulations/posterior/bd/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
     # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # read MCC tree:
-    # f = open('../simulations/posterior/coal/mcc_summary.new')
-    # tree_str = f.readline()
+
+    mcc_ete_tree = rf.read_ete_nexus('../simulations/posterior/bd/mcc_summary.tree')[0]
+    mcc_ete_tree = mcc_ete_tree[0]
+    focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/bd/bd_alignment_b1_d0_20_sequences_10000_length.trees', output_file = '../simulations/posterior/bd/rf_mcc_dist.eps', metric = 'RF')
+
     mcc_tree = read_nexus('../simulations/posterior/coal/mcc_summary.tree', ranked = True).trees[0]
-    print(mcc_tree.num_leaves)
-    # mcc_ete_tree = Tree(tree_str)
     focal_tree_dist(mcc_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_mcc_dist.eps', metric = 'RNNI')
-    # focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', output_file = '../simulations/posterior/coal/rf_mcc_dist.eps', metric = 'RF')
-    
-    # f.close()
