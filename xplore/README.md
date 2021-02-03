@@ -17,7 +17,7 @@
 - Plotting distances between pairs of trees with index i,i+1 for even i (from trees simulated as above), using *src/analyse_distance_distributions.py* (rnni_distances_tree_pairs/ rf_distances_tree_pairs)
 - Plots are saved as *simulations/distance_distributions/D/rnni_distribution_x_n_y_m.eps* (for RNNI) and *simulations/distance_distributions/D/rf_distribution_x_n_y_N.eps* (for RF), where D is the prior distribution (coalescent or bd)
 
-### Distances from focal tree
+### Distances from random focal tree
 
 - Plotting distances between tree that is chosen randomly at uniform to all other trees (from trees simulated as above), using *src/analyse_distance_distributions.py*
 - Plots are saved as *simulations/distance_distributions/D/rnni_focal_distribution_x_n_y_m.eps* (for RNNI) and *simulations/distance_distributions/D/rf_focal_distribution_x_n_y_N.eps* (for RF), where D is the prior distribution (coalescent or bd)
