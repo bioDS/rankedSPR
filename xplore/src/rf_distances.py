@@ -56,7 +56,7 @@ def read_ete_nexus(file_handle):
             leaf_labels = True
         # Start reading leaf labels after 'translate' (signals start of this sequence)
         if leaf_labels == True:
-            re_label = re.search(r'\s*(.+)\s(.+)', line)
+            re_label = re.search(r'\s*(.+)\s([^,^\n]+)', line)
             re_stop = re.search(r';', line)
             if re_stop != None:
                 break

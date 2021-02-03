@@ -56,7 +56,7 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
         bins = np.arange(-.5, rf_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
 
-def focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
+def random_focal_tree_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
@@ -179,9 +179,72 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
         bins = np.arange(-.5, rf_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
 
+def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '', metric = 'RNNI'):
+    # Compute distances from focal_tree to all trees in input_file and save as histogram
+    if metric == 'RNNI':
+        # Read trees in C format (for RNNI distance computation) -- does not contain focal tree yet.
+        print("Read trees")
+        init_tree_list = read_nexus(input_file, ranked = True)[0]
+        index = init_tree_list.num_trees # index that the focal tree will have in tree_list (focal tree is last tree in that list)
+        trees = (TREE * (index + 1))() # list of trees containing focal tree as last tree
+        for i in range(0, index):
+            trees[i] = init_tree_list.trees[i]
+        trees[index] = focal_tree
+        tree_list = TREE_LIST(trees, index + 1)
+        print("Done reading trees")
+        num_trees = tree_list.num_trees
+        num_leaves = tree_list.trees[0].num_leaves
+        rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+
+        # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            distances = rnni.rnni_distance_focal(tree_list, index)[0]
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
+
+    elif metric == 'RF':
+        # Read trees in ete3 format:
+        print("Read trees")
+        tree_list, leaf_labels = rf.read_ete_nexus(input_file)
+        # Correct the leaf labels in focal tree:
+        inv_leaf_labels = dict() # inverse of leaf_label dict
+        for key in leaf_labels.keys():
+            inv_leaf_labels[leaf_labels[key]] = key
+        for node in mcc_ete_tree.get_leaves(): # Replace leaf labels
+            if "t" in node.name:
+                newname = inv_leaf_labels[node.name]
+                node.name = newname
+        tree_list.append(focal_tree) # add focal tree as last tree to tree_lists
+        print("Done reading trees")
+        num_leaves = len(leaf_labels)
+        num_trees = len(tree_list)
+        rf_diameter = int(2*(num_leaves - 1))
+
+        # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            distances = rf.rf_distance_focal(tree_list, len(tree_list)-1)[0]
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        bins = np.arange(-.5, rf_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
+
 
 if __name__ == '__main__':
 
-    all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
-    all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
-    # consec_trees_dist('../simulations/simulated_trees/coal/coal_trees_20_n_100_N.nex', '../simulations/simulated_trees/coal/output.eps', metric = 'RNNI')
+    # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
+    # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
+    # read MCC tree:
+    f = open('../simulations/posterior/coal/mcc_summary.new')
+    tree_str = f.readline()
+    # mcc_tree = read_newick(tree_str, ranked = True)
+    mcc_ete_tree = Tree(tree_str)
+    # focal_tree_dist(mcc_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_mcc_dist.eps', metric = 'RNNI')
+    focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', output_file = '../simulations/posterior/coal/rf_mcc_dist.eps', metric = 'RF')
+    
+    f.close()
