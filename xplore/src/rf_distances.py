@@ -65,7 +65,7 @@ def read_ete_nexus(file_handle):
 
     # Read trees
     for line in f:
-        re_tree = re.search(r'tree .* (\(.*\);)', line, re.I)
+        re_tree = re.search(r'tree .* (\(.*\)(\[[^\]]*\])?;)', line, re.I)
         if re_tree != None:
             current_tree = Tree(re.sub(r'\[[^\]]*\]',"",re_tree.group(1)))
             trees.append(current_tree)          
