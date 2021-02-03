@@ -49,3 +49,4 @@ Settings for beast: JC model, strict clock, coal/bd prior, 1,000,000 trees, savi
 This can also been done with the RF distance (functions in *src/rf_distance_analysis.py*)  
 - Plot hist of all pw distances (RNNI and RF) with pw_rnni_dist/pw_rf_dist -- output in (*simulations/posterior/D* for distribution D=coal/bd) as *rnni_all_pw_dist.eps*/*rf_all_pw_dist.eps*  
   This is to get an impression of how 'dense' the chain is for the corresponding distance measure (RNNI vs RF)
+- Plot all distances from trees in posterior sample to mcc tree (*simulations/posterior/D/mcc_summary.tree*, computed with treeannotator) as *../simulations/posterior/D/z_mcc_dist.eps*, where z is rnni or rf, and D the distribution bd or coal.
