@@ -15,6 +15,7 @@ from dct_parser.tree_io import *
 import rf_distances as rf
 import rnni_distances as rnni
 import plots as plts
+import simulate_trees as sim
 
 
 def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
@@ -230,15 +231,45 @@ def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '
         plts.plot_hist(distances, bins, output_file)
 
 
+# use own implementation of coalescent to plot RNNI distances
+def coal_pw_dist(num_trees, num_leaves, output_file = '', distances_file = ''):
+    # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
+    # Read trees in C format (for RNNI distance computation)
+    print("Simulate trees")
+    tree_list = sim.sim_coal(num_leaves,num_trees)
+    print("Done simulating trees")
+    num_trees = tree_list.num_trees
+    num_leaves = tree_list.trees[0].num_leaves
+    rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+
+    # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
+    if os.path.exists(distances_file):
+        distances = np.loadtxt(distances_file, delimiter = ' ')
+    else:
+        distances = rnni.rnni_distances_tree_pairs(tree_list)[0]
+        if distances_file != '':
+            np.savetxt(distances_file, distances, delimiter = ' ')
+    bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+    plts.plot_hist(distances, bins, output_file)
+
+
 if __name__ == '__main__':
 
-    # all_pw_dist('../simulations/posterior/bd/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_all_pw_dist.eps', metric = 'RNNI')
-    # all_pw_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
+    coal_pw_dist(20000,20, output_file = '../simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps')
+
+    # pw_tree_list_dist('../simulations/simulated_trees/bd/20000/bd_trees_20_n.nex', '../simulations/distance_distribution/bd/rnni_distribution_20_n_20000_N.eps', metric = 'RNNI')
+    # pw_tree_list_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # read MCC tree:
 
-    mcc_ete_tree = rf.read_ete_nexus('../simulations/posterior/bd/mcc_summary.tree')[0]
-    mcc_ete_tree = mcc_ete_tree[0]
-    focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/bd/bd_alignment_b1_d0_20_sequences_10000_length.trees', output_file = '../simulations/posterior/bd/rf_mcc_dist.eps', metric = 'RF')
+    # mcc_ete_tree = rf.read_ete_nexus('../simulations/posterior/bd/mcc_summary.tree')[0]
+    # mcc_ete_tree = mcc_ete_tree[0]
+    # focal_tree_dist(mcc_ete_tree, input_file = '../simulations/posterior/bd/bd_alignment_b1_d0_20_sequences_10000_length.trees', output_file = '../simulations/posterior/bd/rf_mcc_dist.eps', metric = 'RF')
 
-    mcc_tree = read_nexus('../simulations/posterior/coal/mcc_summary.tree', ranked = True).trees[0]
-    focal_tree_dist(mcc_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_mcc_dist.eps', metric = 'RNNI')
+    # mcc_tree = read_nexus('../simulations/posterior/coal/mcc_summary.tree', ranked = True).trees[0]
+    # focal_tree_dist(mcc_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_mcc_dist.eps', metric = 'RNNI')
+
+    # f = open('../simulations/posterior/coal/coal_20_leaves.new', 'r')
+    # original_tree = read_newick(f.readline(), ranked = True)
+    # print(findpath_distance(original_tree, mcc_tree))
+    # focal_tree_dist(original_tree, '../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rnni_original_tree_dist.eps', metric = 'RNNI')
+    # f.close()
