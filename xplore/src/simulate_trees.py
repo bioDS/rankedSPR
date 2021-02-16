@@ -46,3 +46,27 @@ def sim_coal(num_leaves, num_trees, rf = False):
         trees[i] = current_tree
     output_tree_list = TREE_LIST(trees, num_trees)
     return(output_tree_list)
+
+def give_caterpillar(num_leaves):
+    # Create empty node list:
+    num_nodes = 2*num_leaves-1
+    node_list = (NODE * num_nodes)()
+    empty_children = (c_long * 2)()
+    empty_children[0] = -1
+    empty_children[1] = -1
+    for j in range(0, num_nodes):
+        node_list[j] = NODE(-1, empty_children, 0)
+    # First set cherry, remaining leaves get parents in loop
+    node_list[0].parent = num_leaves
+    node_list[1].parent = num_leaves
+    node_list[num_leaves].children[0] = 0
+    node_list[num_leaves].children[1] = 1
+    for leaf in range(2,num_leaves):
+        node_list[leaf].parent = num_leaves + leaf - 1
+        node_list[num_leaves + leaf - 1].children[0] = leaf
+        node_list[num_leaves + leaf - 1].children[1] = num_leaves + leaf - 2
+        node_list[num_leaves + leaf - 2].parent = num_leaves + leaf - 1
+    # for i in range(0, num_nodes):
+    #     print(node_list[i].children[0], node_list[i].children[1], node_list[i].parent)
+    output_tree = TREE(node_list, num_leaves)
+    return(output_tree)
