@@ -11,11 +11,31 @@
 - Simulating birth-death trees using R package geiger (sim.bdtree) with script *src/simulate_bd.R*
 - saved in *simulations/simulated_trees/bd/y/bd_trees_x_n.nex* where x number of leaves and y number of trees
 
+### simulate_trees.py
+*src/simulate_trees.py* contains simulations for ranked trees as C data structure
+
+  | function			|	Description
+  ---    |   ---
+  | *sim_coal* | coalescent simulation in |
+  | *sim_cat* | simulate caterpillar tree uniformly among caterpillar trees |
+
 
 ## Analysing distance distributions
+*src/analyse_distance_distribution.py*
+
+### Using coalescent implementation sim_coal
+| Function | Description | Save File for Plot (if existing)
+---   |   --- | ---
+| *coal_pw_dist* | plot distances between tree pairs i,i+1 for even i (distances are independent) in list of trees simulated using *sim_coal* | *simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps* |
+| *caterpillar_dist_distribution* | plot distances from num_tree trees (sim_coal) to fixed caterpillar tree | *simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps* |
+| *coal_focal_dist* | plot distances between num_tree trees (sim_coal) and focal tree (last tree in tree list) | *simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps* |
+| *mean_distances* | takes as input one of the three functions above and compute distances according to them for n between given boundaries and plots mean and variance of distances depending on n | *simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* |
+
+### Distance Distributions
 
 - Plotting distances between pairs of trees with index i,i+1 for even i (from trees simulated as above), using *src/analyse_distance_distributions.py* (rnni_distances_tree_pairs/ rf_distances_tree_pairs)
 - Plots are saved as *simulations/distance_distributions/D/rnni_distribution_x_n_y_m.eps* (for RNNI) and *simulations/distance_distributions/D/rf_distribution_x_n_y_N.eps* (for RF), where D is the prior distribution (coalescent or bd)
+- For own coalescent simulation (*sim_coal*): 
 
 ### Distances from random focal tree
 
