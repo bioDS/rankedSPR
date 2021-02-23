@@ -264,7 +264,7 @@ def caterpillar_dist_distribution(num_leaves, num_trees, mean = False, output_fi
     rnni_diameter = (num_leaves - 1)*(num_leaves - 2)/2
     for i in range(0,num_trees):
         all_trees[i] = sim_trees[i]
-    all_trees[num_trees] = sim.give_caterpillar(num_leaves)
+    all_trees[num_trees] = sim.identity_caterpillar(num_leaves)
     tree_list = TREE_LIST(all_trees, num_trees)
     # Plotting RNNI distances for all pairs T_{num_trees}, T_i, where num_trees belongs to the focal tree, which is the caterpillar trees 1,2,...,n
     if os.path.exists(distances_file):
