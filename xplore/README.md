@@ -25,12 +25,14 @@
 
 ### Using coalescent implementation sim_coal
 | Function | Description | Save File for Plot (if existing)
----   |   --- | ---
+---|---|---
 | *coal_pw_dist* | plot distances between tree pairs i,i+1 for even i (distances are independent) in list of trees simulated using *sim_coal* | *simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps* |
 | *caterpillar_dist_distribution* | plot distances from num_tree trees (sim_coal) to fixed caterpillar tree | *simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps* |
 | *coal_focal_dist* | plot distances between num_tree trees (sim_coal) and focal tree (last tree in tree list) | *simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps* |
 | *dist_distribution_caterpillar* | plot distances between num_tree caterpillar trees (sim_cat) to a fixed coalescent tree | *simulations/distance_distribution/coalescent/dist_distribution_caterpillar_20_n_10000_N.eps* |
-| *mean_distances* | takes as input one of the three functions above and compute distances according to them for n between given boundaries and plots mean and variance of distances depending on n | *simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* |
+---|---|---
+| *mean_distances_n* | takes as input one of the functions above and compute distances according to them for n between given boundaries and plots mean and variance of distances depending on n |*simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* (alternatively also *cat_mean_and_var_dist_n_3_to_40_N_20000.eps* etc.) |
+| *mean_distances_repeat* | takes as input one of the functions above and compute distances according to them, repeating it for a given number of times (num_iterations) and plots mean and variance of distances for each iteration |*simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* (alternatively also *cat_mean_and_var_dist_n_3_to_40_N_20000.eps* etc.) |
 
 ### Distance Distributions
 

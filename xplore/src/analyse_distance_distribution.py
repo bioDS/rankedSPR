@@ -314,7 +314,6 @@ def coal_focal_dist(num_leaves, num_trees, mean = False, output_file = '', dista
         plts.plot_hist(distances, bins, output_file)
 
 
-
 def dist_distribution_caterpillars(num_leaves, num_trees, mean = False, output_file = '', distances_file = ''):
     # Simulate random tree and compute distance to num_trees simulated caterpillar trees
     # If mean == True, returns mean and var of distances
@@ -343,7 +342,7 @@ def dist_distribution_caterpillars(num_leaves, num_trees, mean = False, output_f
         plts.plot_hist(distances, bins, output_file)
 
 
-def mean_distance(func, min_num_leaves, max_num_leaves, num_trees, output_file = ''):
+def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file = ''):
     # plot mean distances given by function for different number of leaves and plot them
     mean_array = []
     var_array = []
@@ -358,11 +357,26 @@ def mean_distance(func, min_num_leaves, max_num_leaves, num_trees, output_file =
     plt.savefig(output_file)
     plt.show()
 
+def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_file = ''):
+    # plot mean distances given by function for different number of leaves and plot them
+    mean_array = []
+    var_array = []
+    for i in range(0,num_iterations):
+        statistics = func(num_leaves,num_trees, mean = True)
+        mean_array.append(statistics[0])
+        var_array.append(statistics[1])
+    print(mean_array)
+    print(var_array)
+    plt.plot(mean_array)
+    plt.plot(var_array)
+    plt.savefig(output_file)
+    plt.show()
+
 
 if __name__ == '__main__':
 
-    dist_distribution_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_caterpillar_20_n_10000_N.eps')
-    # mean_distance(coal_focal_dist, 4, 10, 1000)
+    # dist_distribution_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_caterpillar_20_n_10000_N.eps')
+    mean_distance_repeat(dist_distribution_caterpillars, 20, 50, 10000, output_file = '../simulations/distance_distribution/coalescent/cat_mean_and_var_dist_n_20_N_20000_50_iterations.eps')
     # coal_pw_dist(20000,20, output_file = '../simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps')
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
     # coal_focal_dist(20, 20000, output_file='../simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps')
