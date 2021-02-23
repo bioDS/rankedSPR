@@ -47,7 +47,7 @@ def sim_coal(num_leaves, num_trees, rf = False):
     output_tree_list = TREE_LIST(trees, num_trees)
     return(output_tree_list)
 
-def give_caterpillar(num_leaves):
+def identity_caterpillar(num_leaves):
     # Create empty node list:
     num_nodes = 2*num_leaves-1
     node_list = (NODE * num_nodes)()
