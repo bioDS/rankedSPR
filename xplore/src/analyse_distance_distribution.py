@@ -283,6 +283,7 @@ def caterpillar_dist_distribution(num_leaves, num_trees, mean = False, output_fi
         bins = np.arange(-.5, rnni_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
 
+
 # use own implementation of coalescent to plot RNNI distances
 def coal_focal_dist(num_leaves, num_trees, mean = False, output_file = '', distances_file = ''):
     # Simulating num_trees coalescent trees and plotting the distances of all tree pairs T_i, T_{num_trees} for all i and save plot (if filehandle given) in output_file
@@ -312,6 +313,36 @@ def coal_focal_dist(num_leaves, num_trees, mean = False, output_file = '', dista
         bins = np.arange(-.5, rnni_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
 
+
+
+def dist_distribution_caterpillars(num_leaves, num_trees, mean = False, output_file = '', distances_file = ''):
+    # Simulate random tree and compute distance to num_trees simulated caterpillar trees
+    # If mean == True, returns mean and var of distances
+    cat_trees = sim.sim_cat(num_leaves, num_trees).trees
+    all_trees = (TREE * (num_trees + 1))()
+    rnni_diameter = (num_leaves - 1)*(num_leaves - 2)/2
+    for i in range(0,num_trees):
+        all_trees[i] = cat_trees[i]
+    all_trees[num_trees] = sim.sim_coal(num_leaves, 1).trees[0] # simulated coalescence tree is focal tree here
+    tree_list = TREE_LIST(all_trees, num_trees)
+    # Plotting RNNI distances for all pairs T_{num_trees}, T_i, where num_trees belongs to the focal tree, a tree sampled from coalescent
+    if os.path.exists(distances_file):
+        distances = np.loadtxt(distances_file, delimiter = ' ')
+    else:
+        distances = rnni.rnni_distance_focal(tree_list, num_trees)[0]
+        norm_distances = []
+        for i in distances:
+            if rnni_diameter != 0:
+                norm_distances.append(i/rnni_diameter)
+        if mean == True:
+            return(np.mean(norm_distances), np.var(norm_distances))
+        if distances_file != '':
+            np.savetxt(distances_file, distances, delimiter = ' ')
+    if mean == False:
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
+
+
 def mean_distance(func, min_num_leaves, max_num_leaves, num_trees, output_file = ''):
     # plot mean distances given by function for different number of leaves and plot them
     mean_array = []
@@ -330,7 +361,8 @@ def mean_distance(func, min_num_leaves, max_num_leaves, num_trees, output_file =
 
 if __name__ == '__main__':
 
-    mean_distance(coal_focal_dist, 4, 10, 1000)
+    dist_distribution_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_caterpillar_20_n_10000_N.eps')
+    # mean_distance(coal_focal_dist, 4, 10, 1000)
     # coal_pw_dist(20000,20, output_file = '../simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps')
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
     # coal_focal_dist(20, 20000, output_file='../simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps')
