@@ -70,3 +70,44 @@ def identity_caterpillar(num_leaves):
     #     print(node_list[i].children[0], node_list[i].children[1], node_list[i].parent)
     output_tree = TREE(node_list, num_leaves)
     return(output_tree)
+
+def sim_cat(num_leaves, num_trees):
+    # simulate num_trees caterpillar trees (random at uniform)
+    trees = (TREE * num_trees)()
+    num_nodes = 2 * num_leaves - 1
+    for i in range(0, num_trees):
+        # Create empty Node list
+        node_list = (NODE * num_nodes)()
+        empty_children = (c_long * 2)()
+        empty_children[0] = -1
+        empty_children[1] = -1
+        for j in range(0, num_nodes):
+            node_list[j] = NODE(-1, empty_children, 0)
+        # Simulate coalescence events
+        n = num_leaves # n decreases in every step of simulation until all lineages coalesce
+        current_leaves = [] # list including all current leaves. Starts with list of leaves, in each iteration two elements are replaced by one (which is attached as last element of the list)
+        for l in range(1,num_leaves+1):
+            current_leaves.append(l)
+        # First simulate cherry
+        [c1,c2] = random.sample(current_leaves, k=2)
+        current_leaves.remove(c1)
+        current_leaves.remove(c2)
+        node_list[c1-1].parent = num_leaves
+        node_list[c2-1].parent = num_leaves
+        node_list[num_leaves].children[0] = c1-1
+        node_list[num_leaves].children[1] = c2-1
+        # Add leaves above cherry to caterpillar tree
+        for node in range(2,num_leaves):
+            leaf = random.choice(current_leaves) # Choose next leaf to add random at uniform
+            current_leaves.remove(leaf)
+            # Add relations in node_list
+            node_list[leaf-1].parent = num_leaves + node - 1
+            node_list[num_leaves+node-2].parent = num_leaves+node-1
+            node_list[num_leaves+node-1].children[0] = leaf-1
+            node_list[num_leaves+node-1].children[1] = num_leaves+node-2
+        # for l in range(0, num_nodes):
+        #     print(l, node_list[l].children[0], node_list[l].children[1], node_list[l].parent)
+        current_tree = TREE(node_list, num_leaves)
+        trees[i] = current_tree
+    output_tree_list = TREE_LIST(trees, num_trees)
+    return(output_tree_list)
