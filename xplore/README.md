@@ -27,8 +27,7 @@
 | Function | Description | Save File for Plot (if existing)
 --- | --- | ---
 | *coal_pw_dist* | plot distances between tree pairs i,i+1 for even i (distances are independent) in list of trees simulated using *sim_coal* | *simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps* |
-| *caterpillar_dist_distribution* | plot distances from num_tree trees (sim_coal) to fixed caterpillar tree | *simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps* |
-| *coal_focal_dist* | plot distances between num_tree trees (sim_coal) and focal tree (last tree in tree list) | *simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps* |
+| *given_focal_distribution* | plot distances from num_tree trees (sim_coal) to given focal tree | for caterpillar tree (sim.sim_cat): *simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps*, for fully balanced tree: *simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps*, coalescent tree (uniform): *simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps* |
 | *dist_distribution_to_caterpillar* | plot distances between num_tree caterpillar trees (sim_cat) to a fixed coalescent tree | *simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps* |
 | *dist_distribution_btw_caterpillar* | plot distances between num_tree caterpillar tree pairs i,i+1 for even i (distances are independent) in list of trees simulated using *sim_cat* | *simulations/distance_distribution/coalescent/dist_distribution_btw_caterpillars_20_n_10000_N.eps* |
   |  |  
