@@ -111,3 +111,61 @@ def sim_cat(num_leaves, num_trees):
         trees[i] = current_tree
     output_tree_list = TREE_LIST(trees, num_trees)
     return(output_tree_list)
+
+def balanced_tree_16_leaves():
+    num_leaves = 16
+    num_nodes = 2 * num_leaves - 1
+    # Create empty Node list
+    node_list = (NODE * num_nodes)()
+    empty_children = (c_long * 2)()
+    empty_children[0] = -1
+    empty_children[1] = -1
+    for j in range(num_leaves, num_nodes):
+        node_list[j] = NODE(-1, empty_children, 0)
+    # set all parents of leaves
+    for i in range(num_leaves, int(num_leaves + num_leaves/2), 2):
+        node_list[i].children[0] = i-num_leaves
+        node_list[i].children[1] = i-num_leaves+1
+        node_list[i-num_leaves].parent = i
+        node_list[i-num_leaves+1].parent = i
+    for i in range(num_leaves + 1, int(num_leaves + num_leaves/2), 2):
+        node_list[i].children[0] = int(i-num_leaves/2)-1
+        node_list[i].children[1] = int(i-num_leaves/2)
+        node_list[int(i-num_leaves/2)-1].parent = i
+        node_list[int(i-num_leaves/2)].parent = i
+    # Set parents of internal nodes
+    # Everything involving root
+    node_list[num_nodes-1].children[0] = num_nodes-2
+    node_list[num_nodes-1].children[1] = num_nodes-3
+    node_list[num_nodes-2].parent = num_nodes-1
+    node_list[num_nodes-3].parent = num_nodes-1
+
+    # Children of root
+    node_list[num_nodes-2].children[0] = num_nodes-6
+    node_list[num_nodes-2].children[1] = num_nodes-4
+    node_list[num_nodes-3].children[0] = num_nodes-7
+    node_list[num_nodes-3].children[1] = num_nodes-5
+    node_list[num_nodes-6].parent = num_nodes-2
+    node_list[num_nodes-4].parent = num_nodes-2
+    node_list[num_nodes-7].parent = num_nodes-3
+    node_list[num_nodes-5].parent = num_nodes-3
+
+    # Children of children of root
+    node_list[num_nodes-6].children[0] = num_leaves + 1
+    node_list[num_nodes-6].children[1] = num_leaves + 3
+    node_list[num_nodes-4].children[0] = num_leaves + 5
+    node_list[num_nodes-4].children[1] = num_leaves + 7
+    node_list[num_nodes-7].children[0] = num_leaves
+    node_list[num_nodes-7].children[1] = num_leaves + 2
+    node_list[num_nodes-5].children[0] = num_leaves + 4
+    node_list[num_nodes-5].children[1] = num_leaves + 6
+    node_list[num_leaves+1].parent = num_nodes-6
+    node_list[num_leaves+3].parent = num_nodes-6
+    node_list[num_leaves+5].parent = num_nodes-4
+    node_list[num_leaves+7].parent = num_nodes-4
+    node_list[num_leaves].parent = num_nodes-7
+    node_list[num_leaves+2].parent = num_nodes-7
+    node_list[num_leaves+4].parent = num_nodes-5
+    node_list[num_leaves+6].parent = num_nodes-5
+    output_tree = TREE(node_list, num_leaves)
+    return(output_tree)
