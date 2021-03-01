@@ -409,9 +409,33 @@ def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_fil
     plt.show()
 
 
+def expected_dist(num_leaves):
+    # Returns a list of expected distances for trees on 3 to num_leaves trees
+    if num_leaves == 2:
+        return(0)
+    exp_dist = [0]
+    for n in range(3, num_leaves+1):
+        p = []
+        if n == 3:
+            exp_dist[n-3] = 0
+        else:
+            exp_dist.append(exp_dist[n-4])
+        for k in range(1, n):
+            p.append(1) # values p_{k,n} for n=i
+            for i in range(1, k):
+                p[k-1] = p[k-1] * (1-2/((n-i+1)*(n-i)))
+            p[k-1] = p[k-1] * (2/((n-k+1)*(n-k)))
+            exp_dist[n-3] += p[k-1] * (k-1)
+    return(exp_dist)
+
+
 if __name__ == '__main__':
 
-    compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
+    print(expected_dist(10))
+    for n in range(3,10):
+        print('Mean: ',coal_pw_dist(n, 200000, mean= True)[0])
+
+    # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
     # given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
 
     # dist_distribution_to_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps')
