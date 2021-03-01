@@ -284,6 +284,41 @@ def given_focal_tree_dist(num_leaves, num_trees, focal_tree, mean = False, outpu
         plts.plot_hist(distances, bins, output_file)
 
 
+# simulate coalescent trees and plot distance to a given focal tree
+def compare_given_focal_tree_dist(num_leaves, num_trees, focal_tree1, focal_tree2, mean = False, output_file = ''):
+    # If mean == True, returns mean and var of distances
+    sim_trees = sim.sim_coal(num_leaves, num_trees).trees
+    all_trees1 = (TREE * (num_trees + 1))()
+    all_trees2 = (TREE * (num_trees + 1))()
+    rnni_diameter = (num_leaves - 1)*(num_leaves - 2)/2
+    for i in range(0,num_trees):
+        all_trees1[i] = sim_trees[i]
+        all_trees2[i] = sim_trees[i]
+    all_trees1[num_trees] = focal_tree1
+    all_trees2[num_trees] = focal_tree2
+    tree_list1 = TREE_LIST(all_trees1, num_trees+1)
+    tree_list2 = TREE_LIST(all_trees2, num_trees+1)
+    # Plotting RNNI distances for all pairs T_{num_trees}, T_i, where num_trees belongs to the given focal tree
+    distances1 = rnni.rnni_distance_focal(tree_list1, num_trees)[0]
+    distances2 = rnni.rnni_distance_focal(tree_list2, num_trees)[0]
+    norm_distances1 = []
+    norm_distances2 = []
+    for i in range(0,len(distances1)):
+        if rnni_diameter != 0:
+            norm_distances1.append(distances1[i]/rnni_diameter)
+            norm_distances2.append(distances2[i]/rnni_diameter)
+    if mean == True:
+        return(np.mean(norm_distances1), np.var(norm_distances1), np.mean(norm_distances2), np.var(norm_distances2))
+    if mean == False:
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        df = pd.DataFrame(data = list(zip(distances1, distances2)), columns = ["fully balanced", "caterpillar"])
+        sns.histplot(data=df, bins = bins, stat = 'density', legend = True)
+        if output_file != '':
+            plt.savefig(output_file)
+        plt.tight_layout()
+        plt.show()
+        plt.show()
+
 def dist_distribution_to_caterpillars(num_leaves, num_trees, mean = False, output_file = '', distances_file = ''):
     # Simulate random tree and compute distance to num_trees simulated caterpillar trees
     # If mean == True, returns mean and var of distances
@@ -372,7 +407,8 @@ def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_fil
 
 if __name__ == '__main__':
 
-    given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
+    compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
+    # given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
 
     # dist_distribution_to_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps')
     # dist_distribution_btw_caterpillars(20,20000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_btw_caterpillars_20_n_20000_N.eps')
