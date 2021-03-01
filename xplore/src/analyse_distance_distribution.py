@@ -117,6 +117,7 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
             distances = rnni.rnni_distances_consecutive_tree_pairs(tree_list)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
+        d = pd.DataFrame(data =  distances)
         plts.plot_dots(distances, output_file)
 
     elif metric == 'RF':
@@ -136,6 +137,7 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
             print(distances)
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
+        d = pd.DataFrame(data =  distances)
         plts.plot_dots(distances, output_file)
 
 
@@ -394,19 +396,20 @@ def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file
 
 def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_file = ''):
     # plot mean distances given by function for different number of leaves and plot them
+    diameter = (num_leaves-1)*(num_leaves-2)/2
     mean_array = []
-    var_array = []
+    # var_array = []
     for i in range(0,num_iterations):
         statistics = func(num_leaves,num_trees, mean = True)
         mean_array.append(statistics[0])
-        var_array.append(statistics[1])
+        # var_array.append(statistics[1])
     print(mean_array)
-    print(var_array)
-    plt.plot(mean_array)
-    plt.plot(var_array)
+    # print(var_array)
+    d = pd.DataFrame(data =  [i/diameter for i in mean_array], columns = ["mean distance"])
+    plts.plot_dots(d, [0.6,1])
+    # plt.plot(var_array)
     if output_file != '':
         plt.savefig(output_file)
-    plt.show()
 
 
 def expected_dist(num_leaves):
@@ -445,7 +448,7 @@ def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '')
 
 if __name__ == '__main__':
 
-    compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
+    # compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
 
     # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
     # given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
@@ -453,6 +456,7 @@ if __name__ == '__main__':
     # dist_distribution_to_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps')
     # dist_distribution_btw_caterpillars(20,20000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_btw_caterpillars_20_n_20000_N.eps')
     # mean_distance_n(dist_distribution_btw_caterpillars, 4, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_and_var_dist_n_3_to_40_N_20000.eps')
+    mean_distance_repeat(coal_pw_dist, 20, 50, 20000, output_file = '../simulations/distance_distribution/coalescent/mean_distance_repeat_n_20_N_20000_50_iterations.eps')
     # mean_distance_repeat(dist_distribution_to_caterpillars, 20, 50, 1000, output_file = '../simulations/distance_distribution/coalescent/to_cat_mean_and_var_dist_n_20_N_20000_50_iterations.eps')
     # coal_pw_dist(20000,20, output_file = '../simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps')
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
