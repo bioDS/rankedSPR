@@ -429,11 +429,21 @@ def expected_dist(num_leaves):
     return(exp_dist)
 
 
+def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = ''):
+    # Compare expected distances of trees on 3 to num_leaves leaves to mean of simulated distance distribution (based on num_trees simulated coalescent trees)
+    exp_dist = expected_dist(num_leaves)
+    sim_dist = []
+    for i in range(3,num_leaves+1):
+        sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0])
+    print(exp_dist)
+    print(sim_dist)
+    d = pd.DataFrame(data = list(zip(exp_dist, sim_dist)), columns = ["approximated expectation", "mean of simulation"])
+    sns.scatterplot(data=d, s = 50, legend = True)
+    plt.show()
+
 if __name__ == '__main__':
 
-    print(expected_dist(10))
-    for n in range(3,10):
-        print('Mean: ',coal_pw_dist(n, 200000, mean= True)[0])
+    compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
 
     # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
     # given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
