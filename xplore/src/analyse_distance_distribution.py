@@ -257,14 +257,18 @@ def coal_pw_dist(num_leaves, num_trees, mean = False, output_file = '', distance
 
 
 # simulate coalescent trees and plot distance to a given focal tree
-def given_focal_tree_dist(num_leaves, num_trees, focal_tree, mean = False, output_file = '', distances_file = ''):
+# TODO: this function does not work with mean_distance functions below anymore!!!
+def given_focal_tree_dist(num_leaves, num_trees, focal_tree = None, mean = False, output_file = '', distances_file = ''):
     # If mean == True, returns mean and var of distances
     sim_trees = sim.sim_coal(num_leaves, num_trees).trees
     all_trees = (TREE * (num_trees + 1))()
     rnni_diameter = (num_leaves - 1)*(num_leaves - 2)/2
     for i in range(0,num_trees):
         all_trees[i] = sim_trees[i]
-    all_trees[num_trees] = focal_tree
+    if focal_tree == None:
+        all_trees[num_trees] = sim.sim_coal(num_leaves,1).trees[0]
+    else:
+        all_trees[num_trees] = focal_tree
     tree_list = TREE_LIST(all_trees, num_trees)
     # Plotting RNNI distances for all pairs T_{num_trees}, T_i, where num_trees belongs to the given focal tree
     if os.path.exists(distances_file):
