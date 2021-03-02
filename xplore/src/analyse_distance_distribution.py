@@ -436,13 +436,11 @@ def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '')
     # Compare expected distances of trees on 3 to num_leaves leaves to mean of simulated distance distribution (based on num_trees simulated coalescent trees)
     exp_dist = expected_dist(num_leaves)
     norm_exp_dist = []
-    sim_dist = []
     norm_sim_dist = []
     for i in range(3,num_leaves+1):
         diameter = (i-1)*(i-2)/2
-        sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0])
         norm_exp_dist.append(exp_dist[i-3]/diameter)
-        norm_sim_dist.append(sim_dist[len(sim_dist)-1]/diameter)
+        norm_sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0]/diameter)
     d = pd.DataFrame(data = list(zip(norm_exp_dist, norm_sim_dist)), columns = ["approximated expectation", "mean of simulation"])
     sns.scatterplot(data=d, s = 50, legend = True)
     plt.savefig(output_file)
