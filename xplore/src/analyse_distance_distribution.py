@@ -434,13 +434,15 @@ def expected_dist(num_leaves):
 
 def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = ''):
     # Compare expected distances of trees on 3 to num_leaves leaves to mean of simulated distance distribution (based on num_trees simulated coalescent trees)
-    diameter = (num_leaves-1)*(num_leaves-2)/2
     exp_dist = expected_dist(num_leaves)
+    norm_exp_dist = []
     sim_dist = []
+    norm_sim_dist = []
     for i in range(3,num_leaves+1):
+        diameter = (i-1)*(i-2)/2
         sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0])
-    norm_exp_dist = [i/diameter for i in exp_dist]
-    norm_sim_dist = [i/diameter for i in sim_dist]
+        norm_exp_dist.append(exp_dist[i-3]/diameter)
+        norm_sim_dist.append(sim_dist[len(sim_dist)-1]/diameter)
     d = pd.DataFrame(data = list(zip(norm_exp_dist, norm_sim_dist)), columns = ["approximated expectation", "mean of simulation"])
     sns.scatterplot(data=d, s = 50, legend = True)
     plt.savefig(output_file)
@@ -448,7 +450,7 @@ def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '')
 
 if __name__ == '__main__':
 
-    # compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
+    compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
 
     # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
     # given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
@@ -456,7 +458,7 @@ if __name__ == '__main__':
     # dist_distribution_to_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps')
     # dist_distribution_btw_caterpillars(20,20000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_btw_caterpillars_20_n_20000_N.eps')
     # mean_distance_n(dist_distribution_btw_caterpillars, 4, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_and_var_dist_n_3_to_40_N_20000.eps')
-    mean_distance_repeat(coal_pw_dist, 20, 50, 20000, output_file = '../simulations/distance_distribution/coalescent/mean_distance_repeat_n_20_N_20000_50_iterations.eps')
+    # mean_distance_repeat(coal_pw_dist, 20, 50, 20000, output_file = '../simulations/distance_distribution/coalescent/mean_distance_repeat_n_20_N_20000_50_iterations.eps')
     # mean_distance_repeat(dist_distribution_to_caterpillars, 20, 50, 1000, output_file = '../simulations/distance_distribution/coalescent/to_cat_mean_and_var_dist_n_20_N_20000_50_iterations.eps')
     # coal_pw_dist(20000,20, output_file = '../simulations/distance_distribution/coalescent/own_coal_distr_20_n_20000_N.eps')
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
