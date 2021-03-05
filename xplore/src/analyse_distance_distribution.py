@@ -244,7 +244,6 @@ def coal_pw_dist(num_leaves, num_trees, mean = False, output_file = '', distance
     num_trees = tree_list.num_trees
     num_leaves = tree_list.trees[0].num_leaves
     rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
-
     # Plotting RNNI distances for all pairs T_index, T_i, where index belongs to the focal tree, which is chosen randomly (at uniform)
     if os.path.exists(distances_file):
         distances = np.loadtxt(distances_file, delimiter = ' ')
@@ -255,6 +254,27 @@ def coal_pw_dist(num_leaves, num_trees, mean = False, output_file = '', distance
             return(np.mean(norm_distances), np.var(norm_distances))
         if distances_file != '':
             np.savetxt(distances_file, distances, delimiter = ' ')
+    if mean == False:
+        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
+
+
+# use own implementation of coalescent to plot RNNI distances
+def coal_pw_dist_space_efficient(num_leaves, num_trees, mean = False, output_file = '', distances_file = ''):
+    # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
+    # Read trees in C format (for RNNI distance computation)
+    # If mean == True, returns mean and var of distances
+    rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
+    distances = []
+
+    for i in range(0,int(num_trees/2)):
+        tree_list = sim.sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
+        distances.append(rnni.rnni_distances_tree_pairs(tree_list)[0][0])
+        norm_distances = [i/rnni_diameter for i in distances]
+    if mean == True:
+        return(np.mean(norm_distances), np.var(norm_distances))
+    if distances_file != '':
+        np.savetxt(distances_file,  distances, delimiter = ' ')
     if mean == False:
         bins = np.arange(-.5, rnni_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
@@ -398,6 +418,28 @@ def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file
     # plt.plot(var_array)
 
 
+def mean_distance_log_n(func, max_exp, num_trees, output_file = ''):
+    # plot mean distances given by function for different number of leaves and plot them
+    mean_array = []
+    # var_array = []
+    for i in range(2,2 + max_exp):
+        num_leaves = 2**i
+        print(num_leaves, 'leaves')
+        if func == given_focal_tree_dist: # For now we assume that here we want to compute the distance from one caterpillar tree to num_trees coalescent trees
+            statistics = func(num_leaves,num_trees, mean = True, focal_tree = sim.identity_caterpillar(num_leaves))
+        else:
+            statistics = func(num_leaves,num_trees, mean = True)
+        diameter = (num_leaves-1)*(num_leaves-2)/2
+        mean_array.append(statistics[0])
+        # var_array.append(statistics[1])
+    print(mean_array)
+    # print(var_array)
+    d = pd.DataFrame(data=mean_array)
+    plts.plot_dots(d, [0,1], output_file)
+    # plt.plot(var_array)
+
+
+
 def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_file = ''):
     # plot mean distances given by function for different number of leaves and plot them
     diameter = (num_leaves-1)*(num_leaves-2)/2
@@ -466,6 +508,7 @@ if __name__ == '__main__':
     # mean_distance_n(given_focal_tree_dist, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/from_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(dist_distribution_btw_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(coal_pw_dist, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_n_3_to_40_N_10000.eps')
+    mean_distance_log_n(coal_pw_dist_space_efficient, 10, 10000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_log_n_1_to_9_N_10000.eps')
 
     # mean_distance_repeat(coal_pw_dist, 20, 50, 20000, output_file = '../simulations/distance_distribution/coalescent/mean_distance_repeat_n_20_N_20000_50_iterations.eps')
     # mean_distance_repeat(dist_distribution_to_caterpillars, 20, 50, 1000, output_file = '../simulations/distance_distribution/coalescent/to_cat_mean_and_var_dist_n_20_N_20000_50_iterations.eps')
