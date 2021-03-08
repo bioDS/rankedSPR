@@ -15,9 +15,12 @@ def plot_hist(d, bins, filehandle = ''):
     plt.tight_layout()
     plt.show()
 
-def plot_dots(d, ylimits = None, filehandle = '', lgnd = False):
+def plot_dots(d, ylimits = None, filehandle = '', lgnd = False, line = False):
     # Shows and saves values (to specified file)
-    p = sns.scatterplot(data=d, s = 50, legend = lgnd)
+    if line == False:
+        p = sns.scatterplot(data=d, s = 50, legend = lgnd)
+    else:
+        p = sns.lineplot(data = d, legend = lgnd)
     if ylimits != None:
         p.set(ylim=(ylimits[0],ylimits[1]))
     # p = (p.set_axis_labels("Iteration","Distance").set(ylim=(0,1)))
