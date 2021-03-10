@@ -321,6 +321,77 @@ long findpath_distance(Tree *start_tree, Tree *dest_tree){
     return path_index;
 }
 
+// FINDPATH without saving the path -- returns only the distance
+long * findpath_moves_per_iteration(Tree *start_tree, Tree *dest_tree){
+    long num_leaves = start_tree->num_leaves;
+    long * moves_per_iteration = malloc(num_leaves * sizeof(long));
+    for (long i=0; i < num_leaves; i++){
+        moves_per_iteration[i] = 0;
+    }
+    long path_index = 0; // next position on path that we want to fill with a tree pointer
+    if (start_tree->tree == NULL){
+        printf("Error. Start tree doesn't exist.\n");
+    } else if (dest_tree->tree == NULL){
+        printf("Error. Destination tree doesn't exist.\n");
+    } else{
+        remove("./output/findpath.rtree");
+        // write_tree(start_tree->tree, num_leaves, "./output/findpath.rtree"); // this ruins the running time!!!!!!!!
+        long current_mrca; //rank of the mrca that needs to be moved down
+        Tree current_tree;
+        current_tree.tree = malloc((2 * num_leaves - 1) * sizeof(Node));
+        current_tree.num_leaves = num_leaves;
+        for (long i = 0; i < 2 * num_leaves - 1; i++){
+            current_tree.tree[i] = start_tree->tree[i];
+        }
+        Tree * current_tree_pointer;
+        current_tree_pointer = &current_tree;
+        for (long i = num_leaves; i < 2 * num_leaves - 1; i++){
+            current_mrca = mrca(current_tree_pointer, dest_tree->tree[i].children[0], dest_tree->tree[i].children[1]);
+            // move current_mrca down
+            while(current_mrca != i){
+                moves_per_iteration[i-num_leaves] += 1;
+                // printf("iteration number: %ld\n", i-num_leaves);
+                bool did_nni = false;
+                for (int child_index = 0; child_index < 2; child_index++){ // find out if one of the children of current_tree.tree[current_mrca] has rank current_mrca - 1. If this is the case, we want to make an NNI
+                    if (did_nni == false && current_tree.tree[current_mrca].children[child_index] == current_mrca - 1){ // do nni if current interval is an edge
+                        // check which of the children of current_tree.tree[current_mrca] should move up by the NNI move 
+                        bool found_child = false; //indicate if we found the correct child
+                        int child_stays; // index of the child of current_tree.tree[current_mrca] that does not move up by an NNI move
+                        // find the index of the child of the parent of the node we currently consider -- this will be the index child_stays that we want in the end
+                        int current_child_index = dest_tree->tree[i].children[0]; // rank of already existing cluster in both current_tree.tree and dest_tree->tree
+                        while (found_child == false){
+                            while (current_tree.tree[current_child_index].parent < current_mrca - 1){ // find the x for which dest_tree->tree[i].children[x] is contained in the cluster induced by current_tree.tree[current_mrca - 1]
+                                current_child_index = current_tree.tree[current_child_index].parent;
+                            }
+                            // find the index child_stays
+                            if(current_tree.tree[current_child_index].parent == current_mrca - 1){
+                                found_child = true;
+                                if (current_tree.tree[current_tree.tree[current_child_index].parent].children[0] == current_child_index){
+                                    child_stays = 0;
+                                } else{
+                                    child_stays = 1;
+                                }
+                            } else{
+                                current_child_index = dest_tree->tree[i].children[1];
+                            }
+                        }
+                        nni_move(current_tree_pointer, current_mrca - 1, 1 - child_stays);
+                        did_nni = true;
+                        current_mrca--;
+                    }
+                }
+                if (did_nni == false){
+                    rank_move(current_tree_pointer, current_mrca - 1);
+                    current_mrca--;
+                }
+                path_index++;
+            }
+        }
+        free(current_tree.tree);
+    }
+    return(moves_per_iteration);
+}
+
 
 
 // returns the FINDPATH path between two given given trees as Tree_List -- runs findpath and translates path matrix to actual trees on path
