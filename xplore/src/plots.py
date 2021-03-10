@@ -6,10 +6,13 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-def plot_hist(d, bins, filehandle = ''):
+def plot_hist(d, bins, filehandle = '', density = True):
     # Shows and saves histogram (to specified file)
     df = pd.DataFrame(data = d)
-    sns.histplot(data=df, bins = bins, stat = 'density', legend = False)
+    if density == True:
+        sns.histplot(data=df, bins = bins, stat = 'density', legend = False)
+    else:
+        sns.histplot(data=df, bins = bins, stat = 'count', legend = False)
     if filehandle != '':
         plt.savefig(filehandle)
     plt.tight_layout()
