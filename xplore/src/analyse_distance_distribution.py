@@ -535,8 +535,39 @@ def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '')
         plt.savefig(output_file)
     plt.show()
 
+
+def plot_moves_per_iteration(num_leaves, num_trees, output_file = ''):
+    diameter = (num_leaves - 1)*(num_leaves - 2)/2
+    moves_per_iteration = []
+    for i in range(0, num_leaves-1):
+        moves_per_iteration.append(0)
+    for k in range(0,num_trees):
+        tree_list = sim.sim_coal(num_leaves, 2)
+        fp_moves = findpath_moves_per_iteration(tree_list.trees[0], tree_list.trees[1])
+        moves_this_iteration = []
+        for i in range(0,num_leaves-1):
+            moves_this_iteration.append(fp_moves[i])
+        if sum(moves_this_iteration) != 0:
+            moves_this_iteration = [i/sum(moves_this_iteration) for i in moves_this_iteration]
+        for i in range(0,num_leaves-1):
+            moves_per_iteration[i] += moves_this_iteration[i]
+    for i in range(0,num_leaves-1):
+        moves_per_iteration[i] = moves_per_iteration[i]
+    # print(sum(moves_per_iteration))
+    moves_per_iteration = [i/num_trees for i in moves_per_iteration]
+    print(moves_per_iteration)
+    print(sum(moves_this_iteration))
+    d = pd.DataFrame(data = moves_per_iteration)
+    # bins = np.arange(-.5, num_leaves + 0.5, 1)
+    # plts.plot_hist(d, bins, density = False)
+    plts.plot_dots(d, filehandle = output_file)
+    # p = sns.scatterplot(data=d, s = 50)
+    # plt.show()
+
 if __name__ == '__main__':
     # plot_approx_exp_dist(500, output_file = '../simulations/distance_distribution/coalescent/approx_exp_dist_n_3_to_500.eps')
+    # plot_moves_per_iteration(100, 10000, output_file='../simulations/distance_distribution/coalescent/moves_per_iteration_n_100_N_10000.eps')
+    plot_moves_per_iteration(4, 100000)#, output_file='../simulations/distance_distribution/coalescent/moves_per_iteration_n_100_N_10000.eps')
 
     # compare_expected_dist_to_simulation(7, 200)
     # compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
@@ -550,7 +581,7 @@ if __name__ == '__main__':
     # mean_distance_n(given_focal_tree_dist, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/from_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(dist_distribution_btw_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(coal_pw_dist, 3, 300, 1000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_n_3_to_300_N_1000.eps')
-    mean_distance_n(coal_pw_dist, 3, 1000, 1000)
+    # mean_distance_n(coal_pw_dist, 3, 1000, 1000)
     # mean_distance_log_n(coal_pw_dist_space_efficient, 10, 10000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_log_n_1_to_9_N_10000.eps')
     # mean_distance_100_n(coal_pw_dist_space_efficient, 100, 101, 10) #, output_file = '../simulations/distance_distribution/coalescent/mean_dist_log_n_1_to_9_N_10000.eps')
     # [0.8285882293673883, 0.8300589130067364, 0.8301474363627227, 0.8307205053473854, 0.8311932083023579, 0.8310782928817221, 0.831468037175452, 0.8319265701059583, 0.8316929550362643, 0.8321324688541974, 0.8318900686265788, 0.8321025213961065, 0.8324846223507965, 0.8324120056764494, 0.8318717888630501, 0.8323381148416531]
