@@ -311,6 +311,29 @@ def given_focal_tree_dist(num_leaves, num_trees, focal_tree = None, mean = False
         plts.plot_hist(distances, bins, output_file)
 
 
+# use own implementation of coalescent to plot RNNI distances
+def count_equal_trees(tree_list, output_file = '', data_file = ''):
+    # Count the different number of trees in tree_list, and plot hist (number of occurrences of each tree on x axis)
+    num_trees = tree_list.num_trees
+    num_leaves = tree_list.trees[0].num_leaves
+    distances = rnni.pw_rnni_dist(tree_list)
+    values, counts = np.unique(distances, axis = 0, return_counts=True)
+    # equal_trees = np.zeros((num_trees, num_trees))
+    # for i in range(0,num_trees):
+    #     for j in range(0,num_trees):
+    #         if distances[i][j] == 0:
+    #             equal_trees[i][j] = 1
+    #             print(i,j)
+    # print(equal_trees)
+    # equal_trees = np.unique(equal_trees, axis = 1)
+    # print(distances)
+    # print(values)
+    # print(counts)
+    # print(equal_trees)
+    d = pd.DataFrame(counts)
+    # bins = np.arange(-.5, num_trees + 1.5, 1)
+    plts.plot_dots(d)
+
 # simulate coalescent trees and plot distance to a given focal tree
 def compare_given_focal_tree_dist(num_leaves, num_trees, focal_tree1, focal_tree2, mean = False, output_file = ''):
     # If mean == True, returns mean and var of distances
@@ -422,9 +445,6 @@ def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file
         mean_diff.append(mean_array[i+1] - mean_array[i])
     d = pd.DataFrame(data=mean_diff)
     plts.plot_dots(d, line = True)
-    
-    
-    # plt.plot(var_array)
 
 
 def mean_distance_log_n(func, max_exp, num_trees, output_file = ''):
@@ -526,10 +546,11 @@ def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '')
     norm_exp_dist = []
     norm_sim_dist = []
     for i in range(3,num_leaves+1):
+        print(i)
         diameter = (i-1)*(i-2)/2
         # print(Fraction(np.mean(exp_dist[i-3])).limit_denominator())
         norm_exp_dist.append(exp_dist[i-3]/diameter)
-        norm_sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0]/diameter)
+        norm_sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0])
     d = pd.DataFrame(data = list(zip(norm_exp_dist, norm_sim_dist)), columns = ["approximated expectation", "mean of simulation"])
     sns.scatterplot(data=d, s = 50, legend = True)
     if output_file != '':
@@ -566,11 +587,14 @@ def plot_moves_per_iteration(num_leaves, num_trees, output_file = ''):
     # plt.show()
 
 if __name__ == '__main__':
+    # coal_tree_list = sim.sim_coal(5, 10)
+    # count_equal_trees(coal_tree_list)
+
     # plot_approx_exp_dist(500, output_file = '../simulations/distance_distribution/coalescent/approx_exp_dist_n_3_to_500.eps')
     # plot_moves_per_iteration(100, 10000, output_file='../simulations/distance_distribution/coalescent/moves_per_iteration_n_100_N_10000.eps')
     # plot_moves_per_iteration(4, 100000)
 
-    # compare_expected_dist_to_simulation(7, 200)
+    compare_expected_dist_to_simulation(200, 1000)
     # compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
 
     # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
