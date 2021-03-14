@@ -60,7 +60,7 @@ def rnni_distance_focal(tree_list, index, prgr = False):
     return(distances, int(tree_list.trees[0].num_leaves))
 
 
-def pw_rnni_dist(tree_list):
+def pw_rnni_dist(tree_list, list = False):
     # Return either a np.matrix of pw distances (if list=False; this is an upper diagonal matrix!), or a sequence containing distances (excluding diagonal entries)
     num_trees = tree_list.num_trees
     if list == False:
@@ -69,11 +69,12 @@ def pw_rnni_dist(tree_list):
     else:
         distances = []
     for i in range(0,num_trees):
-        for j in range(i + 1,num_trees):
-            if list == False:
-                distances[i][j] = (findpath_distance(tree_list.trees[i],tree_list.trees[j]))
-            else:
+        if list == True:
+            for j in range(i + 1,num_trees):
                 distances.append(findpath_distance(tree_list.trees[i],tree_list.trees[j]))
+        if list == False:
+            for j in range(0, num_trees):
+                distances[i][j] = (findpath_distance(tree_list.trees[i],tree_list.trees[j]))
     return distances
 
 
