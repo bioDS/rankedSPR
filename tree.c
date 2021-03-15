@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 #include "tree.h"
 
 
@@ -442,4 +443,49 @@ Tree_List return_findpath(Tree *start_tree, Tree *dest_tree){
     free(fp.moves);
     free(current_tree.tree);
     return findpath_list;
+}
+
+
+Tree * uniform_neighbour(Tree * input_tree){
+    // Perform a random RNNI move (at uniform) on input_tree
+    // Deep copy input tree, so we can perform move on it
+    long num_leaves = input_tree->num_leaves;
+    Tree * output_tree = malloc(sizeof(Node*) + 3 * sizeof(long));
+    output_tree->num_leaves = num_leaves;
+    output_tree->tree = malloc((2 * num_leaves - 1) * sizeof(Node)); // deep copy start tree
+    for (long i = 0; i < 2 * num_leaves - 1; i++){
+        output_tree->tree[i] = input_tree->tree[i];
+    }
+    // Count number of possible moves (rank interval + 2*NNI interval)
+    long num_moves = 0;   
+    int ** move_list = malloc(2 * (num_leaves - 1) * sizeof(int*));
+    for (long i = 0; i < 2*(num_leaves - 1); i++){
+        move_list[i] = malloc(2*sizeof(int));
+        move_list[i][0] = -1; // lower node of edge for move
+        move_list[i][1] = -1; // rank vs nni move
+    }
+    for (long i = num_leaves; i < 2 * num_leaves - 2; i++){
+        if (input_tree->tree[i].parent == i+1){
+            move_list[num_moves][0] = i;
+            move_list[num_moves][1] = 1; // NNI move 0
+            move_list[num_moves + 1][0] = i;
+            move_list[num_moves + 1][1] = 2; // NNI move 1
+            num_moves += 2;
+        } else{
+            move_list[num_moves][0] = i;
+            move_list[num_moves][1] = 0; // rank move is 0
+            num_moves += 1;
+        }
+    }
+    // Pick random move
+    srand(time(NULL));
+    long r = rand() % num_moves;
+    if (move_list[r][1] == 0){
+        rank_move(output_tree, move_list[r][0]);
+    } else if (move_list[r][1] == 1){
+        nni_move(output_tree, move_list[r][0], 0);
+    } else{
+        nni_move(output_tree, move_list[r][0], 0);
+    }
+    return(output_tree);
 }
