@@ -50,3 +50,8 @@ findpath_path.restype = TREE_LIST
 findpath_moves_per_iteration = lib.findpath_moves_per_iteration
 findpath_moves_per_iteration.argtypes = [POINTER(TREE),POINTER(TREE)]
 findpath_moves_per_iteration.restype = POINTER(c_long)
+
+# C function uniform_neighbour
+uniform_neighbour = lib.uniform_neighbour
+uniform_neighbour.argtypes = [POINTER(TREE)]
+uniform_neighbour.restype = POINTER(TREE)

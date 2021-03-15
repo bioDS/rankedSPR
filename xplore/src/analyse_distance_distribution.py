@@ -314,22 +314,11 @@ def given_focal_tree_dist(num_leaves, num_trees, focal_tree = None, mean = False
 # use own implementation of coalescent to plot RNNI distances
 def count_equal_trees(tree_list, output_file = '', data_file = ''):
     # Count the different number of trees in tree_list, and plot hist (number of occurrences of each tree on x axis)
+    # This is to analyse the tree distribution -- if we have uniform distribution, each tree appears num_trees
     num_trees = tree_list.num_trees
     num_leaves = tree_list.trees[0].num_leaves
     distances = rnni.pw_rnni_dist(tree_list)
     values, counts = np.unique(distances, axis = 0, return_counts=True)
-    # equal_trees = np.zeros((num_trees, num_trees))
-    # for i in range(0,num_trees):
-    #     for j in range(0,num_trees):
-    #         if distances[i][j] == 0:
-    #             equal_trees[i][j] = 1
-    #             print(i,j)
-    # print(equal_trees)
-    # equal_trees = np.unique(equal_trees, axis = 1)
-    # print(distances)
-    # print(values)
-    # print(counts)
-    # print(equal_trees)
     d = pd.DataFrame(counts)
     # bins = np.arange(-.5, num_trees + 1.5, 1)
     plts.plot_dots(d)
@@ -586,15 +575,29 @@ def plot_moves_per_iteration(num_leaves, num_trees, output_file = ''):
     # p = sns.scatterplot(data=d, s = 50)
     # plt.show()
 
+
+def random_walk_distance(num_leaves, k, num_iterations, output_file = ''):
+    # k: length of random walk
+    distances = []
+    diameter = (num_leaves - 1)*(num_leaves -2)/2
+    for i in range(0, num_iterations):
+        distances.append(rnni.random_walk_dist(sim.sim_coal(num_leaves,1).trees[0], k))
+    d = pd.DataFrame(data = distances)
+    bins = np.arange(-.5, k + 1.5, 1)
+    plts.plot_hist(d, bins)
+
 if __name__ == '__main__':
-    # coal_tree_list = sim.sim_coal(5, 10)
-    # count_equal_trees(coal_tree_list)
+    random_walk_distance(10,10,100)
+    # coal_tree_list = sim.sim_coal(10, 10000)
+    # tree_list = read_nexus('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', ranked = True) # Count number of trees for posterior sample (simulated)
+    # distances = rnni.pw_rnni_dist(tree_list)
+    # count_equal_trees(tree_list) # Not saved anywhere, but this does (as expected) give a constant for uniform distribution. It could be used to investigate other distribution and show that we need a distance for further analyses
 
     # plot_approx_exp_dist(500, output_file = '../simulations/distance_distribution/coalescent/approx_exp_dist_n_3_to_500.eps')
     # plot_moves_per_iteration(100, 10000, output_file='../simulations/distance_distribution/coalescent/moves_per_iteration_n_100_N_10000.eps')
     # plot_moves_per_iteration(4, 100000)
 
-    compare_expected_dist_to_simulation(200, 1000)
+    # compare_expected_dist_to_simulation(200, 1000)
     # compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
 
     # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
@@ -619,7 +622,7 @@ if __name__ == '__main__':
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
     # coal_focal_dist(20, 20000, output_file='../simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps')
 
-    # pw_tree_list_dist('../simulations/simulated_trees/coal/20000/coal_trees_20_n.nex', output_file = '../simulations/distance_distribution/coalescent/rf_distribution_20_n_20000_N.eps', metric = 'RF')to
+    # pw_tree_list_dist('../simulations/simulated_trees/coal/20000/coal_trees_20_n.nex', output_file = '../simulations/distance_distribution/coalescent/rf_distribution_20_n_20000_N.eps', metric = 'RF')
     # pw_tree_list_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # read MCC tree:
 

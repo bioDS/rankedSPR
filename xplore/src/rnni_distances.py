@@ -92,3 +92,10 @@ def rnni_mean_dist_n(n,N,model='coal'):
         diameter = (num_leaves-1)*(num_leaves-2)/2
         mean_list.append(np.mean(distances)/diameter)
     return(mean_list)
+
+
+def random_walk_dist(tree, k):
+    output_tree = tree
+    for i in range(0,k):
+        output_tree = uniform_neighbour(output_tree)
+    return(findpath_distance(tree, output_tree))
