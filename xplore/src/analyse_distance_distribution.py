@@ -576,18 +576,32 @@ def plot_moves_per_iteration(num_leaves, num_trees, output_file = ''):
     # plt.show()
 
 
-def random_walk_distance(num_leaves, k, num_iterations, output_file = ''):
+def random_walk_distance(num_leaves, k, num_iterations, output_file = '', mean = False):
     # k: length of random walk
     distances = []
     diameter = (num_leaves - 1)*(num_leaves -2)/2
     for i in range(0, num_iterations):
-        distances.append(rnni.random_walk_dist(sim.sim_coal(num_leaves,1).trees[0], k))
-    d = pd.DataFrame(data = distances)
-    bins = np.arange(-.5, k + 1.5, 1)
-    plts.plot_hist(d, bins)
+        tree = sim.sim_coal(num_leaves,1).trees[0]
+        distances.append(random_walk(tree, k))
+    if mean == True:
+        return(np.mean(distances))
+    else:
+        d = pd.DataFrame(data = distances)
+        bins = np.arange(-.5, k + 1.5, 1)
+        plts.plot_hist(d, bins)
+
+def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_file = ''):
+    mean_dist = []
+    for k in range(k_min, k_max):
+        mean_dist.append(random_walk_distance(num_leaves, k, num_iterations, mean = True))
+    print(mean_dist)
+    d = pd.DataFrame(data = mean_dist)
+    plts.plot_dots(d, ylimits = [0,(num_leaves -1)*(num_leaves * 2)/2], filehandle=output_file, line = True)
+
 
 if __name__ == '__main__':
-    random_walk_distance(10,10,100)
+    # random_walk_mean_distance(20,1,200,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_20_k_1_to_200_N_1000.eps')
+    random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # coal_tree_list = sim.sim_coal(10, 10000)
     # tree_list = read_nexus('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', ranked = True) # Count number of trees for posterior sample (simulated)
     # distances = rnni.pw_rnni_dist(tree_list)
