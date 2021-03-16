@@ -33,11 +33,13 @@
 | *compare_given_focal_tree_dist* | compare distances between num_trees coalescent trees to fully balanced tree with distances to caterpillar tree | *../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps* |
 | *compare_expected_dist_to_simulation* | Compare approximation of expected distance between two coalescent trees with mean of simulated distances | *../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps* |
 | *plot_approx_exp_dist* | Plot approximated distance depending on n (input is max n, computes it for n=3:max_num_leaves) | *../simulations/distance_distribution/coalescent/approx_exp_dist_n_3_to_500.eps* |
+| *random_walk_distance* | Plots distance between simulated start tree and tree after random walk of length k, num_iterations repetitions of this | *../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps* |
   |  |  
 | *mean_distances_n* | takes as input one of the functions above and compute distances according to them for n between given boundaries and plots mean and variance of distances depending on n |*simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* (alternatively also *cat_mean_and_var_dist_n_3_to_40_N_20000.eps*, *btw_cat_mean_and_var_dist_n_3_to_40_N_20000.eps*, *from_cat_mean_and_var_dist_n_3_to_40_N_20000.eps* etc.) |
 | *mean_distances_repeat* | takes as input one of the functions above and compute distances according to them, repeating it for a given number of times (num_iterations) and plots mean and variance of distances for each iteration |*simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* (alternatively also *to_cat_mean_and_var_dist_n_3_to_40_N_20000.eps* etc.) |
 | *mean_distances_log_n* | takes as input one of the functions above and compute distances according to them for n between 2^i for i=2^2,..2^max_exp (max_exp is input) and plots mean of distances depending on n |*simulations/distance_distribution/coalescent/mean_dist_log_n_10_N_10000.eps* |
 | *mean_distances_log_n* | takes as input one of the functions above and compute distances according to them for n between 100*min_num_leaves and 100*max_num_leaves (min_num_leaves and mex_num_leaves are input) and plots mean of distances depending on n |*simulations/distance_distribution/coalescent/mean_dist_100_n_4_to_20_N_1000.eps* |
+| *random_walk_mean_distance* | Plots distance between simulated start tree and tree after random walk of length k for varying k, num_iterations repetitions for each k, fixed n | *../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps* |
 
 ### Distance Distributions
 
