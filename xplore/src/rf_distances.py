@@ -7,7 +7,9 @@ import re
 from ete3 import Tree
 import matplotlib.pyplot as plt
 import numpy as np
-
+import dendropy
+from dendropy.calculate import treecompare
+from dendropy import TaxonNamespace, Tree, TreeList
 
 def read_ete_nexus(file_handle):
     # Read trees from nexus file and save as list fo ete tree
@@ -77,8 +79,25 @@ def read_ete_nexus(file_handle):
     return(trees, name_dict)
 
 
+def wrf_distances_tree_pairs(filename):
+    tree_list = dendropy.TreeList.get(path = filename, schema        = "nexus")
+    # returns array of distances (weighted Robinson-Foulds) between every pair of trees i,i+1 (even i) in given file and number of leaves
+    num_trees = len(tree_list)
+    print('number of trees: ', num_trees)
+    distances = []
+    progress = 0.05 #for printing progress
+    num_leaves = len(tree_list[0].leaf_nodes())
+    print("Computing RF distances")
+    for i in range(0, num_trees - 1, 2):
+        distances.append(treecompare.weighted_robinson_foulds_distance(tree_list[i], tree_list[i+1]))
+        if (i/(num_trees) > progress):
+            print('Progress: ' + "{:.2f}".format(progress))
+            progress += 0.05
+    return(distances, num_leaves)
+
+
 def rf_distances_tree_pairs(tree_list):
-    # returns array of distances between every pair of trees i,i+1 (even i) in given file and number of leaves
+    # returns array of distances (Robinson-Foulds) between every pair of trees i,i+1 (even i) in given file and number of leaves
     num_trees = len(tree_list)
     print('number of trees: ', num_trees)
     distances = []

@@ -183,6 +183,26 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
         bins = np.arange(-.5, rf_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
 
+    elif metric == 'wRF':
+        # Read trees in dendropy format:
+        # print("Read trees")
+        # tree_list, leaf_labels = rf.read_ete_nexus(input_file, ete = False)
+        # print("Done reading trees")
+        # num_leaves = len(leaf_labels)
+        # num_trees = len(tree_list)
+        rf_diameter = int(2*(20 - 1))
+
+        # Plotting RF distances
+        if os.path.exists(distances_file):
+            distances = np.loadtxt(distances_file, delimiter = ' ')
+        else:
+            distances = rf.wrf_distances_tree_pairs(input_file)[0]
+            print(distances[100])
+            if distances_file != '':
+                np.savetxt(distances_file, distances, delimiter = ' ')
+        bins = np.arange(-.5, rf_diameter + 1.5, 1)
+        plts.plot_hist(distances, bins, output_file)
+
 
 def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '', metric = 'RNNI'):
     # Compute distances from focal_tree to all trees in input_file and save as histogram
@@ -529,17 +549,22 @@ def plot_approx_exp_dist(max_num_leaves, output_file = ''):
     plts.plot_dots(d)
 
 
-def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = ''):
+def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '', all_elements = True):
     # Compare expected distances of trees on 3 to num_leaves leaves to mean of simulated distance distribution (based on num_trees simulated coalescent trees)
+    # if all_elements == False: only do this for trees on num_leaves leaves.
     exp_dist = expected_dist(num_leaves)
     norm_exp_dist = []
     norm_sim_dist = []
-    for i in range(3,num_leaves+1):
-        print(i)
-        diameter = (i-1)*(i-2)/2
-        # print(Fraction(np.mean(exp_dist[i-3])).limit_denominator())
-        norm_exp_dist.append(exp_dist[i-3]/diameter)
-        norm_sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0])
+    if all_elements == True:
+        for i in range(3,num_leaves+1):
+            diameter = (i-1)*(i-2)/2
+            # print(Fraction(np.mean(exp_dist[i-3])).limit_denominator())
+            norm_sim_dist.append(coal_pw_dist(i, num_trees, mean=True)[0])
+            norm_exp_dist.append(exp_dist[i-3]/diameter)
+    if all_elements == False:
+        diameter = (num_leaves - 1)*(num_leaves - 2)/2
+        norm_sim_dist.append(coal_pw_dist(num_leaves, num_trees, mean=True)[0])
+        norm_exp_dist.append(exp_dist[num_leaves - 3]/diameter)
     d = pd.DataFrame(data = list(zip(norm_exp_dist, norm_sim_dist)), columns = ["approximated expectation", "mean of simulation"])
     sns.scatterplot(data=d, s = 50, legend = True)
     if output_file != '':
@@ -600,9 +625,10 @@ def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_f
 
 
 if __name__ == '__main__':
+    # compare_expected_dist_to_simulation(100000, 1000, all_elements=False)
     # random_walk_mean_distance(20,1,200,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_20_k_1_to_200_N_1000.eps')
     # random_walk_distance(6, 20, 1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
-    random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
+    # random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_mean_distance(7,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_7_k_1_to_1000_N_1000.eps')
     # coal_tree_list = sim.sim_coal(10, 10000)
     # tree_list = read_nexus('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', ranked = True) # Count number of trees for posterior sample (simulated)
@@ -638,7 +664,7 @@ if __name__ == '__main__':
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
     # coal_focal_dist(20, 20000, output_file='../simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps')
 
-    # pw_tree_list_dist('../simulations/simulated_trees/coal/20000/coal_trees_20_n.nex', output_file = '../simulations/distance_distribution/coalescent/rf_distribution_20_n_20000_N.eps', metric = 'RF')
+    pw_tree_list_dist('../simulations/simulated_trees/coal/coal_trees_100_n_10000_N.nex', output_file = '../simulations/distance_distribution/coalescent/wrf_distribution_100_n_10000_N.eps', metric = 'wRF')
     # pw_tree_list_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # read MCC tree:
 
