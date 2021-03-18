@@ -10,9 +10,11 @@ def plot_hist(d, bins, filehandle = '', density = True):
     # Shows and saves histogram (to specified file)
     df = pd.DataFrame(data = d)
     if density == True:
-        sns.histplot(data=df, bins = bins, stat = 'density', legend = False)
+        p = sns.histplot(data=df, bins = bins, stat = 'density', legend = False)
     else:
-        sns.histplot(data=df, bins = bins, stat = 'count', legend = False)
+        p = sns.histplot(data=df, bins = bins, stat = 'count', legend = False)
+    p.set_xlabel('distance')
+    p.set_ylabel('frequency')
     if filehandle != '':
         plt.savefig(filehandle)
     plt.tight_layout()
@@ -24,6 +26,8 @@ def plot_dots(d, ylimits = None, filehandle = '', lgnd = False, line = False):
         p = sns.scatterplot(data=d, s = 30, legend = lgnd)
     else:
         p = sns.lineplot(data = d, legend = lgnd)
+    p.set_xlabel('iteration')
+    p.set_ylabel('distance')
     if ylimits != None:
         p.set(ylim=(ylimits[0],ylimits[1]))
     # p = (p.set_axis_labels("Iteration","Distance").set(ylim=(0,1)))
