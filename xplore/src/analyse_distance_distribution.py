@@ -197,11 +197,14 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
             distances = np.loadtxt(distances_file, delimiter = ' ')
         else:
             distances = rf.wrf_distances_tree_pairs(input_file)[0]
-            print(distances[100])
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        bins = np.arange(-.5, rf_diameter + 1.5, 1)
-        plts.plot_hist(distances, bins, output_file)
+        # bins = np.arange(-.5, rf_diameter + 1.5, 1)
+        max_dist = max(distances)
+        bin_width = (max_dist - min(distances))/100 #We get 100 bars in histogram
+        bins = np.arange(-.5, max_dist + 1.5, bin_width)
+        d = pd.DataFrame(distances)
+        plts.plot_hist(d, bins,  filehandle = output_file)
 
 
 def focal_tree_dist(focal_tree, input_file, output_file = '', distances_file = '', metric = 'RNNI'):
@@ -625,7 +628,7 @@ def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_f
 
 
 if __name__ == '__main__':
-    # compare_expected_dist_to_simulation(100000, 1000, all_elements=False)
+    compare_expected_dist_to_simulation(100000, 1000, all_elements=False)
     # random_walk_mean_distance(20,1,200,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_20_k_1_to_200_N_1000.eps')
     # random_walk_distance(6, 20, 1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
     # random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
@@ -664,7 +667,7 @@ if __name__ == '__main__':
     # caterpillar_dist_distribution(20,20000, output_file='../simulations/distance_distribution/coalescent/caterpillar_distances_20_n_20000_N.eps')
     # coal_focal_dist(20, 20000, output_file='../simulations/distance_distribution/coalescent/coal_focal_dist_20_n_20000_N.eps')
 
-    pw_tree_list_dist('../simulations/simulated_trees/coal/coal_trees_100_n_10000_N.nex', output_file = '../simulations/distance_distribution/coalescent/wrf_distribution_100_n_10000_N.eps', metric = 'wRF')
+    # pw_tree_list_dist('../simulations/simulated_trees/coal/20000/coal_trees_20_n.nex', output_file = '../simulations/distance_distribution/coalescent/wrf_distribution_20_n_20000_N.eps', metric = 'wRF')
     # pw_tree_list_dist('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', '../simulations/posterior/coal/rf_all_pw_dist.eps', metric = 'RF')
     # read MCC tree:
 
