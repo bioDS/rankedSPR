@@ -618,18 +618,26 @@ def random_walk_distance(num_leaves, k, num_iterations, output_file = '', mean =
         bins = np.arange(-.5, k + 1.5, 1)
         plts.plot_hist(d, bins, filehandle = output_file)
 
-def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_file = ''):
+def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_file = '', median = False):
     mean_dist = []
     for k in range(k_min, k_max):
         mean_dist.append(random_walk_distance(num_leaves, k, num_iterations, mean = True))
-    print(mean_dist)
+    if median == True:
+        index = 0
+        m = np.median(mean_dist)
+        while(mean_dist[index] < m and index < len(mean_dist)):
+            index += 1
+        mean_mean_dist = mean_dist[index:]
+        return(np.mean(mean_mean_dist), index) # Return approximation of value the distance converges to + length index of random walk from when it is closed convergence (Median)
+        print(index)
     d = pd.DataFrame(data = mean_dist)
     plts.plot_dots(d, filehandle = output_file, line = True)
 
-
 if __name__ == '__main__':
-    compare_expected_dist_to_simulation(100000, 1000, all_elements=False)
-    # random_walk_mean_distance(20,1,200,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_20_k_1_to_200_N_1000.eps')
+    # compare_expected_dist_to_simulation(10000, 100, all_elements=False)
+    mean_distance_n(coal_pw_dist, 3, 10, 1000)
+    for num_leaves in range(3,10):
+        print(random_walk_mean_distance(num_leaves,1,800,1000, median = True))#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_distance(6, 20, 1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
     # random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_mean_distance(7,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_7_k_1_to_1000_N_1000.eps')
