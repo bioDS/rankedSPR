@@ -540,6 +540,7 @@ def expected_dist(num_leaves):
             exp_dist[n-3] += p[k-1] * (k-1)
     return(exp_dist)
 
+
 def plot_approx_exp_dist(max_num_leaves, output_file = ''):
     exp_dist = expected_dist(max_num_leaves)
     norm_exp_dist = []
@@ -550,6 +551,15 @@ def plot_approx_exp_dist(max_num_leaves, output_file = ''):
     if output_file != '':
         plt.savefig(output_file)
     plts.plot_dots(d)
+
+
+def lower_bound_expected_distance(num_leaves):
+    # Compute a lower bound for the expected distance, using the average height of the tree and taking the mean distance of caterpillar trees with mx number of leaves that can be embedded according to average height -- This is a terrible lower bound, don't use it!
+    # Compute harmonic number - 1:
+    h = 0
+    for i in range(2,num_leaves+1):
+        h += 1/i
+    return(2/3*(2*h**2 - h))
 
 
 def compare_expected_dist_to_simulation(num_leaves, num_trees, output_file = '', all_elements = True):
@@ -633,11 +643,16 @@ def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_f
     d = pd.DataFrame(data = mean_dist)
     plts.plot_dots(d, filehandle = output_file, line = True)
 
+
 if __name__ == '__main__':
+    # for i in range(4, 40):
+    #     diameter = (i-1)*(i-2)/2
+    #     print(lower_bound_expected_distance(i)/diameter)
+    # mean_distance_n(coal_pw_dist, 3, 40, 1000)
     # compare_expected_dist_to_simulation(10000, 100, all_elements=False)
-    mean_distance_n(coal_pw_dist, 3, 10, 1000)
-    for num_leaves in range(3,10):
-        print(random_walk_mean_distance(num_leaves,1,800,1000, median = True))#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
+    # mean_distance_n(coal_pw_dist, 3, 10, 1000)
+    # for num_leaves in range(3,10):
+    #     print(random_walk_mean_distance(num_leaves,1,800,1000, median = True))#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_distance(6, 20, 1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
     # random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_mean_distance(7,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_7_k_1_to_1000_N_1000.eps')
