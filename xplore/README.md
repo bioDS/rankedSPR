@@ -39,7 +39,7 @@
 | *mean_distances_repeat* | takes as input one of the functions above and compute distances according to them, repeating it for a given number of times (num_iterations) and plots mean and variance of distances for each iteration |*simulations/distance_distribution/coalescent/mean_and_var_dist_n_3_to_40_N_20000.eps* (alternatively also *to_cat_mean_and_var_dist_n_3_to_40_N_20000.eps* etc.) |
 | *mean_distances_log_n* | takes as input one of the functions above and compute distances according to them for n between 2^i for i=2^2,..2^max_exp (max_exp is input) and plots mean of distances depending on n |*simulations/distance_distribution/coalescent/mean_dist_log_n_10_N_10000.eps* |
 | *mean_distances_log_n* | takes as input one of the functions above and compute distances according to them for n between 100*min_num_leaves and 100*max_num_leaves (min_num_leaves and mex_num_leaves are input) and plots mean of distances depending on n |*simulations/distance_distribution/coalescent/mean_dist_100_n_4_to_20_N_1000.eps* |
-| *random_walk_mean_distance* | Plots distance between simulated start tree and tree after random walk of length k for varying k, num_iterations repetitions for each k, fixed n | *../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps* |
+| *random_walk_mean_distance* | Plots distance between simulated start tree and tree after random walk of length k for varying k, num_iterations repetitions for each k, fixed n; For median=TRUE, return approximation of value the distance between start and end tree converges to | *../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps* |
 
 ### Distance Distributions
 
