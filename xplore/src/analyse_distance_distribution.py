@@ -644,7 +644,33 @@ def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_f
     plts.plot_dots(d, filehandle = output_file, line = True)
 
 
+def number_rnni_edges(num_leaves):
+    # Compute the number of RNNI edges in the graph on num_leaves leaves
+    factorial = 1
+    frac_sum = 0
+    for i in range(1, num_leaves): #Compute (num_leaves-1)!
+        factorial = factorial * i
+        if i > 1:
+            frac_sum = frac_sum + 1/i
+    num_trees = num_leaves*factorial**2/2**(num_leaves-1)
+    nni_edges = 2/3*num_trees*frac_sum
+    rank_edges = 1/2 * num_trees * (num_leaves - 2 - 2*(frac_sum))
+    return(3*nni_edges + rank_edges)
+
+
+def expected_one_neighbourhood_size_n(num_leaves):
+    neighbourhood_size = []
+    for i in range(3, num_leaves):
+        factorial = 1
+        for j in range(1, i): #Compute (i-1)!
+            factorial = factorial * j
+        num_trees = i*factorial**2/2**(i-1)
+        neighbourhood_size.append(1/num_trees * 2 * number_rnni_edges(i))
+    d = pd.DataFrame(neighbourhood_size)
+    plts.plot_dots(d, line = True)
+
 if __name__ == '__main__':
+    expected_one_neighbourhood_size_n(100)
     # for i in range(4, 40):
     #     diameter = (i-1)*(i-2)/2
     #     print(lower_bound_expected_distance(i)/diameter)
