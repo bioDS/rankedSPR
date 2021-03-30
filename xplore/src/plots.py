@@ -10,9 +10,9 @@ def plot_hist(d, bins, filehandle = '', density = True):
     # Shows and saves histogram (to specified file)
     df = pd.DataFrame(data = d)
     if density == True:
-        p = sns.histplot(data=df, bins = bins, stat = 'density', legend = False)
+        p = sns.histplot(data=df, bins = bins, stat = 'density', legend = True)
     else:
-        p = sns.histplot(data=df, bins = bins, stat = 'count', legend = False)
+        p = sns.histplot(data=df, bins = bins, stat = 'count', legend = True)
     p.set_xlabel('distance')
     p.set_ylabel('frequency')
     if filehandle != '':
