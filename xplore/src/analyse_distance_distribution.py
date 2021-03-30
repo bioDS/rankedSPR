@@ -20,12 +20,16 @@ import plots as plts
 import simulate_trees as sim
 
 
-def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
-    # plot and save histogram of all pw distances ('RNNI' od 'RF'). inpput_file is filehandle to file with input trees, distances_file (if specified) is either file to read the matrix from (if already exists), or file to save matrix in (make sure it didn't exist before!), output_file is filehandle for saving the plot (histoogram).
+def all_pw_dist(input, tl = False, output_file = '', distances_file = '', metric = 'RNNI'):
+    # plot and save histogram of all pw distances ('RNNI' od 'RF'). inpput_file is filehandle to file with input trees, distances_file (if specified) is either file to read the matrix from (if already exists), or file to save matrix in (make sure it didn't exist before!), output_file is filehandle for saving the plot (histogram).
+    # if tl=False, we assume input to be a filename, if tl = True, we assume input to be a TREE_LIST
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
-        tree_list = read_nexus(input_file, ranked = True)
+        if tl == False:
+            tree_list = read_nexus(input, ranked = True)
+        else:
+            tree_list = input
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -35,16 +39,20 @@ def all_pw_dist(input_file, output_file = '', distances_file = '', metric = 'RNN
         if os.path.exists(distances_file):
             distances = np.loadtxt(distances_file, delimiter = ' ')
         else:
-            distances = rnni.pw_rnni_dist(tree_list)
+            distances = rnni.pw_rnni_dist(tree_list, list = True)
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
+        print('Done computing distance matrix.')
         bins = np.arange(-.5, rnni_diameter + 1.5, 1)
         plts.plot_hist(distances, bins, output_file)
     
     elif metric == 'RF':
         # Read trees in ete3 format:
         print("Read trees")
-        tree_list, leaf_labels = rf.read_ete_nexus(input_file)
+        if tl == False:
+            tree_list, leaf_labels = rf.read_ete_nexus(input_file)
+        else:
+            tree_list = input
         print("Done reading trees")
         num_leaves = len(leaf_labels)
         rf_diameter = int(2*(num_leaves - 1))
@@ -432,10 +440,10 @@ def dist_distribution_btw_caterpillars(num_leaves, num_trees, mean = False, outp
         plts.plot_hist(distances, bins, output_file)
 
 
-def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file = ''):
+def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file = '', variance = False):
     # plot mean distances given by function for different number of leaves and plot them
     mean_array = []
-    # var_array = []
+    var_array = []
     prgrs = 0.05
     for i in range(min_num_leaves,max_num_leaves):
         if (i/max_num_leaves >= prgrs):
@@ -447,11 +455,13 @@ def mean_distance_n(func, min_num_leaves, max_num_leaves, num_trees, output_file
             statistics = func(i,num_trees, mean = True)
         diameter = (i-1)*(i-2)/2
         mean_array.append(statistics[0])
-        # var_array.append(statistics[1])
-    print(mean_array)
-    # print(var_array)
-    d = pd.DataFrame(data=mean_array)
-    plts.plot_dots(d, [0,1], output_file, line = True)
+        var_array.append(statistics[1])
+    if variance == True:
+        d = pd.DataFrame(data=var_array)
+        plts.plot_dots(d, line = True)
+    else:
+        d = pd.DataFrame(data=mean_array)
+        plts.plot_dots(d, [0,1], output_file, line = True)
     mean_diff = []
     for i in range(0, len(mean_array)-1):
         mean_diff.append(mean_array[i+1] - mean_array[i])
@@ -500,25 +510,30 @@ def mean_distance_100_n(func, min_num_leaves, max_num_leaves, num_trees, output_
     # plt.plot(var_array)
 
 
-def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_file = '', distance_file = '', balanced = False):
+def mean_distance_repeat(func, num_leaves, num_iterations, num_trees, output_file = '', distance_file = '', balanced = False, variance = False):
     # plot mean distances given by function for different number of leaves and plot them
     diameter = (num_leaves-1)*(num_leaves-2)/2
     mean_array = []
-    # var_array = []
+    var_array = []
     for i in range(0,num_iterations):
         if balanced == True:
             statistics = given_focal_tree_dist(num_leaves, num_trees, focal_tree = sim.sim_cat(num_leaves, 1).trees[0], mean = True, distances_file=distance_file)
         else:
             statistics = func(num_leaves,num_trees, mean = True, distances_file=distance_file)
         mean_array.append(statistics[0])
-        # var_array.append(statistics[1])
+        var_array.append(statistics[1])
     # print(mean_array)
     # print(var_array)
     if distance_file != '':
         np.savetxt(distance_file, mean_array)
-    # d = pd.DataFrame(data =  [i/diameter for i in mean_array], columns = ["mean distance"]) # If distances in mean_array aren't normalised yet
-    d = pd.DataFrame(data =  mean_array, columns = ["mean distance"])
-    plts.plot_dots(d, [0,1], filehandle = output_file)
+    if variance == True:
+        d = pd.DataFrame(data = var_array)
+        print(np.var(var_array), min(var_array), max(var_array))
+        plts.plot_dots(d)
+    else:
+        # d = pd.DataFrame(data =  [i/diameter for i in mean_array], columns = ["mean distance"]) # If distances in mean_array aren't normalised yet
+        d = pd.DataFrame(data =  mean_array, columns = ["mean distance"])
+        plts.plot_dots(d, [0,1], filehandle = output_file)
 
 
 def expected_dist(num_leaves):
@@ -670,11 +685,11 @@ def expected_one_neighbourhood_size_n(num_leaves):
     plts.plot_dots(d, line = True)
 
 if __name__ == '__main__':
-    expected_one_neighbourhood_size_n(100)
+    # expected_one_neighbourhood_size_n(100)
     # for i in range(4, 40):
     #     diameter = (i-1)*(i-2)/2
     #     print(lower_bound_expected_distance(i)/diameter)
-    # mean_distance_n(coal_pw_dist, 3, 40, 1000)
+    mean_distance_repeat(coal_pw_dist, 3, 40, 1000, variance=True)
     # compare_expected_dist_to_simulation(10000, 100, all_elements=False)
     # mean_distance_n(coal_pw_dist, 3, 10, 1000)
     # for num_leaves in range(3,10):
@@ -694,7 +709,7 @@ if __name__ == '__main__':
     # compare_expected_dist_to_simulation(200, 1000)
     # compare_expected_dist_to_simulation(40, 20000, output_file='../simulations/distance_distribution/coalescent/compare_expected_dist_to_simulation_40_n_20000_N.eps')
 
-    # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0], output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
+    # compare_given_focal_tree_dist(16, 10000, focal_tree1 = sim.balanced_tree_16_leaves(), focal_tree2 = sim.sim_cat(16,1).trees[0]) #, output_file = '../simulations/distance_distribution/coalescent/compare_cat_balanced_16_n_10000_N.eps')
     # given_focal_tree_dist(16, 10000, sim.balanced_tree_16_leaves(), output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_fully_balanced_16_n_10000_N.eps')
 
     # dist_distribution_to_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps')
