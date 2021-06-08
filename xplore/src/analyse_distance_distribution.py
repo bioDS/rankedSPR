@@ -20,8 +20,24 @@ import plots as plts
 import simulate_trees as sim
 
 
+def read_newick_tree_file(input):
+    index = 0 #iterate through tree file
+    f = open(input, 'r')
+    num_trees = len(f.readlines())
+    f.close()
+    f = open(input, 'r')
+    trees = (TREE * num_trees)()
+    # Read trees in file line by line (assuming that file will only contain newick trees)
+    for line in f:
+        t = read_newick(line, ranked = True)
+        trees[index] = t
+        index += 1
+    tree_list = TREE_LIST(trees, num_trees)
+    f.close()
+    return(tree_list)
+
 def all_pw_dist(input, tl = False, output_file = '', distances_file = '', metric = 'RNNI'):
-    # plot and save histogram of all pw distances ('RNNI' od 'RF'). inpput_file is filehandle to file with input trees, distances_file (if specified) is either file to read the matrix from (if already exists), or file to save matrix in (make sure it didn't exist before!), output_file is filehandle for saving the plot (histogram).
+    # plot and save histogram of all pw distances ('RNNI' od 'RF'). input_file is filehandle to file with input trees, distances_file (if specified) is either file to read the matrix from (if already exists), or file to save matrix in (make sure it didn't exist before!), output_file is filehandle for saving the plot (histogram).
     # if tl=False, we assume input to be a filename, if tl = True, we assume input to be a TREE_LIST
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
@@ -151,12 +167,15 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
         plts.plot_dots(distances, output_file)
 
 
-def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI'):
+def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric = 'RNNI', nexus = True):
     # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
     if metric == 'RNNI':
         # Read trees in C format (for RNNI distance computation)
         print("Read trees")
-        tree_list = read_nexus(input_file, ranked = True)
+        if nexus == False:
+            tree_list = read_newick_tree_file(input_file)
+        else:
+            tree_list = read_nexus(input_file, ranked = True)
         print("Done reading trees")
         num_trees = tree_list.num_trees
         num_leaves = tree_list.trees[0].num_leaves
@@ -685,11 +704,12 @@ def expected_one_neighbourhood_size_n(num_leaves):
     plts.plot_dots(d, line = True)
 
 if __name__ == '__main__':
-    # expected_one_neighbourhood_size_n(100)
+    pw_tree_list_dist("../../../../online/online-ms/non_bayes/output/trees/rooted_20_leaves_5_drops_100_repeats.trees", output_file="../../../../online/online-ms/non_bayes/output/trees/RNNI_rooted_20_leaves_5_drops_100_repeats.pdf", metric = 'RNNI', nexus = False)
+    # print(number_rnni_edges(7))
     # for i in range(4, 40):
     #     diameter = (i-1)*(i-2)/2
     #     print(lower_bound_expected_distance(i)/diameter)
-    mean_distance_repeat(coal_pw_dist, 3, 40, 1000, variance=True)
+    # mean_distance_repeat(coal_pw_dist, 3, 40, 1000, variance=True)
     # compare_expected_dist_to_simulation(10000, 100, all_elements=False)
     # mean_distance_n(coal_pw_dist, 3, 10, 1000)
     # for num_leaves in range(3,10):
