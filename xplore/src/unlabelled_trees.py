@@ -2,6 +2,7 @@ __author__ = 'Lena Collienne'
 # Unlabelled RNNI
 
 from os import unlink
+import copy
 import os.path
 import sys
 from ete3.treeview.main import NODE_STYLE_DEFAULT
@@ -40,8 +41,8 @@ def labelled_to_unlabelled_tree(tree):
 
 # Return a labelled tree (randomly assigned leaf labels)
 def unlabelled_to_labelled_tree(unlabelled_tree):
-    u_tree = unlabelled_tree # Copy unlabelled tree, as we will pop elements of the sets in the list
-    num_leaves = len(unlabelled_tree) + 2
+    u_tree = copy.deepcopy(unlabelled_tree) # Copy unlabelled tree, as we will pop elements of the sets in the list
+    num_leaves = len(u_tree) + 2
     # Initialise output tree:
     num_nodes = 2 * num_leaves - 1
     # Create empty Node list
@@ -57,9 +58,9 @@ def unlabelled_to_labelled_tree(unlabelled_tree):
         leaves.append(i)
     for i in range(num_leaves-3, -1, -1):
         # Top-down approach: fill tree from root to leaves
-        child_1 = unlabelled_tree[i].pop()
-        if (len(unlabelled_tree[i]) > 0): #the set might be empty if there was only one zero in there
-            child_2 = unlabelled_tree[i].pop()
+        child_1 = u_tree[i].pop()
+        if (len(u_tree[i]) > 0): #the set might be empty if there was only one zero in there
+            child_2 = u_tree[i].pop()
         else:
             child_2 = 0
         # SOMETHING HERE IS QUITE BROKEN!!!!
@@ -96,8 +97,21 @@ def unlabelled_to_labelled_tree(unlabelled_tree):
     output = TREE(node_list, num_leaves)
     return(output)
 
-labelled_tree = sim_coal(20,1).trees[0]
-unlabelled_tree = [{0,1}, {0,0}, {2,3}]
-# labelled_to_unlabelled_tree(c_tree)
-t = unlabelled_to_labelled_tree(unlabelled_tree)
-print(labelled_to_unlabelled_tree(t))
+
+def unlabelled_dist(Tlist, Rlist):
+    dist = 0
+    for i in range(0,len(Tlist)):
+        if Tlist[i] != {0} or Rlist[i] != {0}:
+            dist += 2-len(Tlist[i].intersection(Rlist[i]))
+    return(dist)
+
+
+if __name__ == '__main__':
+    # labelled_tree = sim_coal(20,1).trees[0]
+    # unlabelled_tree = [{0,1}, {0,0}, {2,3}]
+    # t2 = [{0,1}, {0,0}, {2,3}]
+    # # labelled_to_unlabelled_tree(c_tree)
+    # t = unlabelled_to_labelled_tree(unlabelled_tree)
+    # utree = labelled_to_unlabelled_tree(labelled_tree)
+    # print(unlabelled_tree, t2)
+    # print(unlabelled_dist(utree,utree))
