@@ -106,6 +106,15 @@ def unlabelled_dist(Tlist, Rlist):
     return(dist)
 
 
+def approx_unlabelled_RNNI_dist(t1, t2, N):
+    # Approximate the unlabelled distance between unlabelled trees t1 and t2 (given in unlabelled tree list representation) by randomly labelling t1 (fixed) and then trying N different labellings for t2
+    tree1 = unlabelled_to_labelled_tree(t1)
+    dist_list = []
+    for i in range(0, N):
+        tree2 = unlabelled_to_labelled_tree(t2)
+        dist_list.append(findpath_distance(tree1, tree2))
+    return(min(dist_list))
+
 if __name__ == '__main__':
     # labelled_tree = sim_coal(20,1).trees[0]
     # unlabelled_tree = [{0,1}, {0,0}, {2,3}]
@@ -115,3 +124,7 @@ if __name__ == '__main__':
     # utree = labelled_to_unlabelled_tree(labelled_tree)
     # print(unlabelled_tree, t2)
     # print(unlabelled_dist(utree,utree))
+    tree_list = sim_coal(10,2)
+    t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
+    t2= labelled_to_unlabelled_tree(tree_list.trees[1])
+    print(approx_unlabelled_RNNI_dist(t1,t2,30))
