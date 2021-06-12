@@ -124,7 +124,10 @@ if __name__ == '__main__':
     # utree = labelled_to_unlabelled_tree(labelled_tree)
     # print(unlabelled_tree, t2)
     # print(unlabelled_dist(utree,utree))
-    tree_list = sim_coal(10,2)
+    tree_list = sim_coal(100,2)
     t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
     t2= labelled_to_unlabelled_tree(tree_list.trees[1])
-    print(approx_unlabelled_RNNI_dist(t1,t2,30))
+    for i in range(0,20):
+        apprx_RNNI = approx_unlabelled_RNNI_dist(t1,t2,1000)
+        u_dist = unlabelled_dist(t1,t2)
+        print(u_dist/apprx_RNNI)
