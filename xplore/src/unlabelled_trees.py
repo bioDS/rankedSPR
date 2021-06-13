@@ -9,6 +9,9 @@ from ete3.treeview.main import NODE_STYLE_DEFAULT
 # sys.path.append('../..')
 
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 import random
 
 from simulate_trees import *
@@ -98,6 +101,61 @@ def unlabelled_to_labelled_tree(unlabelled_tree):
     return(output)
 
 
+# Return a labelled tree such that leaf labels increase with increasing rank
+def label_tree_increasingly(unlabelled_tree):
+    u_tree = copy.deepcopy(unlabelled_tree) # Copy unlabelled tree, as we will pop elements of the sets in the list
+    num_leaves = len(u_tree) + 2
+    # Initialise output tree:
+    num_nodes = 2 * num_leaves - 1
+    # Create empty Node list
+    node_list = (NODE * num_nodes)()
+    empty_children = (c_long * 2)()
+    empty_children[0] = -1
+    empty_children[1] = -1
+    for j in range(0, num_nodes):
+        node_list[j] = NODE(-1, empty_children, 0)
+    # Set of children, which will be assigned randomly at places where unlabelled tree representation has zeros:
+    leaves = list()
+    for i in range(0, num_leaves):
+        leaves.append(i)
+    for i in range(num_leaves-3, -1, -1):
+        # Top-down approach: fill tree from root to leaves
+        child_1 = u_tree[i].pop()
+        if (len(u_tree[i]) > 0): #the set might be empty if there was only one zero in there
+            child_2 = u_tree[i].pop()
+        else:
+            child_2 = 0
+        # SOMETHING HERE IS QUITE BROKEN!!!!
+        if child_1 != 0:
+            node_list[num_leaves+i+1].children[0] = num_leaves-1+child_1
+            node_list[num_leaves+child_1-1].parent = num_leaves+i+1
+        else:
+            leaf = leaves.pop() # choose last leaf label as child (highest possible leaf label)
+            node_list[num_leaves+i+1].children[0] = leaf
+            node_list[leaf].parent = num_leaves+i+1
+        if child_2 != 0:
+            node_list[num_leaves+i+1].children[1] = num_leaves-1+child_2
+            node_list[num_leaves+child_2-1].parent = num_leaves+i+1
+        else:
+            leaf = leaves.pop() # choose last leaf label as child (highest possible leaf label)
+            node_list[num_leaves+i+1].children[1] = leaf
+            node_list[leaf].parent = num_leaves+i+1
+    # Fill cherry of rank 1:
+    child_1 = leaves.pop()
+    child_2 = leaves.pop()
+    node_list[num_leaves].children[0]=child_1
+    node_list[num_leaves].children[1]=child_2
+    node_list[child_1].parent = num_leaves
+    node_list[child_2].parent = num_leaves
+
+    # Check if the tree is read in correctly:
+    # for i in range(len(node_list)-1,-1,-1):
+    #     print(node_list[i].children[0], node_list[i].children[1], node_list[i].parent)
+    
+    output = TREE(node_list, num_leaves)
+    return(output)
+
+
 def unlabelled_dist(Tlist, Rlist):
     dist = 0
     for i in range(0,len(Tlist)):
@@ -115,19 +173,43 @@ def approx_unlabelled_RNNI_dist(t1, t2, N):
         dist_list.append(findpath_distance(tree1, tree2))
     return(min(dist_list))
 
+
+def compare_abitrary_to_increasing_labelling_URNNI(n,m,l):
+    # Simulate m trees on n leaves (coalescent, then delete labels) and compare the URNNI dist proxies resulting from labelling increasingly with rank and approx_labelling from l arbitrary labellings
+    incr_label_dist = []
+    arb_label_dist = []
+    diff = []
+    for i in range(0,m):
+        tree_list = sim_coal(n,2)
+        t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
+        t2= labelled_to_unlabelled_tree(tree_list.trees[1])
+        incr_label_dist.append(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2)))
+        arb_label_dist.append(approx_unlabelled_RNNI_dist(t1,t2,l))
+        diff.append(incr_label_dist[i] - arb_label_dist[i])
+    # Plot 
+    # d = pd.DataFrame(data = list(zip(incr_label_dist, arb_label_dist)), columns = ["increasing labelling", "arbitrary labelling"])
+    d = pd.DataFrame(data = diff)
+    sns.scatterplot(data=d, legend = False)
+    plt.tight_layout()
+    plt.savefig("unlabelled_RNNI_plots/compare_labellings/" + str(n) + "_leaves_" + str(m) + "_repeats_" + str(l) +  "_arbitrary_labellings.pdf")
+    plt.show()
+
+
 if __name__ == '__main__':
+
+    compare_abitrary_to_increasing_labelling_URNNI(20,100,1000)
+
     # labelled_tree = sim_coal(20,1).trees[0]
-    # unlabelled_tree = [{0,1}, {0,0}, {2,3}]
-    # t2 = [{0,1}, {0,0}, {2,3}]
+    # t1 = [{0,1}, {0,0}, {2,3}]
+    # t2 = [{0,0}, {1,0}, {2,3}]
+    # print(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2)))
+    # print(unlabelled_dist(t1, t2))
     # # labelled_to_unlabelled_tree(c_tree)
-    # t = unlabelled_to_labelled_tree(unlabelled_tree)
-    # utree = labelled_to_unlabelled_tree(labelled_tree)
-    # print(unlabelled_tree, t2)
+    # t = unlabelled_to_labelled_tree(t1)
+    # utree = labelled_to_unlabelled_tree(t)
+    # print(t1, t2)
     # print(unlabelled_dist(utree,utree))
-    tree_list = sim_coal(100,2)
-    t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
-    t2= labelled_to_unlabelled_tree(tree_list.trees[1])
-    for i in range(0,20):
-        apprx_RNNI = approx_unlabelled_RNNI_dist(t1,t2,1000)
-        u_dist = unlabelled_dist(t1,t2)
-        print(u_dist/apprx_RNNI)
+    # for i in range(0,20):
+    #     apprx_RNNI = approx_unlabelled_RNNI_dist(t1,t2,1000)
+    #     u_dist = unlabelled_dist(t1,t2)
+    #     print(u_dist/apprx_RNNI)
