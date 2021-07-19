@@ -156,7 +156,7 @@ def label_tree_increasingly(unlabelled_tree):
     return(output)
 
 
-def unlabelled_dist(Tlist, Rlist):
+def subtree_swap_dist(Tlist, Rlist):
     dist = 0
     for i in range(0,len(Tlist)):
         if Tlist[i] != {0} or Rlist[i] != {0}:
@@ -188,7 +188,7 @@ def compare_arbitrary_to_increasing_labelling_URNNI(n,m,l,ldist = False):
         incr_label_dist.append(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2)))
         arb_label_dist.append(approx_unlabelled_RNNI_dist(t1,t2,l))
         if ldist == True:
-            list_dist.append(unlabelled_dist(t1,t2))
+            list_dist.append(subtree_swap_dist(t1,t2))
         diff.append(incr_label_dist[i] - arb_label_dist[i])
     # Plot distances or differences btw distances
     if ldist == True:
@@ -205,7 +205,7 @@ def compare_arbitrary_to_increasing_labelling_URNNI(n,m,l,ldist = False):
     plt.show()
 
 
-def compare_increasing_labellings_list_dist(n,m):
+def compare_increasing_labellings_list_dist(n,m, relative_dist = False):
     # Simulate m trees on n leaves (coalescent, then delete labels) and compare the URNNI dist proxy resulting from labelling increasingly with rank to list dist for unlabelled trees
     incr_label_dist = []
     list_dist = []
@@ -214,8 +214,14 @@ def compare_increasing_labellings_list_dist(n,m):
         tree_list = sim_coal(n,2)
         t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
         t2= labelled_to_unlabelled_tree(tree_list.trees[1])
-        incr_label_dist.append(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2)))
-        list_dist.append(unlabelled_dist(t1,t2))
+        fp_dist = findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2))
+        ss_dist = subtree_swap_dist(t1,t2)
+        if relative_dist == True:
+            # Take relative distances, i.e. divided by diameter
+            fp_dist = fp_dist / ((n-1)*(n-2)/2)
+            ss_dist = ss_dist / (2*(n-3))
+        incr_label_dist.append(fp_dist)
+        list_dist.append(ss_dist)
         diff.append(incr_label_dist[i] - list_dist[i])
     # Plot 
     d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["increasing labelling", "list labelling"])
@@ -228,22 +234,63 @@ def compare_increasing_labellings_list_dist(n,m):
 
 
 
+def boxplot_relative_ss_vs_increasing_fp_dist(n_list,m,relative_dist = False):
+    # Simulate m trees on n_list[i] leaves (list of number of leaves) (coalescent, then delete labels) and compare the URNNI dist proxy resulting from labelling increasingly with rank to list dist for unlabelled trees
+    # incr_label_dist = [list() for i in range(len(n_list))]
+    # list_dist = [list() for i in range(len(n_list))]
+    # diff = [list() for i in range(len(n_list))]
+    incr_label_dist = dict()
+    list_dist = dict()
+    diff = dict()
+    for k in range(0,len(n_list)):
+        n = n_list[k]
+        incr_label_dist[n] = list()
+        list_dist[n] = list()
+        diff[n] = list()
+        for i in range(0,m):
+            tree_list = sim_coal(n,2)
+            t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
+            t2= labelled_to_unlabelled_tree(tree_list.trees[1])
+            fp_dist = findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2))
+            ss_dist = subtree_swap_dist(t1,t2)
+            if relative_dist == True:
+                # Take relative distances, i.e. divided by diameter
+                fp_dist = fp_dist / ((n-1)*(n-2)/2)
+                ss_dist = ss_dist / (2*(n-3))
+            incr_label_dist[n].append(fp_dist)
+            list_dist[n].append(ss_dist)
+            diff[n].append(fp_dist - ss_dist)
+    # Plot 
+    # d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["increasing labelling", "list labelling"])
+    d = pd.DataFrame(diff)
+    # print([i for i in diff.keys()])
+    # sns.scatterplot(data=d, legend = True)
+    sns.boxplot(data=d)
+    plt.tight_layout()
+    plt.xlabel('Number of leaves')
+    plt.ylabel('Relative distance')
+    plt.title('Difference between URNNI and SS distance')
+    plt.savefig("unlabelled_RNNI_plots/compare_relative_ss_vs_fp_dist/ss_vs_increasing_fp_" + ''.join(str(i)+"_" for i in n_list) + "leaves_" + str(m) + "_repeats.pdf")
+    plt.show()
+
+
 if __name__ == '__main__':
 
-    compare_arbitrary_to_increasing_labelling_URNNI(100,100,1000, ldist = True)
-    # compare_increasing_labellings_list_dist(100,100)
+    # compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = True)
+    # compare_increasing_labellings_list_dist(10,1000, relative_dist=True)
+    boxplot_relative_ss_vs_increasing_fp_dist([10,100,1000,10000],1000, relative_dist=True)
 
     # labelled_tree = sim_coal(20,1).trees[0]
     # t1 = [{0,1}, {0,0}, {2,3}]
     # t2 = [{0,0}, {1,0}, {2,3}]
     # print(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2)))
-    # print(unlabelled_dist(t1, t2))
+    # print(subtree_swap_dist(t1, t2))
     # # labelled_to_unlabelled_tree(c_tree)
     # t = unlabelled_to_labelled_tree(t1)
     # utree = labelled_to_unlabelled_tree(t)
     # print(t1, t2)
-    # print(unlabelled_dist(utree,utree))
+    # print(subtree_swap_dist(utree,utree))
     # for i in range(0,20):
     #     apprx_RNNI = approx_unlabelled_RNNI_dist(t1,t2,1000)
-    #     u_dist = unlabelled_dist(t1,t2)
+    #     u_dist = subtree_swap_dist(t1,t2)
     #     print(u_dist/apprx_RNNI)
