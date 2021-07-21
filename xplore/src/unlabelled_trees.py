@@ -172,8 +172,10 @@ def approx_unlabelled_RNNI_dist(t1, t2, N):
     return(min(dist_list))
 
 
-def compare_arbitrary_to_increasing_labelling_URNNI(n,m,l,ldist = False):
+def compare_arbitrary_to_increasing_labelling_URNNI(n,m,l,ldist = False, relative_dist = True, plot_diff = False):
     # Simulate m trees on n leaves (coalescent, then delete labels) and compare the URNNI dist proxies resulting from labelling increasingly with rank and approx_labelling from l arbitrary labellings
+    # relative_dist: take distance divided by diameter, diff: plot only difference between increasing labelling and arbitrary labelling
+    diameter = (n-1)*(n-2)/2
     incr_label_dist = []
     arb_label_dist = []
     if ldist == True:
@@ -183,23 +185,29 @@ def compare_arbitrary_to_increasing_labelling_URNNI(n,m,l,ldist = False):
         tree_list = sim_coal(n,2)
         t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
         t2= labelled_to_unlabelled_tree(tree_list.trees[1])
-        incr_label_dist.append(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2)))
-        arb_label_dist.append(approx_unlabelled_RNNI_dist(t1,t2,l))
+        incr_label_dist.append(findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2))/diameter)
+        arb_label_dist.append(approx_unlabelled_RNNI_dist(t1,t2,l)/diameter)
         if ldist == True:
             list_dist.append(subtree_swap_dist(t1,t2))
-        diff.append(incr_label_dist[i] - arb_label_dist[i])
+        diff.append(arb_label_dist[i] - incr_label_dist[i])
     # Plot distances or differences btw distances
     if ldist == True:
         d = pd.DataFrame(data = list(zip(incr_label_dist, arb_label_dist, list_dist)), columns = ["increasing labelling", "arbitrary labelling", "list_dist"])
     else:
-        d = pd.DataFrame(data = diff)
-    sns.scatterplot(data=d, legend = True)
-    # plt.tight_layout()
-    plt.legend(bbox_to_anchor=(0.6, 0.3), loc='upper left', borderaxespad=0)
+        d_diff = pd.DataFrame(data = diff)
+        d = pd.DataFrame(data = list(zip(incr_label_dist, arb_label_dist)), columns = ["increasing labelling", "arbitrary labelling"])
+    sns.scatterplot(data=d, legend = True, palette = 'colorblind')
     if ldist == True:
+        plt.legend(bbox_to_anchor=(0.6, 0.3), loc='upper left', borderaxespad=0)
         plt.savefig("unlabelled_RNNI_plots/compare_incr_arbr_labellings_list_dist/" + str(n) + "_leaves_" + str(m) + "_repeats_" + str(l) +  "_arbitrary_labellings.pdf")
     else:
+        plt.legend(bbox_to_anchor =(0.75, 1.15), ncol = 2) #(bbox_to_anchor=(0.6, 0.6), loc='upper left', borderaxespad=0)
         plt.savefig("unlabelled_RNNI_plots/compare_labellings/" + str(n) + "_leaves_" + str(m) + "_repeats_" + str(l) +  "_arbitrary_labellings.pdf")
+    plt.show()
+    if plot_diff == True:
+        sns.scatterplot(data=d_diff, legend = False, palette = ['black'])
+        plt.axhline(0, color = 'black')
+        plt.savefig("unlabelled_RNNI_plots/compare_labellings/diff_" + str(n) + "_leaves_" + str(m) + "_repeats_" + str(l) +  "_arbitrary_labellings.pdf")
     plt.show()
 
 
@@ -274,9 +282,10 @@ def boxplot_relative_ss_vs_increasing_fp_dist(n_list,m,relative_dist = False):
 
 if __name__ == '__main__':
 
-    # compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = True)
+    # compare_arbitrary_to_increasing_labelling_URNNI(10,100,10, ldist = False, plot_diff = False)
+    compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = False, plot_diff = True)
     # compare_increasing_labellings_list_dist(10,1000, relative_dist=True)
-    boxplot_relative_ss_vs_increasing_fp_dist([10,100,1000,10000],1000, relative_dist=True)
+    # boxplot_relative_ss_vs_increasing_fp_dist([10,100,1000,10000],1000, relative_dist=True)
 
     # labelled_tree = sim_coal(20,1).trees[0]
     # t1 = [{0,1}, {0,0}, {2,3}]
