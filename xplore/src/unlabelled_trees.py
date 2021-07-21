@@ -66,7 +66,6 @@ def unlabelled_to_labelled_tree(unlabelled_tree):
             child_2 = u_tree[i].pop()
         else:
             child_2 = 0
-        # SOMETHING HERE IS QUITE BROKEN!!!!
         if child_1 != 0:
             node_list[num_leaves+i+1].children[0] = num_leaves-1+child_1
             node_list[num_leaves+child_1-1].parent = num_leaves+i+1
@@ -125,7 +124,6 @@ def label_tree_increasingly(unlabelled_tree):
             child_2 = u_tree[i].pop()
         else:
             child_2 = 0
-        # SOMETHING HERE IS QUITE BROKEN!!!!
         if child_1 != 0:
             node_list[num_leaves+i+1].children[0] = num_leaves-1+child_1
             node_list[num_leaves+child_1-1].parent = num_leaves+i+1
