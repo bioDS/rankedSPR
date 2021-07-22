@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import random
+from statistics import mean
 
 from simulate_trees import *
 
@@ -239,6 +240,49 @@ def compare_increasing_labellings_list_dist(n,m, relative_dist = False):
     plt.show()
 
 
+def boxplot_increasing_vs_random_labelling_dist(n,m,l_list,relative_dist = True):
+    # Simulate m trees on n_list[i] leaves (list of number of leaves) (coalescent, then delete labels) and compare the URNNI dist proxy resulting from labelling increasingly with rank to list dist for unlabelled trees
+    # incr_label_dist = [list() for i in range(len(n_list))]
+    # list_dist = [list() for i in range(len(n_list))]
+    # diff = [list() for i in range(len(n_list))]
+    incr_label_dist = dict()
+    list_dist = dict()
+    diff = dict()
+    for k in l_list:
+        incr_label_dist[k] = list()
+        list_dist[k] = list()
+        diff[k] = list()
+        for i in range(0,m):
+            tree_list = sim_coal(n,2)
+            t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
+            t2= labelled_to_unlabelled_tree(tree_list.trees[1])
+            incr_dist = findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2))
+            random_dist = approx_unlabelled_RNNI_dist(t1,t2,k)
+            if relative_dist == True:
+                # Take relative distances, i.e. divided by diameter
+                incr_dist = incr_dist / ((n-1)*(n-2)/2)
+                random_dist = random_dist / ((n-1)*(n-2)/2)
+            incr_label_dist[k].append(incr_dist)
+            list_dist[k].append(random_dist)
+            diff[k].append(random_dist - incr_dist)
+    # Plot 
+    # d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["increasing labelling", "list labelling"])
+    d = pd.DataFrame(diff)
+    # Save min, mean, and max diff for each value in l_list in a txt file:
+    f = open("unlabelled_RNNI_plots/compare_labellings/boxplot_data_" + str(n) + "_leaves_" + str(m) + "_simulated_pairs_" + ''.join(str(i)+"_" for i in l_list) + "repeats.txt", "w")
+    # Write some statistics in txt file
+    for k in l_list:
+        f.write(str(k) + "\t" + str(min(diff[k])) + "\t" + str(mean(diff[k])) + "\t" + str(max(diff[k])) + "\n")
+    f.close()
+    # print([i for i in diff.keys()])
+    # sns.scatterplot(data=d, legend = True)
+    sns.boxplot(data=d, palette="YlOrRd")
+    # plt.tight_layout()
+    plt.xlabel('Number of repetitions M')
+    plt.ylabel('Difference in relative distances')
+    # plt.title('Difference between increasing and random labelling RNNI distance')
+    plt.savefig("unlabelled_RNNI_plots/compare_labellings/boxplot_" + str(n) + "_leaves_" + str(m) + "_simulated_pairs_" + ''.join(str(i)+"_" for i in l_list) + "repeats.pdf")
+    plt.show()
 
 def boxplot_relative_ss_vs_increasing_fp_dist(n_list,m,relative_dist = False):
     # Simulate m trees on n_list[i] leaves (list of number of leaves) (coalescent, then delete labels) and compare the URNNI dist proxy resulting from labelling increasingly with rank to list dist for unlabelled trees
@@ -266,12 +310,12 @@ def boxplot_relative_ss_vs_increasing_fp_dist(n_list,m,relative_dist = False):
             incr_label_dist[n].append(fp_dist)
             list_dist[n].append(ss_dist)
             diff[n].append(fp_dist - ss_dist)
-    # Plot 
+    # Plot
     # d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["increasing labelling", "list labelling"])
     d = pd.DataFrame(diff)
     # print([i for i in diff.keys()])
     # sns.scatterplot(data=d, legend = True)
-    sns.boxplot(data=d)
+    sns.boxplot(data=d, palette="YlOrRd")
     plt.tight_layout()
     plt.xlabel('Number of leaves')
     plt.ylabel('Relative distance')
@@ -281,9 +325,9 @@ def boxplot_relative_ss_vs_increasing_fp_dist(n_list,m,relative_dist = False):
 
 
 if __name__ == '__main__':
-
+    boxplot_increasing_vs_random_labelling_dist(100,100,[10,100,1000,10000],relative_dist=True)
     # compare_arbitrary_to_increasing_labelling_URNNI(10,100,10, ldist = False, plot_diff = False)
-    compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = False, plot_diff = True)
+    # compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = False, plot_diff = True)
     # compare_increasing_labellings_list_dist(10,1000, relative_dist=True)
     # boxplot_relative_ss_vs_increasing_fp_dist([10,100,1000,10000],1000, relative_dist=True)
 
