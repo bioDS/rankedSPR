@@ -279,7 +279,7 @@ def boxplot_increasing_vs_random_labelling_dist(n,m,l_list,relative_dist = True)
     sns.boxplot(data=d, palette="YlOrRd")
     # plt.tight_layout()
     plt.xlabel('Number of repetitions M')
-    plt.ylabel('Difference in relative distances')
+    plt.ylabel('Difference in distances')
     # plt.title('Difference between increasing and random labelling RNNI distance')
     plt.savefig("unlabelled_RNNI_plots/compare_labellings/boxplot_" + str(n) + "_leaves_" + str(m) + "_simulated_pairs_" + ''.join(str(i)+"_" for i in l_list) + "repeats.pdf")
     plt.show()
@@ -321,12 +321,13 @@ def boxplot_relative_ss_vs_increasing_fp_dist(n,m,relative_dist = False):
 
 
 if __name__ == '__main__':
-    # boxplot_increasing_vs_random_labelling_dist(100,100,[10,100,1000,10000],relative_dist=True)
+    boxplot_increasing_vs_random_labelling_dist(10,100,[10,100,1000,10000],relative_dist=False)
+    # WE CANNOT DEVIDE BY DIAMETER, BECAUSE WE DO NOT KNOW THE DIAMETER OF URNNI
     # compare_arbitrary_to_increasing_labelling_URNNI(10,100,10, ldist = False, plot_diff = False)
     # compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = False, plot_diff = True)
     # compare_increasing_labellings_list_dist(10,1000, relative_dist=True)
-    for i in range(1,5):
-        boxplot_relative_ss_vs_increasing_fp_dist(10**i,100, relative_dist=True)
+    # for i in range(1,5):
+        # boxplot_relative_ss_vs_increasing_fp_dist(10**i,1000, relative_dist=True)
 
     # labelled_tree = sim_coal(20,1).trees[0]
     # t1 = [{0,1}, {0,0}, {2,3}]
