@@ -284,52 +284,49 @@ def boxplot_increasing_vs_random_labelling_dist(n,m,l_list,relative_dist = True)
     plt.savefig("unlabelled_RNNI_plots/compare_labellings/boxplot_" + str(n) + "_leaves_" + str(m) + "_simulated_pairs_" + ''.join(str(i)+"_" for i in l_list) + "repeats.pdf")
     plt.show()
 
-def boxplot_relative_ss_vs_increasing_fp_dist(n_list,m,relative_dist = False):
+def boxplot_relative_ss_vs_increasing_fp_dist(n,m,relative_dist = False):
     # Simulate m trees on n_list[i] leaves (list of number of leaves) (coalescent, then delete labels) and compare the URNNI dist proxy resulting from labelling increasingly with rank to list dist for unlabelled trees
     # incr_label_dist = [list() for i in range(len(n_list))]
     # list_dist = [list() for i in range(len(n_list))]
     # diff = [list() for i in range(len(n_list))]
-    incr_label_dist = dict()
-    list_dist = dict()
-    diff = dict()
-    for k in range(0,len(n_list)):
-        n = n_list[k]
-        incr_label_dist[n] = list()
-        list_dist[n] = list()
-        diff[n] = list()
-        for i in range(0,m):
-            tree_list = sim_coal(n,2)
-            t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
-            t2= labelled_to_unlabelled_tree(tree_list.trees[1])
-            fp_dist = findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2))
-            ss_dist = subtree_swap_dist(t1,t2)
-            if relative_dist == True:
-                # Take relative distances, i.e. divided by diameter
-                fp_dist = fp_dist / ((n-1)*(n-2)/2)
-                ss_dist = ss_dist / (2*(n-3))
-            incr_label_dist[n].append(fp_dist)
-            list_dist[n].append(ss_dist)
-            diff[n].append(fp_dist - ss_dist)
+    incr_label_dist = list()
+    list_dist = list()
+    diff = list()
+    for i in range(0,m):
+        tree_list = sim_coal(n,2)
+        t1 = labelled_to_unlabelled_tree(tree_list.trees[0])
+        t2= labelled_to_unlabelled_tree(tree_list.trees[1])
+        fp_dist = findpath_distance(label_tree_increasingly(t1), label_tree_increasingly(t2))
+        ss_dist = subtree_swap_dist(t1,t2)
+        if relative_dist == True:
+            # Take relative distances, i.e. divided by diameter
+            fp_dist = fp_dist / ((n-1)*(n-2)/2)
+            ss_dist = ss_dist / (2*(n-3))
+        incr_label_dist.append(fp_dist)
+        list_dist.append(ss_dist)
+        diff.append(fp_dist - ss_dist)
     # Plot
-    # d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["increasing labelling", "list labelling"])
-    d = pd.DataFrame(diff)
+    plt.clf()
+    d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["approx. URNNI", "SS"])
+    # d = pd.DataFrame(diff)
     # print([i for i in diff.keys()])
     # sns.scatterplot(data=d, legend = True)
     sns.boxplot(data=d, palette="YlOrRd")
-    plt.tight_layout()
-    plt.xlabel('Number of leaves')
-    plt.ylabel('Relative distance')
-    plt.title('Difference between URNNI and SS distance')
-    plt.savefig("unlabelled_RNNI_plots/compare_relative_ss_vs_fp_dist/ss_vs_increasing_fp_" + ''.join(str(i)+"_" for i in n_list) + "leaves_" + str(m) + "_repeats.pdf")
-    plt.show()
+    # plt.tight_layout()
+    # plt.xlabel('Number of leaves')
+    plt.ylabel('Relative distances, n=' +str(n))
+    # plt.title('Comparison of URNNI and SS distance')
+    plt.savefig("unlabelled_RNNI_plots/compare_relative_ss_vs_fp_dist/ss_vs_increasing_fp_" + str(n) + "_leaves_" + str(m) + "_repeats.pdf")
+    # plt.show()
 
 
 if __name__ == '__main__':
-    boxplot_increasing_vs_random_labelling_dist(100,100,[10,100,1000,10000],relative_dist=True)
+    # boxplot_increasing_vs_random_labelling_dist(100,100,[10,100,1000,10000],relative_dist=True)
     # compare_arbitrary_to_increasing_labelling_URNNI(10,100,10, ldist = False, plot_diff = False)
     # compare_arbitrary_to_increasing_labelling_URNNI(100,100,10000, ldist = False, plot_diff = True)
     # compare_increasing_labellings_list_dist(10,1000, relative_dist=True)
-    # boxplot_relative_ss_vs_increasing_fp_dist([10,100,1000,10000],1000, relative_dist=True)
+    for i in range(1,5):
+        boxplot_relative_ss_vs_increasing_fp_dist(10**i,100, relative_dist=True)
 
     # labelled_tree = sim_coal(20,1).trees[0]
     # t1 = [{0,1}, {0,0}, {2,3}]
