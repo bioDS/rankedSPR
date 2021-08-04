@@ -508,7 +508,7 @@ def mean_distance_n(func, min_num_leaves, max_num_leaves, num_tree_pairs, output
     # plts.plot_dots(d, line = True)
 
 
-def mean_distance_log_n(func, max_exp, num_tree_pairs, output_file = ''):
+def mean_distance_exp_n(func, max_exp, num_tree_pairs, output_file = ''):
     # plot mean distances given by function for different number of leaves and plot them
     mean_array = []
     # var_array = []
@@ -764,7 +764,7 @@ if __name__ == '__main__':
     # mean_distance_n(dist_distribution_btw_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(coal_pw_dist, 3, 300, 1000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_n_3_to_300_N_1000.eps')
     # mean_distance_n(coal_pw_dist, 3, 100, 10000)
-    mean_distance_log_n(coal_pw_dist_space_efficient, 10, 10000)
+    mean_distance_exp_n(coal_pw_dist_space_efficient, 10, 10000)
     # mean_distance_100_n(coal_pw_dist_space_efficient, 100, 101, 10) #, output_file = '../simulations/distance_distribution/coalescent/mean_dist_log_n_1_to_9_N_10000.eps')
     # [0.8285882293673883, 0.8300589130067364, 0.8301474363627227, 0.8307205053473854, 0.8311932083023579, 0.8310782928817221, 0.831468037175452, 0.8319265701059583, 0.8316929550362643, 0.8321324688541974, 0.8318900686265788, 0.8321025213961065, 0.8324846223507965, 0.8324120056764494, 0.8318717888630501, 0.8323381148416531]
 
