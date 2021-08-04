@@ -6,6 +6,7 @@ sys.path.append('../..')
 
 from ete3 import Tree
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -310,14 +311,14 @@ def coal_pw_dist(num_leaves, num_trees, mean = False, output_file = '', distance
 
 
 # use own implementation of coalescent to plot RNNI distances
-def coal_pw_dist_space_efficient(num_leaves, num_trees, mean = False, output_file = '', distances_file = ''):
+def coal_pw_dist_space_efficient(num_leaves, num_tree_pairs, mean = False, output_file = '', distances_file = ''):
     # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
     # Read trees in C format (for RNNI distance computation)
     # If mean == True, returns mean and var of distances
     rnni_diameter = int((num_leaves-1)*(num_leaves-2)/2)
     distances = []
 
-    for i in range(0,int(num_trees/2)):
+    for i in range(0,int(num_tree_pairs)):
         tree_list = sim.sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
         distances.append(rnni.rnni_distances_tree_pairs(tree_list)[0][0])
         norm_distances = [i/rnni_diameter for i in distances]
@@ -326,8 +327,16 @@ def coal_pw_dist_space_efficient(num_leaves, num_trees, mean = False, output_fil
     if distances_file != '':
         np.savetxt(distances_file,  distances, delimiter = ' ')
     if mean == False:
-        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
-        plts.plot_hist(distances, bins, output_file)
+        # Plot histogram
+        d = pd.DataFrame(data=distances)
+        b = np.arange(-.5, rnni_diameter + 1.5, 1)
+        sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,rnni_diameter+1.5], stat = 'density', legend = False)
+        plt.xlabel("Distance")
+        # plt.ylabel("Frequency")
+        plt.ylabel("")
+        plt.savefig("../simulations/distance_distribution/coalescent/rnni_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
+        plt.show()
+        # plts.plot_hist(distances, bins, output_file)
 
 
 # simulate coalescent trees and plot distance to a given focal tree
@@ -704,7 +713,8 @@ def expected_one_neighbourhood_size_n(num_leaves):
     plts.plot_dots(d, line = True)
 
 if __name__ == '__main__':
-    pw_tree_list_dist("../../../../online/online-ms/non_bayes/output/trees/rooted_20_leaves_5_drops_100_repeats.trees", output_file="../../../../online/online-ms/non_bayes/output/trees/RNNI_rooted_20_leaves_5_drops_100_repeats.pdf", metric = 'RNNI', nexus = False)
+    # pw_tree_list_dist("../../../../online/online-ms/non_bayes/output/trees/rooted_20_leaves_5_drops_100_repeats.trees", output_file="../../../../online/online-ms/non_bayes/output/trees/RNNI_rooted_20_leaves_5_drops_100_repeats.pdf", metric = 'RNNI', nexus = False)
+    coal_pw_dist_space_efficient(20,100000) # Output file!
     # print(number_rnni_edges(7))
     # for i in range(4, 40):
     #     diameter = (i-1)*(i-2)/2
