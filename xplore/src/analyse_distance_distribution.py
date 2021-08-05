@@ -683,8 +683,14 @@ def random_walk_distance(num_leaves, k, num_iterations, output_file = '', mean =
         return(np.mean(distances))
     else:
         d = pd.DataFrame(data = distances)
-        bins = np.arange(-.5, k + 1.5, 1)
-        plts.plot_hist(d, bins, filehandle = output_file)
+        # bins = np.arange(-.5, k + 1.5, 1)
+        # plts.plot_hist(d, bins, filehandle = output_file)
+        sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,diameter+1.5], stat = 'density', legend = False)
+        plt.xlabel("Distance")
+        # plt.ylabel("Frequency")
+        plt.ylabel("")
+        plt.savefig("../simulations/distance_distribution/coalescent/random_walk_dist_" + str(num_leaves) + "_n_" + str(k) + "_steps_" + str(num_iterations) + "_repetitions_.eps")
+        plt.show()
 
 def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_file = '', median = False):
     mean_dist = []
@@ -699,7 +705,35 @@ def random_walk_mean_distance(num_leaves, k_min, k_max, num_iterations, output_f
         return(np.mean(mean_mean_dist), index) # Return approximation of value the distance converges to + length index of random walk from when it is closed convergence (Median)
         print(index)
     d = pd.DataFrame(data = mean_dist)
-    plts.plot_dots(d, filehandle = output_file, line = True)
+    # plts.plot_dots(d, filehandle = output_file, line = True)
+    sns.scatterplot(data = d, Color = '#b02538', legend = False)
+    plt.xlabel("Length of random walk")
+    plt.ylabel("Mean distance")
+    plt.savefig("../simulations/distance_distribution/coalescent/random_walk_mean_dist" + str(num_leaves) + "_n_" + str(k_min) + "_to_" + str(k_max) +"_k_" + str(num_iterations) +  "_num_repeats_scatter.eps")
+    plt.show()
+
+def random_walk_mean_distance_exp(num_leaves, k, num_iterations, output_file = '', median = False):
+    mean_dist = []
+    diameter = (num_leaves-1)*(num_leaves-2)/2
+    for i in range(1, k+1):
+        print(i)
+        mean_dist.append(random_walk_distance(num_leaves, 2**i, num_iterations, mean = True)/diameter)
+    if median == True:
+        index = 0
+        m = np.median(mean_dist)
+        while(mean_dist[index] < m and index < len(mean_dist)):
+            index += 1
+        mean_mean_dist = mean_dist[index:]
+        return(np.mean(mean_mean_dist), index) # Return approximation of value the distance converges to + length index of random walk from when it is closed convergence (Median)
+        print(index)
+    print(mean_dist)
+    d = pd.DataFrame(data = mean_dist)
+    # plts.plot_dots(d, filehandle = output_file, line = True)
+    sns.scatterplot(data = d, Color = '#b02538', legend = False)
+    plt.xlabel("k where 2^k is length of random walk")
+    plt.ylabel("Mean distance")
+    plt.savefig("../simulations/distance_distribution/coalescent/random_walk_exp_mean_dist" + str(num_leaves) + "_n_2_to_" + str(k) +"_k_" + str(num_iterations) +  "_num_repeats_scatter.eps")
+    plt.show()
 
 
 def number_rnni_edges(num_leaves):
@@ -739,8 +773,9 @@ if __name__ == '__main__':
     # mean_distance_n(coal_pw_dist, 3, 10, 1000)
     # for num_leaves in range(3,10):
     #     print(random_walk_mean_distance(num_leaves,1,800,1000, median = True))#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
-    # random_walk_distance(6, 20, 1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
-    # random_walk_mean_distance(6,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
+    random_walk_distance(10, 36, 100000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
+    # random_walk_mean_distance(10,1,4*36,1000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
+    # random_walk_mean_distance_exp(10,15,10000)
     # random_walk_mean_distance(7,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_7_k_1_to_1000_N_1000.eps')
     # coal_tree_list = sim.sim_coal(10, 10000)
     # tree_list = read_nexus('../simulations/posterior/coal/coal_alignment_20_sequences_10000_length.trees', ranked = True) # Count number of trees for posterior sample (simulated)
@@ -764,7 +799,7 @@ if __name__ == '__main__':
     # mean_distance_n(dist_distribution_btw_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(coal_pw_dist, 3, 300, 1000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_n_3_to_300_N_1000.eps')
     # mean_distance_n(coal_pw_dist, 3, 100, 10000)
-    mean_distance_exp_n(coal_pw_dist_space_efficient, 10, 10000)
+    # mean_distance_exp_n(coal_pw_dist_space_efficient, 10, 10000)
     # mean_distance_100_n(coal_pw_dist_space_efficient, 100, 101, 10) #, output_file = '../simulations/distance_distribution/coalescent/mean_dist_log_n_1_to_9_N_10000.eps')
     # [0.8285882293673883, 0.8300589130067364, 0.8301474363627227, 0.8307205053473854, 0.8311932083023579, 0.8310782928817221, 0.831468037175452, 0.8319265701059583, 0.8316929550362643, 0.8321324688541974, 0.8318900686265788, 0.8321025213961065, 0.8324846223507965, 0.8324120056764494, 0.8318717888630501, 0.8323381148416531]
 
