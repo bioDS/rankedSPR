@@ -7,7 +7,7 @@ import os.path
 import sys
 from ete3.treeview.main import NODE_STYLE_DEFAULT
 # sys.path.append('../..')
-
+import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -337,6 +337,7 @@ def boxplot_increasing_vs_random_labelling_dist(n,m,l_list,relative_dist = True)
     # Write some statistics in txt file
     f.write("increasing" + "\t" + str(min(incr_label_dist)) + "\t" + str(mean(incr_label_dist)) + "\t" + str(max(incr_label_dist)) + "\n")
     for k in l_list:
+        print(mean(random_label_dist[k]))
         f.write(str(k) + "\t" + str(min(random_label_dist[k])) + "\t" + str(mean(random_label_dist[k])) + "\t" + str(max(random_label_dist[k])) + "\n")
     f.close()
     # print([i for i in diff.keys()])
@@ -346,8 +347,8 @@ def boxplot_increasing_vs_random_labelling_dist(n,m,l_list,relative_dist = True)
     plt.xlabel('Number of repetitions M')
     plt.ylabel('Distance')
     # plt.title('Difference between increasing and random labelling RNNI distance')
-    plt.savefig("unlabelled_RNNI_plots/compare_labellings/boxplot_" + str(n) + "_leaves_" + str(m) + "_simulated_pairs_" + ''.join(str(i)+"_" for i in l_list) + "repeats.pdf")
-    plt.show()
+    # plt.savefig("unlabelled_RNNI_plots/compare_labellings/boxplot_" + str(n) + "_leaves_" + str(m) + "_simulated_pairs_" + ''.join(str(i)+"_" for i in l_list) + "repeats.pdf")
+    # plt.show()
 
 
 def boxplot_relative_ss_vs_increasing_fp_dist(n,m,relative_dist = False):
@@ -387,9 +388,13 @@ def boxplot_relative_ss_vs_increasing_fp_dist(n,m,relative_dist = False):
 
 
 if __name__ == '__main__':
-    # boxplot_increasing_vs_random_labelling_dist_fixed_l(10,100,1000,relative_dist=False)
+    # boxplot_increasing_vs_random_labelling_dist_fixed_l(1010,100,1000,,100,1000,relative_dist=False)
     # boxplot_increasing_vs_random_labelling_dist_fixed_l(100,100,1000,relative_dist=False)
-    boxplot_increasing_vs_random_labelling_dist(100,100,[10,100,1000,10000],relative_dist=False)
+    now = datetime.datetime.now()
+    start = str(now)
+    boxplot_increasing_vs_random_labelling_dist(100,100,[10000],relative_dist=False)
+    now = datetime.datetime.now()
+    print("start: " + start + "\nend:" + str(now))
     # scatterplot_increasing_vs_random_labelling_dist(100,100,[1000],relative_dist=False)
     # WE CANNOT DEVIDE BY DIAMETER, BECAUSE WE DO NOT KNOW THE DIAMETER OF URNNI
     # compare_arbitrary_to_increasing_labelling_URNNI(10,100,10, ldist = False, plot_diff = False)

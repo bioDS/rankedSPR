@@ -682,6 +682,7 @@ def random_walk_distance(num_leaves, k, num_iterations, output_file = '', mean =
     if mean == True:
         return(np.mean(distances))
     else:
+        print(np.mean(distances))
         d = pd.DataFrame(data = distances)
         # bins = np.arange(-.5, k + 1.5, 1)
         # plts.plot_hist(d, bins, filehandle = output_file)
@@ -727,7 +728,7 @@ def random_walk_mean_distance_exp(num_leaves, k, num_iterations, output_file = '
         return(np.mean(mean_mean_dist), index) # Return approximation of value the distance converges to + length index of random walk from when it is closed convergence (Median)
         print(index)
     print(mean_dist)
-    d = pd.DataFrame(data = mean_dist)
+    d = pd.DataFrame(data = mean_dist, index = [i for i in range(1, k+1)])
     # plts.plot_dots(d, filehandle = output_file, line = True)
     sns.scatterplot(data = d, Color = '#b02538', legend = False)
     plt.xlabel("k where 2^k is length of random walk")
@@ -773,7 +774,7 @@ if __name__ == '__main__':
     # mean_distance_n(coal_pw_dist, 3, 10, 1000)
     # for num_leaves in range(3,10):
     #     print(random_walk_mean_distance(num_leaves,1,800,1000, median = True))#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
-    random_walk_distance(10, 36, 100000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
+    random_walk_distance(10, 1000, 100000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
     # random_walk_mean_distance(10,1,4*36,1000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_mean_distance_exp(10,15,10000)
     # random_walk_mean_distance(7,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_7_k_1_to_1000_N_1000.eps')
