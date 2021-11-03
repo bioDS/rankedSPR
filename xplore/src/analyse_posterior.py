@@ -40,6 +40,17 @@ def compare_two_samples(file1, file2, output_file = ''):
     bins = np.arange(-.5, rnni_diameter + 1.5, 1)
     df = pd.DataFrame(data = list(zip(distances3, distances1, distances2)), columns = ["joint sample", "sample 1", "sample 2"])
     plts.plot_hist(df, bins, output_file)
+
+def dist_to_mcc(summary_tree_file, tree_file):
+    # Compute distance of all trees of sample to one tree (in summary_tree_file), both files nexus format!
+    summary_tree = read_nexus(summary_tree_file, ranked  = True).trees[0]
+    tree_list = read_nexus(tree_file, ranked = True)
+    distance = []
+    for i in range(0, tree_list.num_trees):
+        distance.append(findpath_distance(summary_tree, tree_list.trees[i]))
+    plot_dots(d)
+
+
         
 
 
