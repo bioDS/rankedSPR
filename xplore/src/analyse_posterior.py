@@ -4,10 +4,9 @@ __author__ = 'Lena Collienne'
 
 import os.path
 import sys
-sys.path.append('../..')
+# sys.path.append('../..')
 
 from analyse_distance_distribution import *
-
 
 
 def compare_two_samples(file1, file2, output_file = ''):
@@ -43,25 +42,30 @@ def compare_two_samples(file1, file2, output_file = ''):
 
 def dist_to_mcc(summary_tree_file, tree_file):
     # Compute distance of all trees of sample to one tree (in summary_tree_file), both files nexus format!
-    summary_tree = read_nexus(summary_tree_file, ranked  = True).trees[0]
+    # summary_tree = read_nexus(summary_tree_file, ranked  = True).trees[0] #Careful: Leaves need to reveive same labels -- we might need to add summary tree to tree_file
     tree_list = read_nexus(tree_file, ranked = True)
+    # summary_tree = tree_list.trees[tree_list.num_trees - 1]
+    summary_tree = read_nexus(summary_tree_file, ranked = True).trees[0]
     distance = []
+    # print(tree_list.num_trees)
     for i in range(0, tree_list.num_trees):
         distance.append(findpath_distance(summary_tree, tree_list.trees[i]))
-    plot_dots(d)
-
+    print(distance)
+    plt.plot(distance)
+    plt.show()
 
         
 
 
 
 if __name__ == '__main__':
-    trees = (TREE * 2)()
-    for i in range(1,3):
-        with open('../simulations/posterior/comparison/tree_' + str(i) + '_on_20_leaves.new') as f:
-            tree_string = f.read() # This assumes that the file actually only contains one line that is a tree in newick format
-            trees[i-1] = read_newick(tree_string)
+    dist_to_mcc("../simulations/posterior/primates/mcc.trees", "../simulations/posterior/primates/primates_small.trees")
+    # trees = (TREE * 2)()
     # for i in range(1,3):
-        # all_pw_dist('../simulations/posterior/comparison/coal_alignment_tree_' + str(i) + '_on_20_sequences_10000_length.trees')
-        # all_pw_dist('../simulations/posterior/comparison/coal_alignment_tree_1_on_20_sequences_10000_length.trees')
-    compare_two_samples('../simulations/posterior/comparison/coal_alignment_tree_1_on_20_sequences_10000_length.trees', '../simulations/posterior/comparison/coal_alignment_tree_2_on_20_sequences_10000_length.trees', output_file = '../simulations/posterior/comparison/coal_alignment_plot_distances.eps')
+    #     with open('../simulations/posterior/comparison/tree_' + str(i) + '_on_20_leaves.new') as f:
+    #         tree_string = f.read() # This assumes that the file actually only contains one line that is a tree in newick format
+    #         trees[i-1] = read_newick(tree_string)
+    # # for i in range(1,3):
+    #     # all_pw_dist('../simulations/posterior/comparison/coal_alignment_tree_' + str(i) + '_on_20_sequences_10000_length.trees')
+    #     # all_pw_dist('../simulations/posterior/comparison/coal_alignment_tree_1_on_20_sequences_10000_length.trees')
+    # compare_two_samples('../simulations/posterior/comparison/coal_alignment_tree_1_on_20_sequences_10000_length.trees', '../simulations/posterior/comparison/coal_alignment_tree_2_on_20_sequences_10000_length.trees', output_file = '../simulations/posterior/comparison/coal_alignment_plot_distances.eps')
