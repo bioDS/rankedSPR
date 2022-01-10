@@ -20,7 +20,7 @@ def rnni_distances_tree_pairs(tree_list, prgr = False):
     if (prgr == True):
         progress = 0.05 #for printing progress
     # print("Computing RNNI distances")
-    for i in range(0, tree_list.num_trees, 2):
+    for i in range(0, tree_list.num_trees - 1, 2):
         # print(i,i+1)
         distances.append(findpath_distance(tree_list.trees[i],tree_list.trees[i+1]))
         if prgr == True and (i/(tree_list.num_trees) > progress):
