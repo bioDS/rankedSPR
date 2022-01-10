@@ -190,8 +190,17 @@ def pw_tree_list_dist(input_file, output_file = '', distances_file = '', metric 
             distances = rnni.rnni_distances_tree_pairs(tree_list)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        bins = np.arange(-.5, rnni_diameter + 1.5, 1)
-        plts.plot_hist(distances, bins, output_file)
+        # bins = np.arange(-.5, rnni_diameter + 1.5, 1)
+        # plts.plot_hist(distances, bins, output_file)
+
+        d = pd.DataFrame(data = distances)
+        # sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,rnni_diameter+1.5], stat = 'density', legend = False)
+        sns.lineplot(data = d, Color = '#b02538', legend = False)
+        plt.xlabel("Distance")
+        # plt.ylabel("Frequency")
+        plt.ylabel("")
+        plt.savefig(output_file)
+        plt.show()
 
     elif metric == 'RF':
         # Read trees in ete3 format:
@@ -490,16 +499,23 @@ def mean_distance_n(func, min_num_leaves, max_num_leaves, num_tree_pairs, output
         plts.plot_dots(d, [0,1], output_file, line = True)
     else:
         d = pd.DataFrame(data=mean_array, index = [i for i in range(min_num_leaves, max_num_leaves)])
-        sns.scatterplot(data = d, Color = '#b02538', legend = False)
-        plt.xlabel("Number of leaves")
-        plt.ylabel("Mean distance")
-        plt.savefig("../simulations/distance_distribution/coalescent/mean_dist_n_" + str(min_num_leaves) + "_to_" + str(max_num_leaves) + "_N_" + str(num_tree_pairs) + "_scatter.eps")
-        # plt.show()
-        plt.clf()
+        # sns.scatterplot(data = d, Color = '#b02538', legend = False)
+        # plt.xlabel("Number of leaves")
+        # plt.ylabel("Mean distance")
+        # if output_file != '':
+        #     plt.savefig(output_file)
+        # else:
+        #     plt.savefig("../simulations/distance_distribution/coalescent/mean_dist_n_" + str(min_num_leaves) + "_to_" + str(max_num_leaves) + "_N_" + str(num_tree_pairs) + "_scatter.eps")
+        # # plt.show()
+        # plt.clf()
         sns.lineplot(data = d, Color = '#b02538', legend = False)
         plt.xlabel("Number of leaves")
         plt.ylabel("Mean distance")
-        plt.savefig("../simulations/distance_distribution/coalescent/mean_dist_n_" + str(min_num_leaves) + "_to_" + str(max_num_leaves) + "_N_" + str(num_tree_pairs) + "_line.eps")
+        if output_file != '':
+            plt.savefig(output_file)
+        else:
+            plt.savefig("../simulations/distance_distribution/coalescent/mean_dist_n_" + str(min_num_leaves) + "_to_" + str(max_num_leaves) + "_N_" + str(num_tree_pairs) + "_line.eps")
+        print(mean_array)
         # plt.show()
     # mean_diff = []
     # for i in range(0, len(mean_array)-1):
@@ -774,7 +790,7 @@ if __name__ == '__main__':
     # mean_distance_n(coal_pw_dist, 3, 10, 1000)
     # for num_leaves in range(3,10):
     #     print(random_walk_mean_distance(num_leaves,1,800,1000, median = True))#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
-    random_walk_distance(10, 1000, 100000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
+    # random_walk_distance(10, 1000, 100000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_dist_n_6_k_20_N_1000.eps')
     # random_walk_mean_distance(10,1,4*36,1000)#, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_6_k_1_to_1000_N_1000.eps')
     # random_walk_mean_distance_exp(10,15,10000)
     # random_walk_mean_distance(7,1,1000,1000, output_file = '../simulations/distance_distribution/coalescent/random_walk_mean_dist_n_7_k_1_to_1000_N_1000.eps')
@@ -795,9 +811,9 @@ if __name__ == '__main__':
 
     # dist_distribution_to_caterpillars(20,10000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_to_caterpillars_20_n_10000_N.eps')
     # dist_distribution_btw_caterpillars(20,20000, output_file = '../simulations/distance_distribution/coalescent/dist_distribution_btw_caterpillars_20_n_20000_N.eps')
-    # mean_distance_n(dist_distribution_to_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/cat_mean_dist_n_3_to_40_N_10000.eps')
+    # mean_distance_n(dist_distribution_btw_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(given_focal_tree_dist, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/from_cat_mean_dist_n_3_to_40_N_10000.eps')
-    # mean_distance_n(dist_distribution_btw_caterpillars, 3, 40, 10000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_dist_n_3_to_40_N_10000.eps')
+    mean_distance_n(dist_distribution_btw_caterpillars, 1000, 1002, 1000, output_file = '../simulations/distance_distribution/coalescent/btw_cat_mean_dist_n_3_to_40_N_10000.eps')
     # mean_distance_n(coal_pw_dist, 3, 300, 1000, output_file = '../simulations/distance_distribution/coalescent/mean_dist_n_3_to_300_N_1000.eps')
     # mean_distance_n(coal_pw_dist, 3, 100, 10000)
     # mean_distance_exp_n(coal_pw_dist_space_efficient, 10, 10000)
