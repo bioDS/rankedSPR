@@ -4,6 +4,7 @@ __author__ = 'Lena Collienne'
 
 import os.path
 import sys
+import time
 # sys.path.append('../..')
 
 from analyse_distance_distribution import *
@@ -40,26 +41,54 @@ def compare_two_samples(file1, file2, output_file = ''):
     df = pd.DataFrame(data = list(zip(distances3, distances1, distances2)), columns = ["joint sample", "sample 1", "sample 2"])
     plts.plot_hist(df, bins, output_file)
 
-def dist_to_mcc(summary_tree_file, tree_file):
+def dist_to_mcc(summary_tree_file, tree_file, output_file):
+
+    start_time = time.perf_counter() # For displaying time of computation
     # Compute distance of all trees of sample to one tree (in summary_tree_file), both files nexus format!
     # summary_tree = read_nexus(summary_tree_file, ranked  = True).trees[0] #Careful: Leaves need to reveive same labels -- we might need to add summary tree to tree_file
-    tree_list = read_nexus(tree_file, ranked = True)
-    # summary_tree = tree_list.trees[tree_list.num_trees - 1]
+    
+    # tree_list = read_nexus(tree_file, ranked = True) # We cannot read in the whole tree file at once, as this needs too much space
     summary_tree = read_nexus(summary_tree_file, ranked = True).trees[0]
+    # print(summary_tree.num_leaves)    
     distance = []
-    # print(tree_list.num_trees)
-    for i in range(0, tree_list.num_trees):
-        distance.append(findpath_distance(summary_tree, tree_list.trees[i]))
-    print(distance)
+
+    # Read trees from tree_file line by line, as in read_nexus, but without storing all trees in one list.
+    # Precompiled Regex for a line containing a tree
+    re_tree = re.compile("\t?tree .*=? (.*);$", flags=re.I | re.MULTILINE)
+    # Used to delete the ; and a potential branchlength of the root
+
+    # running variables for reading trees
+    i = 0
+    # Regex to delete additional data in []
+    # brackets = re.compile(r'\[[^\]]*\]')
+
+    with open(tree_file, 'r') as f:
+        # Read trees
+        for line in f:
+            if re_tree.match(line):
+                # First extract the newick string and then delete everything after the last occurence of ')'
+                tree_string = f'{re.split(re_tree, line)[1][:re.split(re_tree, line)[1].rfind(")")+1]};'
+                # Delete data in [] from newick, otherwise read_newick breaks
+                tree = read_newick(tree_string, ranked=True)
+                distance.append(findpath_distance(summary_tree, tree))
+                i+=1
+                if (i%10000 == 0):
+                    current_time = time.perf_counter()
+                    print("tree number: ", i, f" time: {current_time - start_time:0.4f} seconds")
+                    if (i==100000):
+                        break
+
+    end_time = time.perf_counter()
+    print(f"time needed: {end_time - start_time:0.4f} seconds")
     plt.plot(distance)
-    plt.show()
+    plt.savefig(output_file)
 
         
 
 
 
 if __name__ == '__main__':
-    dist_to_mcc("../simulations/posterior/primates/mcc.trees", "../simulations/posterior/primates/primates_small.trees")
+    dist_to_mcc("../simulations/posterior/primates/mcc.trees", "../simulations/posterior/primates/primates.trees", "../simulations/posterior/primates/mcc_dist.eps")
     # trees = (TREE * 2)()
     # for i in range(1,3):
     #     with open('../simulations/posterior/comparison/tree_' + str(i) + '_on_20_leaves.new') as f:
