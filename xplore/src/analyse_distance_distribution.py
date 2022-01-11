@@ -145,8 +145,14 @@ def consec_trees_dist(input_file, output_file = '', distances_file = '', metric 
             distances = rnni.rnni_distances_consecutive_tree_pairs(tree_list)[0]
             if distances_file != '':
                 np.savetxt(distances_file, distances, delimiter = ' ')
-        d = pd.DataFrame(data =  distances)
-        plts.plot_dots(distances, output_file)
+        d = pd.DataFrame(data = distances)
+        # sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,rnni_diameter+1.5], stat = 'density', legend = False)
+        sns.lineplot(data = d, Color = '#b02538', legend = False)
+        plt.xlabel("Tree index")
+        plt.ylabel("RNNI distance")
+        plt.ylabel("")
+        plt.savefig(output_file)
+        plt.show()
 
     elif metric == 'RF':
         # Read trees in ete3 format:
