@@ -61,7 +61,7 @@ def rnni_distance_focal(tree_list, index, prgr = False):
 
 
 def pw_rnni_dist(tree_list, list = False):
-    # Return either a np.matrix of pw distances (if list=False; this is an upper diagonal matrix!), or a sequence containing distances (excluding diagonal entries)
+    # Return either a np.matrix of pw distances (if list=False; this is an upper diagonal matrix!), or a sequence containing distances (if list=True, excluding diagonal entries)
     num_trees = tree_list.num_trees
     if list == False:
         # Create empty distance matrix as input for pw_distances
