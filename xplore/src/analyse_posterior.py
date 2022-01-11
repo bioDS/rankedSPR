@@ -5,9 +5,9 @@ __author__ = 'Lena Collienne'
 import os.path
 import sys
 import time
-# sys.path.append('../..')
 
 from analyse_distance_distribution import *
+from rnni_distances import pw_rnni_dist
 
 
 def compare_two_samples(file1, file2, output_file = ''):
@@ -83,12 +83,27 @@ def dist_to_mcc(summary_tree_file, tree_file, output_file):
     plt.plot(distance)
     plt.savefig(output_file)
 
-        
 
+def visual_all_distances(tree_file, output_file):
+    tree_list = read_nexus(tree_file, ranked = True)
+    distances = pw_rnni_dist(tree_list, list=False)
+
+    dist_list = pw_rnni_dist(tree_list, list=True)
+    d = pd.DataFrame(data = dist_list)
+    num_leaves = tree_list.trees[0].num_leaves
+    rnni_diameter = (num_leaves-1)*(num_leaves-2)/2
+    # sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,rnni_diameter+1.5], stat = 'density', legend = False)
+    # plt.show()
+    # plt.clf()
+    sns.heatmap(distances,vmax=5)
+    plt.savefig(output_file)
+    plt.show()
 
 
 if __name__ == '__main__':
-    dist_to_mcc("../simulations/posterior/primates/mcc.trees", "../simulations/posterior/primates/primates.trees", "../simulations/posterior/primates/mcc_dist.eps")
+    # dist_to_mcc("../simulations/posterior/primates/mcc.trees", "../simulations/posterior/primates/primates.trees", "../simulations/posterior/primates/mcc_dist.eps")
+    # consec_trees_dist("../simulations/posterior/primates/primates_small.trees", "../simulations/posterior/primates/pw_dist_primates_small.eps")
+    visual_all_distances("../simulations/posterior/primates/primates_small.trees", "../simulations/posterior/primates/all_dist_matrix_primates_small.eps")
     # trees = (TREE * 2)()
     # for i in range(1,3):
     #     with open('../simulations/posterior/comparison/tree_' + str(i) + '_on_20_leaves.new') as f:
