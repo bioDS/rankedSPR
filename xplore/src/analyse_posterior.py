@@ -37,6 +37,7 @@ def compare_two_samples(file1, file2, output_file = ''):
     print('Done computing distances.')
 
     # Plot histograms based on distances
+    plt.clf()
     bins = np.arange(-.5, rnni_diameter + 1.5, 1)
     df = pd.DataFrame(data = list(zip(distances3, distances1, distances2)), columns = ["joint sample", "sample 1", "sample 2"])
     plts.plot_hist(df, bins, output_file)
@@ -80,6 +81,7 @@ def dist_to_mcc(summary_tree_file, tree_file, output_file):
 
     end_time = time.perf_counter()
     print(f"time needed: {end_time - start_time:0.4f} seconds")
+    plt.clf()
     plt.plot(distance)
     plt.savefig(output_file)
 
@@ -94,16 +96,16 @@ def visual_all_distances(tree_file, output_file):
     rnni_diameter = (num_leaves-1)*(num_leaves-2)/2
     # sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,rnni_diameter+1.5], stat = 'density', legend = False)
     # plt.show()
-    # plt.clf()
+    plt.clf()
     sns.heatmap(distances,vmax=5)
     plt.savefig(output_file)
     plt.show()
 
 
 if __name__ == '__main__':
-    # dist_to_mcc("../simulations/posterior/primates/mcc.trees", "../simulations/posterior/primates/primates.trees", "../simulations/posterior/primates/mcc_dist.eps")
-    # consec_trees_dist("../simulations/posterior/primates/primates_small.trees", "../simulations/posterior/primates/pw_dist_primates_small.eps")
-    visual_all_distances("../simulations/posterior/primates/primates_small.trees", "../simulations/posterior/primates/all_dist_matrix_primates_small.eps")
+    # dist_to_mcc("../simulations/posterior/primates/mcc_6000.trees", "../simulations/posterior/primates/primates_normal.trees", "../simulations/posterior/primates/mcc_6000_dist.eps")
+    consec_trees_dist("../simulations/posterior/primates/primates_normal.trees", "../simulations/posterior/primates/pw_dist_primates_normal.eps")
+    # visual_all_distances("../simulations/posterior/primates/primates_small.trees", "../simulations/posterior/primates/all_dist_matrix_primates_small.eps")
     # trees = (TREE * 2)()
     # for i in range(1,3):
     #     with open('../simulations/posterior/comparison/tree_' + str(i) + '_on_20_leaves.new') as f:
