@@ -97,7 +97,7 @@ def unlabelled_to_labelled_tree(unlabelled_tree):
     # Check if the tree is read in correctly:
     # for i in range(len(node_list)-1,-1,-1):
     #     print(node_list[i].children[0], node_list[i].children[1], node_list[i].parent)
-    
+
     output = TREE(node_list, num_leaves)
     return(output)
 
@@ -151,7 +151,7 @@ def label_tree_increasingly(unlabelled_tree):
     # Check if the tree is read in correctly:
     # for i in range(len(node_list)-1,-1,-1):
     #     print(node_list[i].children[0], node_list[i].children[1], node_list[i].parent)
-    
+
     output = TREE(node_list, num_leaves)
     return(output)
 
@@ -239,7 +239,7 @@ def scatterplot_increasing_vs_random_labelling_dist(n,m,l_list,relative_dist = T
             incr_label_dist[k].append(incr_dist)
             list_dist[k].append(random_dist)
             diff[k].append(random_dist - incr_dist)
-    # Plot 
+    # Plot
     d = pd.DataFrame(data = list(zip(incr_label_dist[k], list_dist[k])), columns = ["increasing labelling", "random labelling"])
     # d = pd.DataFrame(diff)
     # Save min, mean, and max diff for each value in l_list in a txt file:
@@ -280,7 +280,7 @@ def boxplot_increasing_vs_random_labelling_dist_fixed_l(n,m,l,relative_dist = Tr
         incr_label_dist.append(incr_dist)
         list_dist.append(random_dist)
         diff.append(random_dist - incr_dist)
-    # Plot 
+    # Plot
     d = pd.DataFrame(data = list(zip(incr_label_dist, list_dist)), columns = ["increasing labelling", "random labelling"])
     # d = pd.DataFrame(diff)
     # Save min, mean, and max diff for each value in l_list in a txt file:
@@ -387,12 +387,45 @@ def boxplot_relative_ss_vs_increasing_fp_dist(n,m,relative_dist = False):
     # plt.show()
 
 
+def check_increasing_labelling_URNNI_caterpillar(n,m,l, relative_dist = True, plot_diff = False):
+    # Simulate m pairs of trees on n leaves, where one is caterpillar and the other one form uniform distribution (coalescent, then delete labels) and compare the URNNI dist proxies resulting from labelling increasingly with rank and approx_labelling from l arbitrary labellings
+    # relative_dist: take distance divided by diameter, diff: plot only difference between increasing labelling and arbitrary labelling
+    # Note that this does not give a definite answer to whether increasing labelling gives shortest paths for caterpillar trees, but it is a good indication.
+    diameter = (n-1)*(n-2)/2
+    incr_label_dist = []
+    arb_label_dist = []
+    diff = []
+    for i in range(0,m):
+        coal_tree = sim_coal(n,1).trees[0] # Sim random ranked tree and (later) use increasing labelling for distance to caterpillar tree
+        c_tree = identity_caterpillar(n) # Identity caterpillar tree (already labelled increasingly)
+        t1 = labelled_to_unlabelled_tree(coal_tree)
+        t2 = labelled_to_unlabelled_tree(c_tree)
+        incr_label_dist.append(findpath_distance(label_tree_increasingly(t1), c_tree))
+        arb_label_dist.append(approx_unlabelled_RNNI_dist(t1, t2,l))
+        if incr_label_dist[i] > arb_label_dist[i]:
+            print('increasing labelling does not give unlabelled distance to caterpillar!\n')
+        diff.append(arb_label_dist[i] - incr_label_dist[i])
+    # Plot distances or differences btw distances
+    d_diff = pd.DataFrame(data = diff)
+    d = pd.DataFrame(data = list(zip(incr_label_dist, arb_label_dist)), columns = ["increasing labelling", "arbitrary labelling"])
+    sns.scatterplot(data=d, legend = True, palette = 'colorblind')
+    plt.legend(bbox_to_anchor =(0.75, 1.15), ncol = 2) #(bbox_to_anchor=(0.6, 0.6), loc='upper left', borderaxespad=0)
+    plt.savefig("unlabelled_RNNI_plots/compare_labellings/" + str(n) + "_leaves_" + str(m) + "_repeats_" + str(l) +  "_arbitrary_labellings.pdf")
+    plt.show()
+    if plot_diff == True:
+        sns.scatterplot(data=d_diff, legend = False, palette = ['black'])
+        plt.axhline(0, color = 'black')
+        plt.savefig("unlabelled_RNNI_plots/compare_labellings/diff_" + str(n) + "_leaves_" + str(m) + "_repeats_" + str(l) +  "_arbitrary_labellings.pdf")
+    plt.show()
+
+
 if __name__ == '__main__':
     # boxplot_increasing_vs_random_labelling_dist_fixed_l(1010,100,1000,,100,1000,relative_dist=False)
     # boxplot_increasing_vs_random_labelling_dist_fixed_l(100,100,1000,relative_dist=False)
     now = datetime.datetime.now()
     start = str(now)
-    boxplot_increasing_vs_random_labelling_dist(100,100,[10000],relative_dist=False)
+    # boxplot_increasing_vs_random_labelling_dist(100,100,[10000],relative_dist=False)
+    check_increasing_labelling_URNNI_caterpillar(10,100,1000, relative_dist=False, plot_diff=True)
     now = datetime.datetime.now()
     print("start: " + start + "\nend:" + str(now))
     # scatterplot_increasing_vs_random_labelling_dist(100,100,[1000],relative_dist=False)
