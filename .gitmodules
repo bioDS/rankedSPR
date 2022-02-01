@@ -1,0 +1,4 @@
+[submodule "treeOclock"]
+	path = treeOclock
+	url = git@github.com:bioDS/treeOclock.git
+	branch = dct_efficient_length
