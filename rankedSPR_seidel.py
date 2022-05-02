@@ -8,8 +8,6 @@ import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
 import time
-from treeOclock.dct_parser.tree_io import *
-from treeOclock import *
 from rankedSPR import *
 from os.path import exists
 
