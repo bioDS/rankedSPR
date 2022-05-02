@@ -11,6 +11,7 @@ import random
 from treeOclock.dct_parser.tree_io import *
 from treeOclock import *
 from simulate_trees import *
+from os.path import exists
 
 # Compute the adjacency matrix of the rankedSPR graph
 def rankedSPR_adjacency(num_leaves):
@@ -62,8 +63,9 @@ def rankedSPR_adjacency(num_leaves):
         current_tree = next_tree # update current_tree
 
     # Save adjacency matrix in file
-    np.save("SPR/adj_matrix_" + str(num_leaves) + "_leaves.npy", adj)
-    return(0)
+    if not exists('SPR/adj_matrix_%s_leaves.npy' %num_leaves):
+        np.save("SPR/adj_matrix_" + str(num_leaves) + "_leaves.npy", adj)
+    return(adj, tree_index)
 
 # rankedSPR_adjacency(6)
 
