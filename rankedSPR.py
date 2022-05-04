@@ -14,7 +14,8 @@ from simulate_trees import *
 from os.path import exists
 
 # Compute the adjacency matrix of the rankedSPR graph
-def rankedSPR_adjacency(num_leaves):
+# If hspr = 1, compute matrix for rankedSPR graph, otherwise for HSPR graph
+def rankedSPR_adjacency(num_leaves, hspr = 1):
     num_trees = math.factorial(num_leaves - 1) * math.factorial(num_leaves) / (2**(num_leaves - 1))
     tree_index = dict()
     index = 0 # Index of the last added tree in tree_index
@@ -35,7 +36,7 @@ def rankedSPR_adjacency(num_leaves):
     # Note that this is VERY inefficient! It is only kind of quick for up to 7 leaves!
     # We could do this a lot more efficient if we used the coalescent process.
     while len(visited) < num_trees:
-        neighbourhood = spr_neighbourhood(current_tree)
+        neighbourhood = all_spr_neighbourhood(current_tree, hspr)
         current_tree_str = tree_to_cluster_string(current_tree)
 
         for i in range(0,neighbourhood.num_trees):
@@ -63,11 +64,16 @@ def rankedSPR_adjacency(num_leaves):
         current_tree = next_tree # update current_tree
 
     # Save adjacency matrix in file
-    if not exists('SPR/adj_matrix_%s_leaves.npy' %num_leaves):
-        np.save("SPR/adj_matrix_" + str(num_leaves) + "_leaves.npy", adj)
+    if hspr ==1:
+        if not exists('SPR/adj_matrix_%s_leaves.npy' %num_leaves):
+            np.save("SPR/adj_matrix_" + str(num_leaves) + "_leaves.npy", adj)
+    else:
+        if not exists('SPR/adj_matrix_%s_leaves_hspr.npy' %num_leaves):
+            np.save("SPR/adj_matrix_" + str(num_leaves) + "_leaves_hspr.npy", adj)
     return(adj, tree_index)
 
-# rankedSPR_adjacency(6)
+# print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
+# print(sum(rankedSPR_adjacency(4)[0]))
 
 # adj = np.load("SPR/adj_matrix_6_leaves.npy")
 # print(adj.size)
