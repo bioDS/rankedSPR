@@ -17,11 +17,12 @@ _seidel.test_function.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"),
 _seidel.seidel.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32)
 _seidel.seidel_recursive.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32, ctypes.c_int32)
 
-
-AI = rankedSPR_adjacency(7)
+n = 4
+AI = rankedSPR_adjacency(n)
 A = np.ascontiguousarray(AI[0], dtype=np.int32)	
 time1 = time.time()
 _seidel.seidel(A, A.shape[0])
+np.save('SPR/distance_matrix_' + str(n) + '_leaves', A)
 time2 = time.time()
 print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
 print(np.amax(A))

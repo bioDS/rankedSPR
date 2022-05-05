@@ -12,12 +12,20 @@ from treeOclock.dct_parser.tree_io import *
 from treeOclock import *
 from simulate_trees import *
 from os.path import exists
+from numpy.ctypeslib import ndpointer
+
+
+_seidel = ctypes.CDLL("./libseidel.so")
+_seidel.test_function.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32)
+_seidel.seidel.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32)
+_seidel.seidel_recursive.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32, ctypes.c_int32)
+
 
 # Compute the adjacency matrix of the rankedSPR graph
 # If hspr = 1, compute matrix for rankedSPR graph, otherwise for HSPR graph
 def rankedSPR_adjacency(num_leaves, hspr = 1):
     num_trees = math.factorial(num_leaves - 1) * math.factorial(num_leaves) / (2**(num_leaves - 1))
-    tree_index = dict()
+    tree_index = dict() # dict containing trees as keys (as strings of cluster representation) and their index in adjacency matrix as values.
     index = 0 # Index of the last added tree in tree_index
     not_visited = [] # Save the trees that are already generated, but have not been added to adjacency matrix, in list
     visited = [] # Save the trees that have already been used, i.e. their 1-neighbourhoods have already been considered
@@ -71,6 +79,28 @@ def rankedSPR_adjacency(num_leaves, hspr = 1):
         if not exists('SPR/adj_matrix_%s_leaves_hspr.npy' %num_leaves):
             np.save("SPR/adj_matrix_" + str(num_leaves) + "_leaves_hspr.npy", adj)
     return(adj, tree_index)
+
+
+def test_restricted_neighbourhood_search(num_leaves, num_tree_pairs):
+    # Compute adjacency matrix & distance matrix
+    rspr_adj = rankedSPR_adjacency(num_leaves)
+    rspr_distances = np.ascontiguousarray(rspr_adj[0], dtype=np.int32)
+    _seidel.seidel(rspr_distances, rspr_distances.shape[0])
+
+    # Now simulate trees to be used to check distance computation
+    t_list = sim_coal(num_leaves, 2*num_tree_pairs)
+    correct_distance = 0
+    for i in range(0,num_tree_pairs):
+        tree1_index = rspr_adj[1][tree_to_cluster_string(t_list.trees[i])]
+        tree2_index = rspr_adj[1][tree_to_cluster_string(t_list.trees[i+1])]
+        print(tree_to_cluster_string(t_list.trees[i]))
+        print(tree_to_cluster_string(t_list.trees[i+1]))
+        print(rspr_distances[tree1_index][tree2_index])
+        if (rspr_distances[tree1_index][tree2_index] == rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1])):
+            correct_distance += 1
+    print(correct_distance)
+
+test_restricted_neighbourhood_search(4,2)
 
 # print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
 # print(sum(rankedSPR_adjacency(4)[0]))
