@@ -93,12 +93,12 @@ def test_restricted_neighbourhood_search(num_leaves, num_tree_pairs):
     for i in range(0,num_tree_pairs):
         tree1_index = rspr_adj[1][tree_to_cluster_string(t_list.trees[i])]
         tree2_index = rspr_adj[1][tree_to_cluster_string(t_list.trees[i+1])]
-        print(tree_to_cluster_string(t_list.trees[i]))
-        print(tree_to_cluster_string(t_list.trees[i+1]))
-        print(rspr_distances[tree1_index][tree2_index])
+        # print(tree_to_cluster_string(t_list.trees[i]))
+        # print(tree_to_cluster_string(t_list.trees[i+1]))
+        # print(rspr_distances[tree1_index][tree2_index], rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1]))
         if (rspr_distances[tree1_index][tree2_index] == rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1])):
             correct_distance += 1
-    print(correct_distance)
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
 
 test_restricted_neighbourhood_search(4,2)
 
