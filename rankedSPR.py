@@ -71,6 +71,18 @@ def rankedSPR_adjacency(num_leaves, hspr = 1):
             index += 1
         current_tree = next_tree # update current_tree
 
+    # Save tree dict in file:
+    # open file for writing
+    f = open("SPR/tree_dict_" + str(num_leaves) + "_leaves.txt","w")
+
+    # write file
+    for key in tree_index:
+        f.write(str(tree_index[key]) + " " +str(key))
+        f.write("\n")
+
+    # close file
+    f.close()
+
     # Save adjacency matrix in file
     if hspr ==1:
         if not exists('SPR/adj_matrix_%s_leaves.npy' %num_leaves):
@@ -98,13 +110,50 @@ def test_restricted_neighbourhood_search(num_leaves, num_tree_pairs):
         # print(rspr_distances[tree1_index][tree2_index], rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1]))
         if (rspr_distances[tree1_index][tree2_index] == rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1])):
             correct_distance += 1
+        else:
+            print("tree1:", tree_to_cluster_string(t_list.trees[i]))
+            print("tree2:", tree_to_cluster_string(t_list.trees[i+1]))
+            print("correct distance:", rspr_distances[tree1_index][tree2_index], "approximated distance:", rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1]))
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
 
-test_restricted_neighbourhood_search(4,2)
+test_restricted_neighbourhood_search(5,10000)
+
+
 
 # print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
 # print(sum(rankedSPR_adjacency(4)[0]))
 
-# adj = np.load("SPR/adj_matrix_6_leaves.npy")
+
+# t1 = "(((1:1,2:1):2,(3:2,4:2):1):1,5:4);"
+# t2 = "((((3:1,5:1):1,2:2):1,1:3):1,4:4);"
+
+# tree1 = read_newick(t1, factor = 0)
+# tree2 = read_newick(t2, factor = 0)
+
+# print("rankedSPR neighbours:")
+# spr_neighbours = spr_neighbourhood(tree1)
+# for i in range(0,spr_neighbours.num_trees):
+#     print(tree_to_cluster_string(spr_neighbours.trees[i]))
+
+
+# adj = np.load("SPR/adj_matrix_5_leaves.npy")
+# tree1_1nh = set()
+# tree2_2nh = set()
+# print("adjacency tree1:")
+# for i in range(0,180):
+#     if(adj[7][i] == 1):
+#         print(i)
+#         tree1_1nh.add(i)
+# print("adjacency tree2:")
+# for i in range(0,180):
+#     if(adj[154][i] == 1):
+#         for j in range(0,180):
+#             if(adj[i][j]==1):
+#                 tree2_2nh.add(j)
+# print(tree1_1nh)
+# print(tree2_2nh)
+# print(tree1_1nh.intersection(tree2_2nh))
+# print(adj[7])
+# print(adj[154])
 # print(adj.size)
 # print(sum(sum(adj)))
