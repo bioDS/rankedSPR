@@ -155,10 +155,11 @@ def rankedspr_bfs(start_tree, dest_tree):
 
     # backtracking
     current_index = tree_dict[tree_to_cluster_string(dest_tree)]
-    path_indices = []
+    path_indices = [current_index]
     while (predecessor[current_index-1] != 0):
         path_indices.append(predecessor[current_index-1])
         current_index = predecessor[current_index-1]
+    path_indices.append(0)
     # now turn path_indices array into path:
     path = []
     for i in range(len(path_indices)-1, -1, -1):
@@ -177,7 +178,8 @@ def rankedspr_bfs(start_tree, dest_tree):
 # tree1 = read_newick(t1, factor = 0)
 # tree2 = read_newick(t2, factor = 0)
 
-# print(rankedspr_bfs(tree1, tree2))
+# for tree in rankedspr_bfs(tree1, tree2):
+#     print(tree)
 
 # print("rankedSPR neighbours:")
 # spr_neighbours = spr_neighbourhood(tree1)
