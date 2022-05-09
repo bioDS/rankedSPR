@@ -116,9 +116,56 @@ def test_restricted_neighbourhood_search(num_leaves, num_tree_pairs):
             print("correct distance:", rspr_distances[tree1_index][tree2_index], "approximated distance:", rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1]))
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
 
-test_restricted_neighbourhood_search(5,10000)
 
+# Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
+def rankedspr_bfs(start_tree, dest_tree):
+    num_leaves = start_tree.num_leaves
+    tree_dict = dict() # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
+    index_dict = dict() # reverse of tree_dict (indices as keys and trees as values)
+    predecessor = []
+    to_visit = [] # queue containing next trees to be visited in BFS
 
+    dest_tree_string = tree_to_cluster_string(dest_tree)
+    
+    # Initialise path?
+    current_tree = start_tree
+
+    tree_dict[tree_to_cluster_string(start_tree)] = 0
+    index_dict[0] = tree_to_cluster_string(start_tree)
+    index = 1 # index of the tree we currently consider (to be put as value for that tree into tree_dict)
+    to_visit.append(current_tree)
+    found = False # True if we found dest_tree
+    # Start BFS
+    while found == False:
+        current_tree = to_visit.pop(0)
+        current_tree_str = tree_to_cluster_string(current_tree)
+        neighbours = spr_neighbourhood(current_tree)
+        for i in range(0,neighbours.num_trees):
+            tree = neighbours.trees[i]
+            neighbour_string = tree_to_cluster_string(tree)
+            if neighbour_string not in tree_dict:
+                to_visit.append(tree)
+                tree_dict[neighbour_string] = index
+                index_dict[index]=neighbour_string
+                predecessor.append(tree_dict[current_tree_str])
+                index+=1
+            if neighbour_string == dest_tree_string:
+                found = True
+                break
+
+    # backtracking
+    current_index = tree_dict[tree_to_cluster_string(dest_tree)]
+    path_indices = []
+    while (predecessor[current_index-1] != 0):
+        path_indices.append(predecessor[current_index-1])
+        current_index = predecessor[current_index-1]
+    # now turn path_indices array into path:
+    path = []
+    for i in range(len(path_indices)-1, -1, -1):
+        path.append(index_dict[path_indices[i]])
+    return(path)
+
+# test_restricted_neighbourhood_search(5,10000)
 
 # print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
 # print(sum(rankedSPR_adjacency(4)[0]))
@@ -129,6 +176,8 @@ test_restricted_neighbourhood_search(5,10000)
 
 # tree1 = read_newick(t1, factor = 0)
 # tree2 = read_newick(t2, factor = 0)
+
+# print(rankedspr_bfs(tree1, tree2))
 
 # print("rankedSPR neighbours:")
 # spr_neighbours = spr_neighbourhood(tree1)
