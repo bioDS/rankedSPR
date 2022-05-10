@@ -166,6 +166,11 @@ def rankedspr_bfs(start_tree, dest_tree):
         path.append(index_dict[path_indices[i]])
     return(path)
 
+
+
+######## TESTING ########
+
+
 # test_restricted_neighbourhood_search(5,10000)
 
 # print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
@@ -175,10 +180,26 @@ def rankedspr_bfs(start_tree, dest_tree):
 # t1 = "(((1:1,2:1):2,(3:2,4:2):1):1,5:4);"
 # t2 = "((((3:1,5:1):1,2:2):1,1:3):1,4:4);"
 
-# tree1 = read_newick(t1, factor = 0)
-# tree2 = read_newick(t2, factor = 0)
 
-# for tree in rankedspr_bfs(tree1, tree2):
+# identity_caterpillar_7 = "((((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5):1,7:6);"
+# reverse_identity_caterpillar_7 = "((((((6:1,7:1):1,5:2):1,4:3):1,3:4):1,2:5):1,1:6);"
+
+# identity_caterpillar_6 = "(((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5);"
+# reverse_identity_caterpillar_6 = "(((((5:1,6:1):1,4:2):1,3:3):1,2:4):1,1:5);"
+
+# identity_caterpillar_5 = "((((1:1,2:1):1,3:2):1,4:3):1,5:4);"
+# reverse_identity_caterpillar_5 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
+
+# identity_caterpillar_4 = "(((1:1,2:1):1,3:2):1,4:3);"
+# reverse_identity_caterpillar_4 = "(((3:1,4:1):1,2:2):1,1:3);"
+
+# tree1 = read_newick(identity_caterpillar_4, factor = 0)
+# tree2 = read_newick(reverse_identity_caterpillar_4, factor = 0)
+
+# path = rankedspr_bfs(tree1, tree2)
+# print("distance:", len(path)-1)
+
+# for tree in path:
 #     print(tree)
 
 # print("rankedSPR neighbours:")
