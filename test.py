@@ -37,8 +37,8 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 # n=7
 # m=1000
 
-# caterpillar_trees = sim_cat(n,m)
-# identity_caterpillar = identity_caterpillar(n)
+#caterpillar_trees = sim_cat(n,m)
+#identity_caterpillar = identity_caterpillar(n)
 
 # for i in range(0,m):
 #     print(i)
@@ -48,20 +48,42 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 #         for tree in path:
 #             print(tree)
 
-# d = np.load('SPR/distance_matrix_7_leaves.npy')
-# print(np.count_nonzero(d==7))
+print("Reading trees")
+file = open('SPR/tree_dict_7_leaves.txt')
+content = file.readlines()
 
-n=7
-m=100
+d = np.load('SPR/distance_matrix_7_leaves.npy')
+print("Done reading trees")
 
-PROBLEM: only a very small number of trees actually has diameter distance from each other.
-For 7 leaves we are very unlikely to get those by chance.
-for i in range(0,m):
-    sim_trees = sim_coal(n, 2) #simulate 2 ranked trees with n leaves, repeat this m times
-    # compare pairwise distances between trees the two tree
-    path = rankedspr_bfs(sim_trees.trees[0], sim_trees.trees[1])
-    print(i, 'distance:', len(path)-1)
-    if len(path) - 1 == 7:
-        print("path:")
-        for tree in path:
-            print(tree)
+max_indices = np.where(d == np.amax(d))
+max_coordinates = list(zip(max_indices[0], max_indices[1]))
+count = 0
+num_max_dist = 0
+#print(len(content[0]), content[0])
+for index1 in max_indices[1]:
+    if max_indices[0][count] != 0:
+        break
+    count += 1
+#    print(index1, len(content[index1]), content[index1])
+    # We only need to compare against first tree in file, as this is identity caterpillar tree (bc of symmetry)
+    if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
+        print(content[0], content[index1])
+        num_max_dist +=1
+
+print("number of caterpillar trees with diameter distance from identity caterpillar:", num_max_dist)
+print("total number of trees with diameter distance from identity caterpillar:", count)
+
+# n=7
+# m =100
+#
+# # PROBLEM: only a very small number of trees actually has diameter distance from each other.
+# # For 7 leaves we are very unlikely to get those by chance.
+#for i in range(0,m):
+#    sim_trees = sim_coal(n, 2) #simulate 2 ranked trees with n leaves, repeat this m times
+#    # compare pairwise distances between trees the two tree
+#    path = rankedspr_bfs(sim_trees.trees[0], sim_trees.trees[1])
+#    print(i, 'distance:', len(path)-1)
+#    if len(path) - 1 == 7:
+#        print("path:")
+#        for tree in path:
+#            print(tree)
