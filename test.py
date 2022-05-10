@@ -48,6 +48,8 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 #         for tree in path:
 #             print(tree)
 
+# d = np.load('SPR/distance_matrix_7_leaves.npy')
+# print(np.count_nonzero(d==7))
 
 n=7
 m=100
