@@ -35,13 +35,14 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 
 
 n=7
-m=100
+m=1000
 
 caterpillar_trees = sim_cat(n,m)
+identity_caterpillar = identity_caterpillar(n)
 
-for i in range(0,m,2):
+for i in range(0,m):
     print(i)
-    path = rankedspr_bfs(caterpillar_trees.trees[i], caterpillar_trees.trees[i+1])
+    path = rankedspr_bfs(identity_caterpillar, caterpillar_trees.trees[i])
     if len(path) >7:
         print('path:')
         for tree in path:
