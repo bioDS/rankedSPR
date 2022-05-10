@@ -34,28 +34,32 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 # rankedspr_path_restricting_neighbourhood(ct,cr)
 
 
+# n=7
+# m=1000
+
+# caterpillar_trees = sim_cat(n,m)
+# identity_caterpillar = identity_caterpillar(n)
+
+# for i in range(0,m):
+#     print(i)
+#     path = rankedspr_bfs(identity_caterpillar, caterpillar_trees.trees[i])
+#     if len(path) >7:
+#         print('path:')
+#         for tree in path:
+#             print(tree)
+
+
 n=7
-m=1000
+m=100
 
-caterpillar_trees = sim_cat(n,m)
-identity_caterpillar = identity_caterpillar(n)
-
+PROBLEM: only a very small number of trees actually has diameter distance from each other.
+For 7 leaves we are very unlikely to get those by chance.
 for i in range(0,m):
-    print(i)
-    path = rankedspr_bfs(identity_caterpillar, caterpillar_trees.trees[i])
-    if len(path) >7:
-        print('path:')
+    sim_trees = sim_coal(n, 2) #simulate 2 ranked trees with n leaves, repeat this m times
+    # compare pairwise distances between trees the two tree
+    path = rankedspr_bfs(sim_trees.trees[0], sim_trees.trees[1])
+    print(i, 'distance:', len(path)-1)
+    if len(path) - 1 == 7:
+        print("path:")
         for tree in path:
             print(tree)
-
-
-# n=5
-# m=100
-# sim_trees = sim_coal(n, 100, rf = False) #simulate m ranked trees with n leaves
-
-# for i in range(0,99,2):
-#     # compare pairwise distances between trees at positions i and i+1 in sim_trees
-#     path = rankedspr_path_mrca_cluster_diff(sim_trees.trees[i], sim_trees.trees[i+1])
-#     if path.num_trees - 1 >4:
-#         for i in range(0,path.num_trees):
-#             print(tree_to_cluster_string(path.trees[i]))
