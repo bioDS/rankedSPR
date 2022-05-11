@@ -34,6 +34,24 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 # rankedspr_path_restricting_neighbourhood(ct,cr)
 
 
+# a = "((((3:1,4:1):1,5:2):2,6:4):1,(1:3,2:3):2);"
+# b = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
+
+# c = "((1:1,2:1):5,((((3:2,4:2):1,5:3):1,6:4):1,7:5):1)"
+# d = "((1:1,2:1):5,((3:2,7:2):3,((4:3,5:3):1,6:4):1):1);"
+
+
+# tree1 = read_newick(a, factor=0)
+# tree2 = read_newick(b, factor=0)
+
+# path = rankedspr_bfs(tree1, tree2)
+# print('distance:', len(path)-1)
+# print('path:')
+# for tree in path:
+#     print(tree)
+
+
+
 # n=7
 # m=1000
 
@@ -48,30 +66,39 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 #         for tree in path:
 #             print(tree)
 
-print("Reading trees")
-file = open('SPR/tree_dict_7_leaves.txt')
-content = file.readlines()
 
-d = np.load('SPR/distance_matrix_7_leaves.npy')
-print("Done reading trees")
+def caterpillar_diameter_trees(n):
+    # Checking which caterpillar trees have diameter distance from identity caterpillar
+    print("Reading trees")
+    file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
+    content = file.readlines()
 
-max_indices = np.where(d == np.amax(d))
-max_coordinates = list(zip(max_indices[0], max_indices[1]))
-count = 0
-num_max_dist = 0
-#print(len(content[0]), content[0])
-for index1 in max_indices[1]:
-    if max_indices[0][count] != 0:
-        break
-    count += 1
-#    print(index1, len(content[index1]), content[index1])
-    # We only need to compare against first tree in file, as this is identity caterpillar tree (bc of symmetry)
-    if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
-        print(content[0], content[index1])
-        num_max_dist +=1
+    d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
+    print("Done reading trees")
 
-print("number of caterpillar trees with diameter distance from identity caterpillar:", num_max_dist)
-print("total number of trees with diameter distance from identity caterpillar:", count)
+    max_indices = np.where(d == np.amax(d))
+    max_coordinates = list(zip(max_indices[0], max_indices[1]))
+    print("number of tree pair with diameter distance:")
+    print(len(max_coordinates)/2)
+    count = 0
+    num_max_dist = 0
+    #print(len(content[0]), content[0])
+    for index1 in max_indices[1]:
+        if max_indices[0][count] != 0:
+            break
+        count += 1
+    #    print(index1, len(content[index1]), content[index1])
+        # We only need to compare against first tree in file, as this is identity caterpillar tree (bc of symmetry)
+        if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
+            print(content[0], content[index1])
+            num_max_dist +=1
+
+    print("number of caterpillar trees with diameter distance from identity caterpillar:", num_max_dist)
+    print("total number of trees with diameter distance from identity caterpillar:", count)
+
+# for n in range(4,7):
+#     print('n =',n)
+#     caterpillar_diameter_trees(n)
 
 # n=7
 # m =100
