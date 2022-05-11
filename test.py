@@ -10,7 +10,7 @@ import time
 from treeOclock.dct_parser.tree_io import *
 from treeOclock import *
 from simulate_trees import *
-from rankedSPR import *
+from rankedSPR_seidel import *
 
 
 t = "((1:1,2:1):2,(3:2,4:2):1);"
@@ -66,9 +66,10 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 #         for tree in path:
 #             print(tree)
 
-# for n in range(4,7):
-#     print('n =',n)
-#     caterpillar_diameter_trees(n)
+for n in range(4,7):
+    print('n =',n)
+    # rankedspr_seidel(n, hspr = 1)
+    caterpillar_diameter_trees(n)
 
 # n=7
 # m =100
