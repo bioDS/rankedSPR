@@ -66,36 +66,6 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 #         for tree in path:
 #             print(tree)
 
-
-def caterpillar_diameter_trees(n):
-    # Checking which caterpillar trees have diameter distance from identity caterpillar
-    print("Reading trees")
-    file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
-    content = file.readlines()
-
-    d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
-    print("Done reading trees")
-
-    max_indices = np.where(d == np.amax(d))
-    max_coordinates = list(zip(max_indices[0], max_indices[1]))
-    print("number of tree pair with diameter distance:")
-    print(len(max_coordinates)/2)
-    count = 0
-    num_max_dist = 0
-    #print(len(content[0]), content[0])
-    for index1 in max_indices[1]:
-        if max_indices[0][count] != 0:
-            break
-        count += 1
-    #    print(index1, len(content[index1]), content[index1])
-        # We only need to compare against first tree in file, as this is identity caterpillar tree (bc of symmetry)
-        if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
-            print(content[0], content[index1])
-            num_max_dist +=1
-
-    print("number of caterpillar trees with diameter distance from identity caterpillar:", num_max_dist)
-    print("total number of trees with diameter distance from identity caterpillar:", count)
-
 # for n in range(4,7):
 #     print('n =',n)
 #     caterpillar_diameter_trees(n)
@@ -114,3 +84,69 @@ def caterpillar_diameter_trees(n):
 #        print("path:")
 #        for tree in path:
 #            print(tree)
+
+
+######## TESTING ######## (moved here from rankedSPR.py)
+
+# coal_pw_spr_dist(5, 10000, hspr = 0)
+# coal_pw_spr_dist(5, 10000, hspr = 1)
+
+
+# test_restricted_neighbourhood_search(5,10000)
+
+# print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
+# print(sum(rankedSPR_adjacency(4)[0]))
+
+
+# t1 = "(((1:1,2:1):2,(3:2,4:2):1):1,5:4);"
+# t2 = "((((3:1,5:1):1,2:2):1,1:3):1,4:4);"
+
+
+# identity_caterpillar_7 = "((((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5):1,7:6);"
+# reverse_identity_caterpillar_7 = "((((((6:1,7:1):1,5:2):1,4:3):1,3:4):1,2:5):1,1:6);"
+
+# identity_caterpillar_6 = "(((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5);"
+# reverse_identity_caterpillar_6 = "(((((5:1,6:1):1,4:2):1,3:3):1,2:4):1,1:5);"
+
+# identity_caterpillar_5 = "((((1:1,2:1):1,3:2):1,4:3):1,5:4);"
+# reverse_identity_caterpillar_5 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
+
+# identity_caterpillar_4 = "(((1:1,2:1):1,3:2):1,4:3);"
+# reverse_identity_caterpillar_4 = "(((3:1,4:1):1,2:2):1,1:3);"
+
+# tree1 = read_newick(identity_caterpillar_4, factor = 0)
+# tree2 = read_newick(reverse_identity_caterpillar_4, factor = 0)
+
+# path = rankedspr_bfs(tree1, tree2)
+# print("distance:", len(path)-1)
+
+# for tree in path:
+#     print(tree)
+
+# print("rankedSPR neighbours:")
+# spr_neighbours = spr_neighbourhood(tree1)
+# for i in range(0,spr_neighbours.num_trees):
+#     print(tree_to_cluster_string(spr_neighbours.trees[i]))
+
+
+# adj = np.load("SPR/adj_matrix_5_leaves.npy")
+# tree1_1nh = set()
+# tree2_2nh = set()
+# print("adjacency tree1:")
+# for i in range(0,180):
+#     if(adj[7][i] == 1):
+#         print(i)
+#         tree1_1nh.add(i)
+# print("adjacency tree2:")
+# for i in range(0,180):
+#     if(adj[154][i] == 1):
+#         for j in range(0,180):
+#             if(adj[i][j]==1):
+#                 tree2_2nh.add(j)
+# print(tree1_1nh)
+# print(tree2_2nh)
+# print(tree1_1nh.intersection(tree2_2nh))
+# print(adj[7])
+# print(adj[154])
+# print(adj.size)
+# print(sum(sum(adj)))
