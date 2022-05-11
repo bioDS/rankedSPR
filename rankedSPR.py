@@ -214,7 +214,7 @@ def caterpillar_diameter_trees(n):
     print(len(max_coordinates)/2)
     count = 0
     num_max_dist = 0
-    #print(len(content[0]), content[0])
+    # print(len(content[0]), content[0])
     for index1 in max_indices[1]:
         if max_indices[0][count] != 0:
             break
