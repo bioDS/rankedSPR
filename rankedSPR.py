@@ -7,6 +7,9 @@ sys.path.append('treeOclock/dct_parser/')
 import ctypes
 import math
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 import random
 from treeOclock.dct_parser.tree_io import *
 from treeOclock import *
@@ -167,8 +170,37 @@ def rankedspr_bfs(start_tree, dest_tree):
     return(path)
 
 
+# use own implementation of coalescent to plot RSPR distances between coalescent trees (i.e. uniform ranked trees)
+def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', distances_file = ''):
+    # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
+    # Read trees in C format (for RSPR distance computation)
+    # If mean == True, returns mean and var of distances
+    distances = []
+
+    for i in range(0,int(num_tree_pairs)):
+        print(i)
+        tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
+        distances.append(len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1]))-1)
+    if distances_file != '':
+        np.savetxt(distances_file,  distances, delimiter = ' ')
+    # Plot histogram
+    d = pd.DataFrame(data=distances)
+    upper_bound = max(distances)
+    b = np.arange(-.5, upper_bound + 1.5, 1)
+    sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    plt.xlabel("Distance")
+    # plt.ylabel("Frequency")
+    plt.ylabel("")
+    if hspr == 1:
+        plt.savefig("SPR/plots/rspr_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
+    else:
+        plt.savefig("SPR/plots/hspr_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
+    plt.show()
+    # plts.plot_hist(distances, bins, output_file)
 
 ######## TESTING ########
+
+coal_pw_spr_dist(6, 10000)
 
 
 # test_restricted_neighbourhood_search(5,10000)
