@@ -120,6 +120,30 @@ def test_restricted_neighbourhood_search(num_leaves, num_tree_pairs):
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
 
 
+def test_top_down_neighbourhood_search(num_leaves, num_tree_pairs):
+    # Compute adjacency matrix & distance matrix
+    rspr_adj = rankedSPR_adjacency(num_leaves)
+    rspr_distances = np.ascontiguousarray(rspr_adj[0], dtype=np.int32)
+    _seidel.seidel(rspr_distances, rspr_distances.shape[0])
+
+    # Now simulate trees to be used to check distance computation
+    t_list = sim_coal(num_leaves, 2*num_tree_pairs)
+    correct_distance = 0
+    for i in range(0,num_tree_pairs):
+        tree1_index = rspr_adj[1][tree_to_cluster_string(t_list.trees[i])]
+        tree2_index = rspr_adj[1][tree_to_cluster_string(t_list.trees[i+1])]
+        # print(tree_to_cluster_string(t_list.trees[i]))
+        # print(tree_to_cluster_string(t_list.trees[i+1]))
+        # print(rspr_distances[tree1_index][tree2_index], rankedspr_path_restricting_neighbourhood(t_list.trees[i],t_list.trees[i+1]))
+        if (rspr_distances[tree1_index][tree2_index] == rankedspr_path_top_down_symm_diff(t_list.trees[i],t_list.trees[i+1])):
+            correct_distance += 1
+        else:
+            print("tree1:", tree_to_cluster_string(t_list.trees[i]))
+            print("tree2:", tree_to_cluster_string(t_list.trees[i+1]))
+            print("correct distance:", rspr_distances[tree1_index][tree2_index], "approximated distance:", rankedspr_path_top_down_symm_diff(t_list.trees[i],t_list.trees[i+1]))
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
+
+
 # Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
 def rankedspr_bfs(start_tree, dest_tree):
     num_leaves = start_tree.num_leaves

@@ -40,9 +40,11 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 # c = "((1:1,2:1):5,((((3:2,4:2):1,5:3):1,6:4):1,7:5):1)"
 # d = "((1:1,2:1):5,((3:2,7:2):3,((4:3,5:3):1,6:4):1):1);"
 
+# tree1 = read_newick(q1, factor=0)
+# tree2 = read_newick(q2, factor=0)
 
-# tree1 = read_newick(a, factor=0)
-# tree2 = read_newick(b, factor=0)
+# print(rankedspr_path_top_down_symm_diff(tree1, tree2))
+# print(symm_cluster_diff(tree1, tree2, 2*tree1.num_leaves-3))
 
 # path = rankedspr_bfs(tree1, tree2)
 # print('distance:', len(path)-1)
@@ -66,10 +68,10 @@ q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 #         for tree in path:
 #             print(tree)
 
-for n in range(4,7):
-    print('n =',n)
-    # rankedspr_seidel(n, hspr = 1)
-    caterpillar_diameter_trees(n)
+# for n in range(4,7):
+#     print('n =',n)
+#     # rankedspr_seidel(n, hspr = 1)
+#     caterpillar_diameter_trees(n)
 
 # n=7
 # m =100
@@ -94,6 +96,7 @@ for n in range(4,7):
 
 
 # test_restricted_neighbourhood_search(5,10000)
+test_top_down_neighbourhood_search(5,10)
 
 # print(sum(rankedSPR_adjacency(4, hspr=0)[0]))
 # print(sum(rankedSPR_adjacency(4)[0]))
