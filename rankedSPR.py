@@ -222,7 +222,7 @@ def caterpillar_diameter_trees(n):
     #    print(index1, len(content[index1]), content[index1])
         # We only need to compare against first tree in file, as this is identity caterpillar tree (bc of symmetry)
         if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
-            print(content[0], content[index1])
+            # print(content[0], content[index1])
             num_max_dist +=1
 
     print("number of caterpillar trees with diameter distance from identity caterpillar:", num_max_dist)
