@@ -178,7 +178,8 @@ def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', dis
     distances = []
 
     for i in range(0,int(num_tree_pairs)):
-        print(i)
+        if i%100 == 0:
+            print('iteration', i)
         tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
         distances.append(len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1]))-1)
     if distances_file != '':
