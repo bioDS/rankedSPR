@@ -188,20 +188,22 @@ def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', dis
     d = pd.DataFrame(data=distances)
     upper_bound = max(distances)
     b = np.arange(-.5, upper_bound + 1.5, 1)
+    sns.set_theme(font_scale=1.2)
     sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
     plt.xlabel("Distance")
-    # plt.ylabel("Frequency")
-    plt.ylabel("")
+    plt.ylabel("Proportion of trees")
     if hspr == 1:
         plt.savefig("SPR/plots/rspr_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
     else:
         plt.savefig("SPR/plots/hspr_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
-    plt.show()
+    plt.clf()
+    # plt.show()
     # plts.plot_hist(distances, bins, output_file)
 
 ######## TESTING ########
 
-coal_pw_spr_dist(6, 10000)
+# coal_pw_spr_dist(5, 10000, hspr = 0)
+# coal_pw_spr_dist(5, 10000, hspr = 1)
 
 
 # test_restricted_neighbourhood_search(5,10000)
