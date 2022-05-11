@@ -170,11 +170,9 @@ def rankedspr_bfs(start_tree, dest_tree):
     return(path)
 
 
-# use own implementation of coalescent to plot RSPR distances between coalescent trees (i.e. uniform ranked trees)
+# use own implementation of coalescent to plot ranked SPR distances (HSPR if hspr=0, otherwise (default) RSPR) between coalescent trees (i.e. uniform ranked trees)
 def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', distances_file = ''):
-    # Plotting the distances of all tree pairs T_i, T_i+1 for even i (for list of simulated trees this should give independent distances) and save plot (if filehandle given) in output_file
-    # Read trees in C format (for RSPR distance computation)
-    # If mean == True, returns mean and var of distances
+    # Plotting the distances for num_tree_pairs simulated pairs of trees and save plot (if filehandle given) in output_file
     distances = []
 
     for i in range(0,int(num_tree_pairs)):
