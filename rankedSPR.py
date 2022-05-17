@@ -146,7 +146,7 @@ def test_top_down_neighbourhood_search(num_leaves, num_tree_pairs):
 
 
 # Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
-def rankedspr_bfs(start_tree, dest_tree):
+def rankedspr_bfs(start_tree, dest_tree, hspr=1):
     num_leaves = start_tree.num_leaves
     tree_dict = dict() # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
     index_dict = dict() # reverse of tree_dict (indices as keys and trees as values)
@@ -167,7 +167,7 @@ def rankedspr_bfs(start_tree, dest_tree):
     while found == False:
         current_tree = to_visit.pop(0)
         current_tree_str = tree_to_cluster_string(current_tree)
-        neighbours = spr_neighbourhood(current_tree)
+        neighbours = all_spr_neighbourhood(current_tree,hspr)
         for i in range(0,neighbours.num_trees):
             tree = neighbours.trees[i]
             neighbour_string = tree_to_cluster_string(tree)
