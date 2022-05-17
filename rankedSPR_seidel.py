@@ -20,7 +20,7 @@ _seidel.seidel_recursive.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS
 def rankedspr_seidel(n, hspr=1):
     # compute distance matrix for RSPR (or HSPR if HSPR=0), for trees on n leaves
     print('number of leaves:', n)
-    AI = rankedSPR_adjacency(n, hspr=1)
+    AI = rankedSPR_adjacency(n, hspr)
     A = np.ascontiguousarray(AI[0], dtype=np.int32)	
     time1 = time.time()
     _seidel.seidel(A, A.shape[0])
