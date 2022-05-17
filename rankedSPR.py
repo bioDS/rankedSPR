@@ -254,7 +254,7 @@ def caterpillar_diameter_trees(n):
     print("total number of trees with diameter distance from identity caterpillar:", count)
 
 
-def orbit_size_identity_caterpillar(n):
+def orbit_size_identity_caterpillar(n, hspr=1):
     # find the number of trees at distance d from the first tree in distance matrix computed by SEIDEL (the identity catepillar tree)
 
     print("Tree:")
