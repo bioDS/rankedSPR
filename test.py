@@ -26,6 +26,12 @@ b = "(((1:1,3:1):2,2:3):1,(4:2,5:2):2);"
 ct = read_newick(a, factor = 0)
 cr = read_newick(b, factor = 0)
 
+# compare_hspr_rspr(5,50)
+
+# find_rank_moves(6,10)
+
+compare_hspr_rspr_uniform(7,100)
+
 # print('symmetric cluster difference:', symmetric_cluster_diff(ct,cr))
 
 # tree_list = sim_coal(5,100)
@@ -48,8 +54,8 @@ cr = read_newick(b, factor = 0)
 
 # rankedspr_path_restricting_neighbourhood(ct,cr)
 
-rankedspr_seidel(6)
-orbit_size_identity_caterpillar(6)
+# rankedspr_seidel(4,0)
+# orbit_size_identity_caterpillar(4)
 
 # a = "((((3:1,4:1):1,5:2):2,6:4):1,(1:3,2:3):2);"
 # b = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
