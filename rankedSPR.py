@@ -242,6 +242,26 @@ def compare_hspr_rspr(num_leaves, num_tree_pairs):
                 print(tree)
 
 
+def find_rank_moves(num_leaves, num_tree_pairs):
+    # simulate num_tree_pairs pairs of trees on num_leaves leaves and check the position of rank moves on shortest paths between those trees in RSPR (using BFS)
+    # prints shortest paths that have rank moves not at the start or beginning, but somewhere in the middle
+    for i in range(0,num_tree_pairs):
+        tree_pair = sim_coal(num_leaves, 2)
+        path = rankedspr_bfs(tree_pair.trees[0], tree_pair.trees[1])
+        for i in range(0,len(path)-1):
+            tree1_sorted = ''.join(sorted(str(path[i])))
+            tree2_sorted = ''.join(sorted(str(path[i+1])))
+            if tree1_sorted == tree2_sorted and i != 0 and i != len(path)-2:
+                # two trees are connected by a rank move if the cluster strings contain exactly the same characters (are permutations of each other)
+                print("rank move between:")
+                print(path[i])
+                print(path[i+1])
+                print("entire path:")
+                for tree in path:
+                    print(tree)
+
+
+
 def caterpillar_diameter_trees(n):
     # Checking which caterpillar trees have diameter distance from identity caterpillar
     print("Reading trees")
