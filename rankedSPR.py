@@ -224,6 +224,30 @@ def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', dis
     # plts.plot_hist(distances, bins, output_file)
 
 
+# use own implementation of coalescent to compare RSPR and HSPR distances between trees drawn from uniform distribution
+def compare_hspr_rspr_uniform(num_leaves, num_tree_pairs, distances_file = ''):
+    # Plotting the distances for num_tree_pairs simulated pairs of trees and save plot (if filehandle given) in output_file
+    distances = [] # contains HSPR-RSPR distance for all simulated tree pairs
+    for i in range(0,int(num_tree_pairs)):
+        if i%100 == 0:
+            print('iteration', i)
+        tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
+        distances.append(len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1], hspr=0))-len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1],hspr=1)))
+    if distances_file != '':
+        np.savetxt(distances_file,  distances, delimiter = ' ')
+    # Plot histogram
+    d = pd.DataFrame(data=distances)
+    upper_bound = max(distances)
+    b = np.arange(-.5, upper_bound + 1.5, 1)
+    sns.set_theme(font_scale=1.2)
+    sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    plt.xlabel("Distance")
+    plt.ylabel("Proportion of trees")
+    plt.savefig("SPR/plots/rspr_hspr_difference_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
+    plt.show()
+    plt.clf()
+
+
 # use own implementation of coalescent to compare differences between RSPR and HSPR shortest paths -- might be useful to determine if rank moves are always at beginning or end of shortest paths
 def compare_hspr_rspr(num_leaves, num_tree_pairs):
     for i in range(0,int(num_tree_pairs)):
