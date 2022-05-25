@@ -15,22 +15,56 @@ from rankedSPR_seidel import *
 
 t = "((1:1,2:1):2,(3:2,4:2):1);"
 r = "(((1:1,2:1):1,3:2):1,4:3);"
-s = "(((3:1,4:1):1,2:2):1,1:3);"
+s = "((3:1,4:1):2,(1:2,2:2):1);"
 
 q1 = "((((1:1,2:1):1,4:2):1,5:3):1,3:4);"
 q2 = "((((4:1,5:1):1,3:2):1,2:3):1,1:4);"
 
-a = "(((2:1,4:1):2,5:3):1,(1:2,3:2):2);"
-b = "(((1:1,3:1):2,2:3):1,(4:2,5:2):2);"
+a = "(((1:1,2:1):1,3:2):3,((4:3,5:3):1,6:4):1);"
+b = "(((4:1,5:1):1,6:2):3,((1:3,2:3):1,3:4):1);"
 
-ct = read_newick(a, factor = 0)
-cr = read_newick(b, factor = 0)
+c = "(((1:1,2:1):2,3:3):2,((5:2,6:2):2,4:4):2);"
+d = "(((5:1,6:1):2,4:3):2,((1:2,2:2):2,3:4):2);"
+
+e = "((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1)"
+f = "((((1:3,2:3):1,3:4):1,4:5):1,((5:1,6:1):1,7:2):4)"
+
+
+t1 = "((((3:1,4:1):1,5:2):2,6:4):1,(1:3,2:3):2);"
+t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
+
+
+# ct = read_newick(e)
+# cs = read_newick(f)
+
+# path = rankedspr_bfs(ct, cs, hspr=0)
+# for i in range(0,len(path)):
+#     print(path[i])
+
+# ct = read_newick(t1, factor = 0)
+# cr = read_newick(t2, factor = 0)
+# print(ct, cs)
+# print('distance(tree1, tree2):', len(rankedspr_bfs(ct,cs,hspr=0)))
+# ct_neighbourhood = hspr_neighbourhood(ct)
+# print('distance(neighbours of tree1, tree2):')
+# for i in range(0, ct_neighbourhood.num_trees):
+#     n_path = rankedspr_bfs(ct_neighbourhood.trees[i], cs, hspr=0)
+#     if len(n_path)-1 == 2:
+#         print("distance one neighbours:")
+#         print(tree_to_cluster_string(ct_neighbourhood.trees[i]))
+#         nested_neighbourhood = hspr_neighbourhood(ct_neighbourhood.trees[i])
+#         print("distance two neighbours:")
+#         for j in range(0, nested_neighbourhood.num_trees):
+#             nn_path = rankedspr_bfs(nested_neighbourhood.trees[j], cs, hspr = 0)
+#             if len(nn_path)-1 == 1:
+#                 print(tree_to_cluster_string(nested_neighbourhood.trees[j]))
+
 
 # compare_hspr_rspr(5,50)
 
 # find_rank_moves(6,10)
 
-compare_hspr_rspr_uniform(7,100)
+# compare_hspr_rspr_uniform(6,100)
 
 # print('symmetric cluster difference:', symmetric_cluster_diff(ct,cr))
 
@@ -63,14 +97,14 @@ compare_hspr_rspr_uniform(7,100)
 # c = "((1:1,2:1):5,((((3:2,4:2):1,5:3):1,6:4):1,7:5):1)"
 # d = "((1:1,2:1):5,((3:2,7:2):3,((4:3,5:3):1,6:4):1):1);"
 
-t1 = "(((2:1,3:1):2,(1:2,4:2):1):1,5:4);"
-t2 = "((((1:1,5:1):1,4:2):1,3:3):1,2:4);"
+# t1 = "(((2:1,3:1):2,(1:2,4:2):1):1,5:4);"
+# t2 = "((((1:1,5:1):1,4:2):1,3:3):1,2:4);"
 
-t3 = "(((1:1,5:1):2,(3:2,4:2):1):1,2:4);"
-t4 = "((((1:1,5:1):1,4:2):1,2:3):1,3:4);"
+# t3 = "(((1:1,5:1):2,(3:2,4:2):1):1,2:4);"
+# t4 = "((((1:1,5:1):1,4:2):1,2:3):1,3:4);"
 
-t5 = "(((2:1,5:1):1,3:2):2,(1:3,4:3):1);"
-t6 = "(((1:1,5:1):2,3:3):1,(2:2,4:2):2);"
+# t5 = "(((2:1,5:1):1,3:2):2,(1:3,4:3):1);"
+# t6 = "(((1:1,5:1):2,3:3):1,(2:2,4:2):2);"
 
 
 # tree1 = read_newick(t5, factor=0)
@@ -168,6 +202,19 @@ t6 = "(((1:1,5:1):2,3:3):1,(2:2,4:2):2);"
 # for i in range(0,spr_neighbours.num_trees):
 #     print(tree_to_cluster_string(spr_neighbours.trees[i]))
 
+
+# Compute distance matrices in HSPR and RSPR for small number of leaves and print number of trees with diameter distance
+for n in range(4,7):
+    rankedspr_seidel(n,0)
+    rankedspr_seidel(n,1)
+
+    print("RSPR for " + str(n) + " leaves:")
+    dist = np.load("SPR/distance_matrix_" + str(n) + "_leaves.npy")
+    print(len(np.where(dist == np.amax(dist))[0])/2)
+
+    print("HSPR for " + str(n) + " leaves:")
+    dist = np.load("SPR/distance_matrix_" + str(n) + "_leaves_hspr.npy")
+    print(len(np.where(dist == np.amax(dist))[0])/2)
 
 # adj = np.load("SPR/adj_matrix_5_leaves.npy")
 # tree1_1nh = set()
