@@ -24,7 +24,10 @@ def rankedspr_seidel(n, hspr=1):
     A = np.ascontiguousarray(AI[0], dtype=np.int32)	
     time1 = time.time()
     _seidel.seidel(A, A.shape[0])
-    np.save('SPR/distance_matrix_' + str(n) + '_leaves', A)
+    if(hspr==0):
+        np.save('SPR/distance_matrix_' + str(n) + '_leaves_hspr', A)
+    else:
+        np.save('SPR/distance_matrix_' + str(n) + '_leaves', A)
     time2 = time.time()
     print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
     print("diameter: ", np.amax(A))
