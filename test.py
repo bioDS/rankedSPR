@@ -34,8 +34,13 @@ t1 = "((((3:1,4:1):1,5:2):2,6:4):1,(1:3,2:3):2);"
 t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 
 
-# ct = read_newick(e)
-# cs = read_newick(f)
+ct = read_newick(q1)
+# cs = read_newick(r)
+
+print(tree_to_cluster_string(del_leaf(ct, 3)))
+# del_leaf(cs, 2)
+
+# distance_del_leaf(5,100,hspr=0)
 
 # path = rankedspr_bfs(ct, cs, hspr=0)
 # for i in range(0,len(path)):
@@ -204,17 +209,17 @@ t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 
 
 # Compute distance matrices in HSPR and RSPR for small number of leaves and print number of trees with diameter distance
-for n in range(4,7):
-    rankedspr_seidel(n,0)
-    rankedspr_seidel(n,1)
+# for n in range(4,7):
+#     rankedspr_seidel(n,0)
+#     rankedspr_seidel(n,1)
 
-    print("RSPR for " + str(n) + " leaves:")
-    dist = np.load("SPR/distance_matrix_" + str(n) + "_leaves.npy")
-    print(len(np.where(dist == np.amax(dist))[0])/2)
+#     print("RSPR for " + str(n) + " leaves:")
+#     dist = np.load("SPR/distance_matrix_" + str(n) + "_leaves.npy")
+#     print(len(np.where(dist == np.amax(dist))[0])/2)
 
-    print("HSPR for " + str(n) + " leaves:")
-    dist = np.load("SPR/distance_matrix_" + str(n) + "_leaves_hspr.npy")
-    print(len(np.where(dist == np.amax(dist))[0])/2)
+#     print("HSPR for " + str(n) + " leaves:")
+#     dist = np.load("SPR/distance_matrix_" + str(n) + "_leaves_hspr.npy")
+#     print(len(np.where(dist == np.amax(dist))[0])/2)
 
 # adj = np.load("SPR/adj_matrix_5_leaves.npy")
 # tree1_1nh = set()

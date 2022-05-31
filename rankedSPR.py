@@ -233,13 +233,16 @@ def distance_del_leaf(num_leaves, num_tree_pairs, hspr = 1, output_file = '', di
         if i%100 == 0:
             print('iteration', i)
         tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
+        print("original trees:")
+        print(tree_to_cluster_string(tree_list.trees[0]))
+        print(tree_to_cluster_string(tree_list.trees[1]))
         d = len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1]))-1
         # take trees that result from deleting the same (randomly chosen) leaf
         r = random.randint(0,num_leaves-1)
         tree1 = del_leaf(tree_list.trees[0],r)
         tree2 = del_leaf(tree_list.trees[1],r)
-        # print(tree_to_cluster_string(tree1))
-        # print(tree_to_cluster_string(tree2))
+        print(tree_to_cluster_string(tree1))
+        print(tree_to_cluster_string(tree2))
         d1 = len(rankedspr_bfs(tree1, tree2))-1
         distances.append(d-d1)
     if distances_file != '':
