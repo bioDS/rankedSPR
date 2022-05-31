@@ -233,22 +233,35 @@ def distance_del_leaf(num_leaves, num_deletions, num_tree_pairs, hspr = 1, outpu
         if i%100 == 0:
             print('iteration', i)
         tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
-        # print("original trees:")
-        # print(tree_to_cluster_string(tree_list.trees[0]))
-        # print(tree_to_cluster_string(tree_list.trees[1]))
         tree1 = tree_list.trees[0]
         tree2 = tree_list.trees[1]
         d = len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1]))-1
         # take trees that result from deleting the same (randomly chosen) leaf
-        for i in range(0,num_deletions):
-            r = random.randint(0,num_leaves-1-num_deletions)
-            tree1 = del_leaf(tree1,r)
-            tree2 = del_leaf(tree2,r)
-        # print("trees after deleting leaves:")
-        # print(tree_to_cluster_string(tree1))
-        # print(tree_to_cluster_string(tree2))
-        d1 = len(rankedspr_bfs(tree1, tree2))-1
-        distances.append(d-d1)
+        # for i in range(0,num_deletions):
+        #     r = random.randint(0,num_leaves-1-num_deletions)
+        #     tree1 = del_leaf(tree1,r)
+        #     tree2 = del_leaf(tree2,r)
+        # d1 = len(rankedspr_bfs(tree1, tree2))-1
+        # distances.append(d-d1)
+
+        # alternatively: try to delete every pair of leaves and look at minimum distance
+        current_dist = []
+        for i in range(0,num_leaves-1):
+            tree1 = del_leaf(tree_list.trees[0],i)
+            tree2 = del_leaf(tree_list.trees[1],i)
+            for j in range(0,num_leaves-2):
+                tree1 = del_leaf(tree_list.trees[0],j)
+                tree2 = del_leaf(tree_list.trees[1],j)
+                current_dist.append(len(rankedspr_bfs(tree1, tree2))-1)
+        # if d - max(current_dist)==3:
+        #     print("original trees:")
+        #     print(tree_to_cluster_string(tree_list.trees[0]))
+        #     print(tree_to_cluster_string(tree_list.trees[1]))
+        #     print("trees after deleting leaves:")
+        #     print(tree_to_cluster_string(tree1))
+        #     print(tree_to_cluster_string(tree2))
+        #     print("original distance:", d, "small tree distance:", current_dist)
+        distances.append(d - max(current_dist))
         # if d-d1 == 3:
         #     print("original trees:")
         #     print(tree_to_cluster_string(tree_list.trees[0]))
