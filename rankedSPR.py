@@ -224,6 +224,43 @@ def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', dis
     # plts.plot_hist(distances, bins, output_file)
 
 
+# use own implementation of coalescent to plot difference in RSPR/HSPR distances between two coalescent trees and the same trees with one leaf deleted
+def distance_del_leaf(num_leaves, num_tree_pairs, hspr = 1, output_file = '', distances_file = ''):
+    # Plotting the distances for num_tree_pairs simulated pairs of trees and save plot (if filehandle given) in output_file
+    distances = []
+
+    for i in range(0,int(num_tree_pairs)):
+        if i%100 == 0:
+            print('iteration', i)
+        tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead of a list with num_tree trees
+        d = len(rankedspr_bfs(tree_list.trees[0], tree_list.trees[1]))-1
+        # take trees that result from deleting the same (randomly chosen) leaf
+        r = random.randint(0,num_leaves-1)
+        tree1 = del_leaf(tree_list.trees[0],r)
+        tree2 = del_leaf(tree_list.trees[1],r)
+        # print(tree_to_cluster_string(tree1))
+        # print(tree_to_cluster_string(tree2))
+        d1 = len(rankedspr_bfs(tree1, tree2))-1
+        distances.append(d-d1)
+    if distances_file != '':
+        np.savetxt(distances_file,  distances, delimiter = ' ')
+    # Plot histogram
+    d = pd.DataFrame(data=distances)
+    upper_bound = max(distances)
+    b = np.arange(-.5, upper_bound + 1.5, 1)
+    sns.set_theme(font_scale=1.2)
+    sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    plt.xlabel("Distance")
+    plt.ylabel("Proportion of trees")
+    if hspr == 1:
+        plt.savefig("SPR/plots/rspr_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
+    else:
+        plt.savefig("SPR/plots/hspr_distribution_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
+    plt.clf()
+    # plt.show()
+    # plts.plot_hist(distances, bins, output_file)
+
+
 # use own implementation of coalescent to compare RSPR and HSPR distances between trees drawn from uniform distribution
 def compare_hspr_rspr_uniform(num_leaves, num_tree_pairs, distances_file = ''):
     # Plotting the distances for num_tree_pairs simulated pairs of trees and save plot (if filehandle given) in output_file
