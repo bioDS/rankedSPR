@@ -387,15 +387,14 @@ def orbit_sizes(n, hspr=1):
 
     num_trees = int(math.factorial(n) * math.factorial(n-1) / (2**(n-1)))
     print("Start reading distance matrix")
-    d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
+    else:
+        d = np.load('SPR/distance_matrix_' + str(n) + '_leaves_hspr.npy')
     print("Done reading distance matrix")
     orbit_size = np.zeros((int(num_trees), int(np.amax(d)+1))) # initialise orbit sizes as zero matrix
 
-    file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
     for i in range(0,num_trees):
-        # print("Tree:")
-        content = file.readline()
-        # print(content)
         for j in range(0,np.amax(d)+1):
             orbit_size[i][j] = np.count_nonzero(d[0]==j)
             # print("distance", i, ":", num_trees, "trees")
