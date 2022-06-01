@@ -382,17 +382,22 @@ def caterpillar_diameter_trees(n):
     print("total number of trees with diameter distance from identity caterpillar:", count)
 
 
-def orbit_size_identity_caterpillar(n, hspr=1):
-    # find the number of trees at distance d from the first tree in distance matrix computed by SEIDEL (the identity catepillar tree)
+def orbit_sizes(n, hspr=1):
+    # find the number of trees at distance k from the first tree in distance matrix computed by SEIDEL (the identity catepillar tree)
 
-    print("Tree:")
-    file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
-    content = file.readline()
-    print(content)
-
+    num_trees = int(math.factorial(n) * math.factorial(n-1) / (2**(n-1)))
+    print("Start reading distance matrix")
     d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
-    print("Done reading trees")
+    print("Done reading distance matrix")
+    orbit_size = np.zeros((int(num_trees), int(np.amax(d)+1))) # initialise orbit sizes as zero matrix
 
-    for i in range(0,np.amax(d)+1):
-        num_trees = np.count_nonzero(d[0]==i)
-        print("distance", i, ":", num_trees, "trees")
+    file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
+    for i in range(0,num_trees):
+        # print("Tree:")
+        content = file.readline()
+        # print(content)
+        for j in range(0,np.amax(d)+1):
+            orbit_size[i][j] = np.count_nonzero(d[0]==j)
+            # print("distance", i, ":", num_trees, "trees")
+    unique_rows = np.unique(orbit_size, axis=0)
+    print(unique_rows)
