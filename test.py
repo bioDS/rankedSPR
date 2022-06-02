@@ -43,9 +43,9 @@ test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 # print(tree_to_cluster_string(del_leaf(ct, 1)))
 # del_leaf(cs, 2)
 
-distance_del_leaf(7,1,100,hspr=0)
+# distance_del_leaf(7,1,100,hspr=0)
 
-# orbit_sizes(6,hspr=0)
+# print(orbit_sizes(6,hspr=0))
 
 # path = rankedspr_bfs(ct, cs, hspr=0)
 # for i in range(0,len(path)):

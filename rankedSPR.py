@@ -386,7 +386,8 @@ def caterpillar_diameter_trees(n):
 
 
 def orbit_sizes(n, hspr=1):
-    # find the number of trees at distance k from the first tree in distance matrix computed by SEIDEL (the identity catepillar tree)
+    # find the number of trees at distance k from any tree in the distance matrix computed by SEIDEL (the identity catepillar tree)
+    # Output is an array of orbit sizes, where unique ones are only given once (e.g. all orbit sizes for same ranked topology will be the same)
 
     num_trees = int(math.factorial(n) * math.factorial(n-1) / (2**(n-1)))
     print("Start reading distance matrix")
@@ -402,4 +403,4 @@ def orbit_sizes(n, hspr=1):
             orbit_size[i][j] = np.count_nonzero(d[0]==j)
             # print("distance", i, ":", num_trees, "trees")
     unique_rows = np.unique(orbit_size, axis=0)
-    print(unique_rows)
+    return(unique_rows)
