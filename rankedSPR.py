@@ -195,6 +195,27 @@ def rankedspr_bfs(start_tree, dest_tree, hspr=1):
     return(path)
 
 
+def bfs_path_rank_sequence(tree1, tree2):
+    path = rankedspr_bfs(tree1, tree2, hspr=0)
+    rank_list = []
+    rank_count = []
+    for i in range(0,len(path)-1):
+        # for each move, find the lowest rank for which induced cluster changes -- this is the rank on which the HSPR move happened
+        path[i] = str(path[i])
+        path[i+1] = str(path[i+1])
+        print("trees:", path[i])
+        print(path[i+1])
+        rank = 0
+        for j in range(0, len(path[i])-1):
+            if path[i][j] == '{':
+                rank += 1
+            if path[i][j] != path[i+1][j]:
+                rank_list.append(rank)
+                break
+    for i in range(1,tree1.num_leaves-1):
+        rank_count.append(rank_list.count(i))
+    return(rank_count)
+
 # use own implementation of coalescent to plot ranked SPR distances (HSPR if hspr=0, otherwise (default) RSPR) between coalescent trees (i.e. uniform ranked trees)
 def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', distances_file = ''):
     # Plotting the distances for num_tree_pairs simulated pairs of trees and save plot (if filehandle given) in output_file
