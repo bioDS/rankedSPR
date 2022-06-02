@@ -244,24 +244,27 @@ def distance_del_leaf(num_leaves, num_deletions, num_tree_pairs, hspr = 1, outpu
         # d1 = len(rankedspr_bfs(tree1, tree2))-1
         # distances.append(d-d1)
 
-        # alternatively: try to delete every pair of leaves and look at minimum distance
-        current_dist = []
-        for i in range(0,num_leaves-1):
-            tree1 = del_leaf(tree_list.trees[0],i)
-            tree2 = del_leaf(tree_list.trees[1],i)
-            for j in range(0,num_leaves-2):
-                tree1_1 = del_leaf(tree1,j)
-                tree2_1 = del_leaf(tree2,j)
-                current_dist.append(len(rankedspr_bfs(tree1_1, tree2_1))-1)
-        # if d - max(current_dist)==3:
-        #     print("original trees:")
-        #     print(tree_to_cluster_string(tree_list.trees[0]))
-        #     print(tree_to_cluster_string(tree_list.trees[1]))
-        #     print("trees after deleting leaves:")
-        #     print(tree_to_cluster_string(tree1))
-        #     print(tree_to_cluster_string(tree2))
-        #     print("original distance:", d, "small tree distance:", current_dist)
-        distances.append(d - max(current_dist))
+        # # alternatively: try to delete every pair of leaves and look at minimum distance
+        # current_dist = []
+        # for i in range(0,num_leaves-1):
+        #     tree1 = del_leaf(tree_list.trees[0],i)
+        #     tree2 = del_leaf(tree_list.trees[1],i)
+        #     for j in range(0,num_leaves-2):
+        #         tree1_1 = del_leaf(tree1,j)
+        #         tree2_1 = del_leaf(tree2,j)
+        #         current_dist.append(len(rankedspr_bfs(tree1_1, tree2_1))-1)
+        # distances.append(d - max(current_dist))
+
+        # even another alternative: delete the two cherry leaves
+        c1 = min(tree1.tree[num_leaves].children[0], tree1.tree[num_leaves].children[1])
+        c2 = max(tree1.tree[num_leaves].children[0], tree1.tree[num_leaves].children[1])
+        tree1 = del_leaf(tree1, c2)
+        tree1 = del_leaf(tree1, c1)
+        tree2 = del_leaf(tree2, c2)
+        tree2 = del_leaf(tree2, c1)
+        d1 = len(rankedspr_bfs(tree1, tree2))-1
+        distances.append(d-d1)
+
         # if d-d1 == 3:
         #     print("original trees:")
         #     print(tree_to_cluster_string(tree_list.trees[0]))
