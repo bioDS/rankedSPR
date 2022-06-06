@@ -203,8 +203,6 @@ def bfs_path_rank_sequence(tree1, tree2):
         # for each move, find the lowest rank for which induced cluster changes -- this is the rank on which the HSPR move happened
         path[i] = str(path[i])
         path[i+1] = str(path[i+1])
-        print("trees:", path[i])
-        print(path[i+1])
         rank = 0
         for j in range(0, len(path[i])-1):
             if path[i][j] == '{':
@@ -214,7 +212,20 @@ def bfs_path_rank_sequence(tree1, tree2):
                 break
     for i in range(1,tree1.num_leaves-1):
         rank_count.append(rank_list.count(i))
+    if max(rank_count) > 3:
+        print("There is a rank for which more than one move is needed. The corresponding path is:")
+        for tree in path:
+            print(tree)
     return(rank_count)
+
+
+def check_HSPR_moves_per_rank(num_leaves, num_tree_pairs):
+    # simulate num_tree_pairs trees and check how moves are distributed across ranks in the trees on shortest path computed by bfs
+    for i in range(0,num_tree_pairs):
+        tree_list = sim_coal(num_leaves,2) # Simulate a pair of trees instead
+        rank_count = bfs_path_rank_sequence(tree_list.trees[0], tree_list.trees[1])
+        print(rank_count)
+
 
 # use own implementation of coalescent to plot ranked SPR distances (HSPR if hspr=0, otherwise (default) RSPR) between coalescent trees (i.e. uniform ranked trees)
 def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', distances_file = ''):
