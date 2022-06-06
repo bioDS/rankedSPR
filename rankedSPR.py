@@ -432,7 +432,7 @@ def orbit_sizes(n, hspr=1):
 
     for i in range(0,num_trees):
         for j in range(0,np.amax(d)+1):
-            orbit_size[i][j] = np.count_nonzero(d[0]==j)
+            orbit_size[i][j] = np.count_nonzero(d[i]==j)
             # print("distance", i, ":", num_trees, "trees")
     unique_rows = np.unique(orbit_size, axis=0)
     return(unique_rows)
