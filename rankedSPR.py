@@ -76,7 +76,10 @@ def rankedSPR_adjacency(num_leaves, hspr = 1):
 
     # Save tree dict in file:
     # open file for writing
-    f = open("SPR/tree_dict_" + str(num_leaves) + "_leaves.txt","w")
+    if hspr == 0:
+        f = open("SPR/tree_dict_" + str(num_leaves) + "_leaves_hspr.txt","w")
+    else:
+        f = open("SPR/tree_dict_" + str(num_leaves) + "_leaves.txt","w")
 
     # write file
     for key in tree_index:
@@ -418,7 +421,7 @@ def caterpillar_diameter_trees(n):
 
 
 def orbit_sizes(n, hspr=1):
-    # find the number of trees at distance k from any tree in the distance matrix computed by SEIDEL (the identity catepillar tree)
+    # find the number of trees at distance k from any tree in the distance matrix computed by SEIDEL
     # Output is an array of orbit sizes, where unique ones are only given once (e.g. all orbit sizes for same ranked topology will be the same)
 
     num_trees = int(math.factorial(n) * math.factorial(n-1) / (2**(n-1)))
@@ -434,5 +437,15 @@ def orbit_sizes(n, hspr=1):
         for j in range(0,np.amax(d)+1):
             orbit_size[i][j] = np.count_nonzero(d[i]==j)
             # print("distance", i, ":", num_trees, "trees")
-    unique_rows = np.unique(orbit_size, axis=0)
-    return(unique_rows)
+    unique_rows = np.unique(orbit_size, axis=0, return_index = True)
+    return(unique_rows) # unique_rows[0] contains the unique orbit sizes and unique_rows[1] contains the indices belonging to trees having those orbit sizes.
+
+def print_orbits_with_trees(n, hspr=1):
+    orbits = orbit_sizes(n, hspr)
+    if hspr == 0:
+        f = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
+    else:
+        f = open('SPR/tree_dict_' + str(n) + '_leaves_hspr.txt')
+    trees = f.readlines()
+    for i in range(0,len(orbits[0])):
+        print(str(trees[orbits[1][i]]), orbits[0][i])
