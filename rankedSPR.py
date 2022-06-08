@@ -443,9 +443,9 @@ def orbit_sizes(n, hspr=1):
 def print_orbits_with_trees(n, hspr=1):
     orbits = orbit_sizes(n, hspr)
     if hspr == 0:
-        f = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
-    else:
         f = open('SPR/tree_dict_' + str(n) + '_leaves_hspr.txt')
+    else:
+        f = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
     trees = f.readlines()
     for i in range(0,len(orbits[0])):
         print(str(trees[orbits[1][i]]), orbits[0][i])
