@@ -449,3 +449,4 @@ def print_orbits_with_trees(n, hspr=1):
     trees = f.readlines()
     for i in range(0,len(orbits[0])):
         print(str(trees[orbits[1][i]]), orbits[0][i])
+    f.close()
