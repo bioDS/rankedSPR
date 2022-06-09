@@ -45,11 +45,22 @@ test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
 # check_HSPR_moves_per_rank(5,10)
 
-for n in range(4,7):
-    print("number of leaves:", n)
-    # rankedspr_seidel(n, hspr=0)
-    print_orbits_with_trees(n, hspr=0)
+# for n in range(4,7):
+#     print("number of leaves:", n)
+#     rankedspr_seidel(n, hspr=1)
+#     print_orbits_with_trees(n, hspr=1)
 
+for n in range(4,11):
+    print(n, "leaves")
+    ctree = identity_caterpillar(n)
+    for i in [0,1]:
+        nh = orbit_count_repetitions(ctree, hspr=0)[i]
+        print(i+1,"- NH")
+        vals = np.fromiter(nh.values(), dtype=int)
+        for i in range(0,np.amax(vals)):
+            print(i, np.count_nonzero(vals==i))
+        # for tree in nh:
+        #     print(nh[tree])
 
 # print(orbit_sizes(4,hspr=0))
 
