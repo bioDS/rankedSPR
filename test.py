@@ -50,15 +50,16 @@ test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 #     rankedspr_seidel(n, hspr=1)
 #     print_orbits_with_trees(n, hspr=1)
 
-for n in range(4,11):
+for n in range(4,7):
     print(n, "leaves")
     ctree = identity_caterpillar(n)
     for i in [0,1]:
         nh = orbit_count_repetitions(ctree, hspr=0)[i]
         print(i+1,"- NH")
         vals = np.fromiter(nh.values(), dtype=int)
-        for i in range(0,np.amax(vals)):
-            print(i, np.count_nonzero(vals==i))
+        for j in range(0,np.amax(vals)+1):
+            print(j, np.count_nonzero(vals==j))
+    # print(n, (n-1)*(n-1)*(n-2)*(n-2)*0.5)
         # for tree in nh:
         #     print(nh[tree])
 
