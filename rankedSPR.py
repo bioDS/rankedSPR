@@ -450,3 +450,35 @@ def print_orbits_with_trees(n, hspr=1):
     for i in range(0,len(orbits[0])):
         print(str(trees[orbits[1][i]]), orbits[0][i])
     f.close()
+
+def orbit_count_repetitions(tree, hspr=1):
+    # print for every tree in 2-NH of tree how often it is counted if we perform two HSPR/RSPR moves on tree
+    one_orbit_dict = dict()
+    two_orbit_dict = dict()
+    if hspr == 0:
+        one_orbit = hspr_neighbourhood(tree)
+    else:
+        one_orbit = spr_neighbourhood(tree)
+    # add all trees in 1-NH to one_orbit_dict
+    for i in range(0,one_orbit.num_trees):
+        one_orbit_dict[tree_to_cluster_string(one_orbit.trees[i])] = 1
+    for i in range(0,one_orbit.num_trees):
+        if hspr == 0:
+            two_orbit = hspr_neighbourhood(one_orbit.trees[i])
+        else:
+            two_orbit = spr_neighbourhood(one_orbit.trees[i])
+        for j in range(0,two_orbit.num_trees):
+            tree_str = tree_to_cluster_string(two_orbit.trees[j])
+            if tree_str in one_orbit_dict:
+                one_orbit_dict[tree_str] += 1
+            elif tree_str in two_orbit_dict:
+                two_orbit_dict[tree_str] += 1
+            elif tree_str == tree_to_cluster_string(tree): # ignore the initial tree
+                pass
+            else:
+                two_orbit_dict[tree_str] = 1
+    print("Size of 2-orbit:", len(two_orbit_dict))
+    print("Size of 2-NH:", 1+len(one_orbit_dict)+len(two_orbit_dict))
+    return(one_orbit_dict, two_orbit_dict)
+
+    
