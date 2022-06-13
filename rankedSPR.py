@@ -11,6 +11,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import random
+import re
 from treeOclock.dct_parser.tree_io import *
 from treeOclock import *
 from simulate_trees import *
@@ -506,4 +507,44 @@ def orbit_count_repetitions(tree, hspr=1):
     print("Size of 2-NH:", 1+len(one_orbit_dict)+len(two_orbit_dict))
     return(one_orbit_dict, two_orbit_dict)
 
-    
+def check_caterpillar_on_shortest_path(num_leaves, num_tree_pairs, hspr=1):
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+    else:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+
+    num_ctrees_on_paths = 0
+
+    for n in range(0,num_tree_pairs):
+        if (n%10 == 0):
+            print("iteration", n)
+        trees = sim_coal(num_leaves, 2)
+        c_dict = dict() # dictionary assigning caterpillar trees to their indices in tree_index file
+        # fill c_dict:
+        c_length = len(str(tree_to_cluster_string(identity_caterpillar(num_leaves))))
+        if hspr == 0:
+            f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+        else:
+            f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+        count = 0
+        i,j = 0,0
+        for line in f:
+            tree_str = line[line.rfind('b'):]
+            tree_str = tree_str[:tree_str.rfind(' ')]
+            if len(tree_str) == c_length:
+                c_dict[tree_str] = count
+            if tree_str == str(tree_to_cluster_string(trees.trees[0])):
+                i = count
+            elif tree_str == str(tree_to_cluster_string(trees.trees[1])):
+                j = count
+            count += 1
+        flag = False
+        for k in c_dict.values(): # check for every tree k if it is on a shortest i-j-path
+            if d[i][k] + d[k][j] == d[i][j]:
+                flag = True
+                num_ctrees_on_paths += 1
+                break
+            if flag == True:
+                break
+    print(num_ctrees_on_paths, "out of", num_tree_pairs, "tree pairs have a path that has at least one caterpillar tree in them")
+    return(num_ctrees_on_paths, num_tree_pairs)
