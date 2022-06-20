@@ -11,6 +11,7 @@ from treeOclock.dct_parser.tree_io import *
 from treeOclock import *
 from simulate_trees import *
 from rankedSPR_seidel import *
+from analyse_distance_distribution import *
 
 
 t = "((1:1,2:1):2,(3:2,4:2):1);"
@@ -50,18 +51,29 @@ test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 #     rankedspr_seidel(n, hspr=1)
 #     print_orbits_with_trees(n, hspr=1)
 
-for n in range(4,7):
-    print(n, "leaves")
-    ctree = identity_caterpillar(n)
-    for i in [0,1]:
-        nh = orbit_count_repetitions(ctree, hspr=0)[i]
-        print(i+1,"- NH")
-        vals = np.fromiter(nh.values(), dtype=int)
-        for j in range(0,np.amax(vals)+1):
-            print(j, np.count_nonzero(vals==j))
-    # print(n, (n-1)*(n-1)*(n-2)*(n-2)*0.5)
+# test_restricted_neighbourhood_search_caterpillar(6,1000, hspr=0)
+
+# for n in range(4,8):
+#     print(n, "leaves")
+#     ctree = identity_caterpillar(n)
+#     for i in [0,1]:
+#         nh = orbit_count_repetitions(ctree, hspr=0)[i]
+#         print(i+1,"- NH")
+#         vals = np.fromiter(nh.values(), dtype=int)
+#         for j in range(0,np.amax(vals)+1):
+#             print(j, np.count_nonzero(vals==j))
+    # print(n, ((n-1)**3*(n-2)**3 - (n*(n+1)))*0.5)
         # for tree in nh:
         #     print(nh[tree])
+
+print_trees_at_diameter(5, hspr=0)
+
+# print(expected_dist(4))
+
+# check_caterpillar_on_shortest_path(6,100)
+
+# for n in range(4,10):
+#     print(n, (n-1)**3*(n-2)**3, (n-1)**2*(n-2)**2)
 
 # print(orbit_sizes(4,hspr=0))
 
