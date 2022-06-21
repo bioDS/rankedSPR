@@ -559,28 +559,52 @@ def print_trees_at_diameter(num_leaves, hspr=1):
     tree_dict = f.readlines()
     d_max = np.amax(d)
     int_pattern = r'[0-9]' # by looking at tree string without integers, we can compare tree topology and only print a tree pair once, if they have the same topology (careful: there might be tree pairs with same topology where not both trees result from same permutation!)
-    print('trees at diameter distance:')
+    # print('trees at diameter distance:')
     all_topologies = set([]) # save all toplogoies in an array to be able to check the number of trees with max distance for every topology
     topology_pairs = [] # topolgies of pairs of trees at diameter distance
     tree_pairs = [] # actual trees at diameter distance (only one per topology pair)
+    count = 0
     for coord in np.argwhere(d == d_max):
+        if count%100==0:
+            print("number of tree pairs considered: ", count)
+        count+=1
         tree1_str = tree_dict[coord[0]].split("'")[1]
         tree2_str = tree_dict[coord[1]].split("'")[1]
-        tree1_top_str = str(re.sub(int_pattern, '', tree1_str))
-        tree2_top_str = str(re.sub(int_pattern, '', tree2_str))
-        if (set([tree1_top_str, tree2_top_str]) not in topology_pairs):
-            topology_pairs.append(set([tree1_top_str, tree2_top_str]))
+        tree1 = read_from_cluster(tree1_str)
+        tree2 = read_from_cluster(tree2_str)
+        # print('tree1:', tree1_str)
+        # print('tree2:', tree2_str)
+        if len(tree_pairs) == 0:
             tree_pairs.append(set([tree1_str, tree2_str]))
-            all_topologies.add(tree1_top_str)
-            all_topologies.add(tree2_top_str)
-    for pair in topology_pairs:
+        # print('tree pairs:', tree_pairs)
+        for i in range(0,len(tree_pairs)):
+            tp = tree_pairs[i]
+            # print('tp:', tp)
+            t1_str = tp.pop()
+            t2_str = tp.pop()
+            t1 = read_from_cluster(t1_str)
+            t2 = read_from_cluster(t2_str)
+            tree_pairs[i] = set([t1_str, t2_str])
+            if ((same_topology(t1,tree1)+same_topology(t2,tree2))+(same_topology(t2,tree1)+same_topology(t1,tree2))>1):
+                tree_pairs.append(set([tree1_str, tree2_str]))
+
+        # Alternative (wrong)
+        # tree1_top_str = str(re.sub(int_pattern, '', tree1_str))
+        # tree2_top_str = str(re.sub(int_pattern, '', tree2_str))
+        # if (set([tree1_top_str, tree2_top_str]) not in topology_pairs):
+        #     topology_pairs.append(set([tree1_top_str, tree2_top_str]))
+        #     tree_pairs.append(set([tree1_str, tree2_str]))
+        #     all_topologies.add(tree1_top_str)
+        #     all_topologies.add(tree2_top_str)
+    print('tree pairs at diameter distance:')
+    for pair in tree_pairs:
         print(pair)
-    print("diameter dist trees per topology:")
-    for topology in all_topologies:
-        count = 0
-        for pair in topology_pairs:
-            if topology in pair:
-                count +=1
-        print("number of neighbours for topology", topology, ":", count)
+    # print("diameter dist trees per topology:")
+    # for topology in all_topologies:
+    #     count = 0
+    #     for pair in topology_pairs:
+    #         if topology in pair:
+    #             count +=1
+    #     print("number of neighbours for topology", topology, ":", count)
 
     print("number of tree topology pairs:", len(tree_pairs))
