@@ -577,6 +577,7 @@ def print_trees_at_diameter(num_leaves, hspr=1):
         if len(tree_pairs) == 0:
             tree_pairs.append(set([tree1_str, tree2_str]))
         # print('tree pairs:', tree_pairs)
+        topology_already_counted = False
         for i in range(0,len(tree_pairs)):
             tp = tree_pairs[i]
             # print('tp:', tp)
@@ -585,8 +586,11 @@ def print_trees_at_diameter(num_leaves, hspr=1):
             t1 = read_from_cluster(t1_str)
             t2 = read_from_cluster(t2_str)
             tree_pairs[i] = set([t1_str, t2_str])
-            if ((same_topology(t1,tree1)+same_topology(t2,tree2))+(same_topology(t2,tree1)+same_topology(t1,tree2))>1):
-                tree_pairs.append(set([tree1_str, tree2_str]))
+            if ((same_topology(t1,tree1)+same_topology(t2,tree2)== 0) or (same_topology(t2,tree1)+same_topology(t1,tree2)==0)):
+                topology_already_counted = True
+                break
+        if topology_already_counted == False:
+            tree_pairs.append(set([tree1_str, tree2_str]))
 
         # Alternative (wrong)
         # tree1_top_str = str(re.sub(int_pattern, '', tree1_str))
