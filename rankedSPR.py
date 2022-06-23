@@ -536,6 +536,8 @@ def check_caterpillar_on_shortest_path(num_leaves, hspr=1):
     f.close()
 
     for i in range(0,num_trees):
+        if math.floor(i%(num_trees/100)) == 0:
+            print("progress:", i/num_trees)
         for j in range(i+1, num_trees):
             flag = False
             for k in c_indices: # check for every tree k if it is on a shortest i-j-path
@@ -545,8 +547,8 @@ def check_caterpillar_on_shortest_path(num_leaves, hspr=1):
                     break
                 if flag == True:
                     break
-            if flag==False:
-                print(i, j)
+            # if flag==False:
+            #     print(i, j)
     print(num_ctrees_on_paths, "out of", (num_trees**2-num_trees)/2, "tree pairs have a path that has at least one caterpillar tree in them")
     return(num_ctrees_on_paths, num_trees)
 

@@ -37,8 +37,8 @@ t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
 
-ct = read_newick(t)
-cs = read_newick(r)
+# ct = read_newick(t)
+# cs = read_newick(r)
 
 # print(same_topology(ct,cs))
 # print(same_topology(ct,ct))
@@ -69,11 +69,11 @@ cs = read_newick(r)
         # for tree in nh:
         #     print(nh[tree])
 
-print_trees_at_diameter(4, hspr=0)
+# print_trees_at_diameter(4, hspr=0)
 
 # print(expected_dist(4))
 
-# check_caterpillar_on_shortest_path(6,100)
+check_caterpillar_on_shortest_path(6)
 
 # for n in range(4,10):
 #     print(n, (n-1)**3*(n-2)**3, (n-1)**2*(n-2)**2)
