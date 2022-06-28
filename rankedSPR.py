@@ -623,7 +623,7 @@ def same_unranked_topology(tree1, tree2):
     tree1_str = str(tree_to_cluster_string(tree1))
     clusters1 = re.findall(cluster_pattern, tree1_str)
     tree2_str = str(tree_to_cluster_string(tree2))
-    clusters2 = re.findall(cluster_pattern, tree1_str)
+    clusters2 = re.findall(cluster_pattern, tree2_str)
     if sorted(clusters1) == sorted(clusters2):
         return(True)
     else:
@@ -648,8 +648,12 @@ def longest_rank_shortest_path(num_leaves, hspr=1):
 
     current_d = max_dist
     found_path = False # did we find a path with only rank moves on it?
-    for coord in np.argwhere(d == current_d):
-        tree1_str = tree_dict[coord[0]].split("'")[1]
-        tree2_str = tree_dict[coord[1]].split("'")[1]
-        tree1 = read_from_cluster(tree1_str)
-        tree2 = read_from_cluster(tree2_str)
+    while(found_path==False):
+        for coord in np.argwhere(d == current_d):
+            tree1_str = tree_dict[coord[0]].split("'")[1]
+            tree2_str = tree_dict[coord[1]].split("'")[1]
+            tree1 = read_from_cluster(tree1_str)
+            tree2 = read_from_cluster(tree2_str)
+            if same_unranked_topology(tree1, tree2) == True:
+                
+        current_d -=1
