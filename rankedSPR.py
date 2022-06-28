@@ -642,7 +642,18 @@ def longest_rank_shortest_path(num_leaves, hspr=1):
     max_dist = np.amax(d)
     print('maximum distance:', max_dist)
 
-    tree_dict = f.readlines()
+    tree_strings = f.readlines()
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")
+        print(tree_str)
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
 
     num_trees = len(d)
 
@@ -650,10 +661,15 @@ def longest_rank_shortest_path(num_leaves, hspr=1):
     found_path = False # did we find a path with only rank moves on it?
     while(found_path==False):
         for coord in np.argwhere(d == current_d):
-            tree1_str = tree_dict[coord[0]].split("'")[1]
-            tree2_str = tree_dict[coord[1]].split("'")[1]
+            tree1_str = tree_index_dict[coord[0]]
+            tree2_str = tree_index_dict[coord[1]]
             tree1 = read_from_cluster(tree1_str)
             tree2 = read_from_cluster(tree2_str)
             if same_unranked_topology(tree1, tree2) == True:
-                
+                # Here we basically want a BFS implementation with only rank moves
+                neighbourhood = all_rank_neighbours(tree1)
+                for i in range(0,neighbourhood.num_trees):
+                    neighbour_index = tree_dict[tree_to_cluster_string(neighbourhood.trees[i])]
+                    if d[coord[0]][neighbour_index] + d[coord[1]][neighbour_index] == current_d:
+                        # neighbour_index is on shortest path
         current_d -=1
