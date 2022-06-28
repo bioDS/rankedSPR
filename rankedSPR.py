@@ -615,3 +615,41 @@ def print_trees_at_diameter(num_leaves, hspr=1):
     #     print("number of neighbours for topology", topology, ":", count)
 
     print("number of tree topology pairs:", len(tree_pairs))
+
+
+# check if two trees have same unranked topology]
+def same_unranked_topology(tree1, tree2):
+    cluster_pattern = r'\{[^\}]*\}'
+    tree1_str = str(tree_to_cluster_string(tree1))
+    clusters1 = re.findall(cluster_pattern, tree1_str)
+    tree2_str = str(tree_to_cluster_string(tree2))
+    clusters2 = re.findall(cluster_pattern, tree1_str)
+    if sorted(clusters1) == sorted(clusters2):
+        return(True)
+    else:
+        return(False)
+
+
+# Find longest shortest paths with only rank moves on them
+def longest_rank_shortest_path(num_leaves, hspr=1):
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+    else:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+    max_dist = np.amax(d)
+    print('maximum distance:', max_dist)
+
+    tree_dict = f.readlines()
+
+    num_trees = len(d)
+
+    current_d = max_dist
+    found_path = False # did we find a path with only rank moves on it?
+    for coord in np.argwhere(d == current_d):
+        tree1_str = tree_dict[coord[0]].split("'")[1]
+        tree2_str = tree_dict[coord[1]].split("'")[1]
+        tree1 = read_from_cluster(tree1_str)
+        tree2 = read_from_cluster(tree2_str)
