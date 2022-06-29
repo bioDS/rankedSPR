@@ -37,13 +37,53 @@ t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
 
+mrtree4_1="((1:1,2:1):2,(3:2,4:2):1);"
+mrtree4_2="((3:1,4:1):2,(1:2,2:2):1);"
+
+mrtree5_1="((1:1,2:1):3,((3:2,4:2):1,5:3):1);"
+mrtree5_2="(((3:1,4:1):1,5:2):2,(1:3,2:3):1);"
+
+mrtree6_1="(((1:1,2:1):1,3:2):3,((4:3,5:3):1,6:4):1);"
+mrtree6_2="(((4:1,5:1):1,6:2):3,((1:3,2:3):1,3:4):1);"
+
+mrtree7_1="(((1:1,2:1):1,3:2):4,(((4:3,5:3):1,6:4):1,7:5):1);"
+mrtree7_2="((((4:1,5:1):1,6:2):1,7:3):3,((1:4,2:4):1,3:5):1);"
+
+mrtree8_1="((((1:1,2:1):1,3:2):1,4:3):4,(((5:4,6:4):1,7:5):1,8:6):1);"
+mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
+
+
+tree4_1=read_newick(mrtree4_1)
+tree4_2=read_newick(mrtree4_2)
+
+tree5_1=read_newick(mrtree5_1)
+tree5_2=read_newick(mrtree5_2)
+
+tree6_1=read_newick(mrtree6_1)
+tree6_2=read_newick(mrtree6_2)
+
+tree7_1=read_newick(mrtree7_1)
+tree7_2=read_newick(mrtree7_2)
+
+tree8_1=read_newick(mrtree8_1)
+tree8_2=read_newick(mrtree8_2)
+
+print(shortest_rank_path(tree4_1, tree4_2))
+print(shortest_rank_path(tree5_1, tree5_2))
+print(shortest_rank_path(tree6_1, tree6_2))
+print(shortest_rank_path(tree7_1, tree7_2))
+print(shortest_rank_path(tree8_1, tree8_2))
+
+print(rankedspr_bfs(tree8_1, tree8_2, hspr=1))
+
+
 # ct = read_newick(e)
 # cs = read_newick(f)
 
 # print(same_unranked_topology(ct, cs))
-for n in range(4,7):
-    print('n =', n)
-    longest_rank_shortest_path(n)
+# for n in range(4,7):
+#     print('n =', n)
+#     longest_rank_shortest_path(n)
 
 # # test function all_rank_neighbours:
 # print('start tree:', tree_to_cluster_string(ct))
