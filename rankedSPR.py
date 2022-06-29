@@ -631,13 +631,9 @@ def same_unranked_tree(tree1, tree2):
 
 
 # Find longest shortest paths with only rank moves on them
-def longest_rank_shortest_path(num_leaves, hspr=1):
-    if hspr == 1:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    else:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+def longest_rank_shortest_path(num_leaves):
+    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
 
     max_dist = np.amax(d)
     print('Diameter:', max_dist)
