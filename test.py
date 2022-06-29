@@ -37,8 +37,19 @@ t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
 
-# ct = read_newick(t)
-# cs = read_newick(r)
+# ct = read_newick(e)
+# cs = read_newick(f)
+
+# print(same_unranked_topology(ct, cs))
+for n in range(4,7):
+    print('n =', n)
+    longest_rank_shortest_path(n)
+
+# # test function all_rank_neighbours:
+# print('start tree:', tree_to_cluster_string(ct))
+# neighbours = all_rank_neighbours(ct)
+# for i in range(0,neighbours.num_trees):
+#     print(tree_to_cluster_string(neighbours.trees[i]))
 
 # print(same_topology(ct,cs))
 # print(same_topology(ct,ct))
@@ -73,7 +84,7 @@ test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
 # print(expected_dist(4))
 
-check_caterpillar_on_shortest_path(6)
+# check_caterpillar_on_shortest_path(6)
 
 # for n in range(4,10):
 #     print(n, (n-1)**3*(n-2)**3, (n-1)**2*(n-2)**2)
