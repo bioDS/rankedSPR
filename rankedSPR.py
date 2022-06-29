@@ -561,10 +561,7 @@ def print_trees_at_diameter(num_leaves, hspr=1):
         f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
     tree_dict = f.readlines()
     d_max = np.amax(d)
-    int_pattern = r'[0-9]' # by looking at tree string without integers, we can compare tree topology and only print a tree pair once, if they have the same topology (careful: there might be tree pairs with same topology where not both trees result from same permutation!)
     # print('trees at diameter distance:')
-    all_topologies = set([]) # save all toplogoies in an array to be able to check the number of trees with max distance for every topology
-    topology_pairs = [] # topolgies of pairs of trees at diameter distance
     tree_pairs = [] # actual trees at diameter distance (only one per topology pair)
     count = 0
     for coord in np.argwhere(d == d_max):
@@ -594,15 +591,6 @@ def print_trees_at_diameter(num_leaves, hspr=1):
                 break
         if topology_already_counted == False:
             tree_pairs.append(set([tree1_str, tree2_str]))
-
-        # Alternative (wrong)
-        # tree1_top_str = str(re.sub(int_pattern, '', tree1_str))
-        # tree2_top_str = str(re.sub(int_pattern, '', tree2_str))
-        # if (set([tree1_top_str, tree2_top_str]) not in topology_pairs):
-        #     topology_pairs.append(set([tree1_top_str, tree2_top_str]))
-        #     tree_pairs.append(set([tree1_str, tree2_str]))
-        #     all_topologies.add(tree1_top_str)
-        #     all_topologies.add(tree2_top_str)
     print('tree pairs at diameter distance:')
     for pair in tree_pairs:
         print(pair)
@@ -649,8 +637,6 @@ def longest_rank_shortest_path(num_leaves):
         tree_dict[tree_str]=index
         tree_index_dict[index]=tree_str
         index += 1
-
-    num_trees = len(d)
 
     current_d = max_dist
     found_path = False # did we find a path with only rank moves on it?
