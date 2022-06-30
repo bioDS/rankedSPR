@@ -657,3 +657,39 @@ def longest_rank_shortest_path(num_leaves):
                     print('Given by trees:\n', tree1_str, "\n", tree2_str)
                     return(0)
         current_d -=1
+
+
+# find a shortest path with rank moves bundled at the beginning for trees on num_leaves leaves (use coalescent to simulate such trees)
+def path_rank_moves_first(num_leaves, num_repeats):
+    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    for j in range(0,num_repeats):
+        tree_list = sim_coal(num_leaves,2)
+        tree1 = tree_list.trees[0]
+        tree2 = tree_list.trees[1]
+        tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
+        tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
+
+        tree1_index = tree_dict[tree1_str]
+        tree2_index = tree_dict[tree2_str]
+
+        rank_neighbours = all_rank_neighbours(tree1)
+        for i in range(0,rank_neighbours.num_trees):
+            neighbour_str = str(tree_to_cluster_string(rank_neighbours.trees[i])).split("'")[1]
+            neighbour_index = tree_dict[neighbour_str]
+            if d[tree1_index][neighbour_index] + d[neighbour_index][tree2_index] == d[tree1_index][tree2_index]:
+                print("start:", tree1_str)
+                print("neighbour:", neighbour_str)
+                print("end:", tree2_str)

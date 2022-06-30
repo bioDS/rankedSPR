@@ -76,8 +76,9 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 
 # print(rankedspr_bfs(tree8_1, tree8_2, hspr=1))
 
-compare_hspr_rspr_uniform(6,100)
+# compare_hspr_rspr_uniform(6,100)
 
+path_rank_moves_first(5,10)
 
 # ct = read_newick(e)
 # cs = read_newick(f)
