@@ -273,7 +273,7 @@ def coal_pw_spr_dist(num_leaves, num_tree_pairs, hspr = 1, output_file = '', dis
     upper_bound = max(distances)
     b = np.arange(-.5, upper_bound + 1.5, 1)
     sns.set_theme(font_scale=1.2)
-    sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    sns.histplot(d, color = '#b02538', edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
     plt.xlabel("Distance")
     plt.ylabel("Proportion of trees")
     if hspr == 1:
@@ -370,7 +370,7 @@ def compare_hspr_rspr_uniform(num_leaves, num_tree_pairs, distances_file = ''):
     upper_bound = max(distances)
     b = np.arange(-.5, upper_bound + 1.5, 1)
     sns.set_theme(font_scale=1.2)
-    sns.histplot(d, Color = '#b02538', Edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    sns.histplot(d, color = '#b02538', edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
     plt.xlabel("Distance")
     plt.ylabel("Proportion of trees")
     plt.savefig("SPR/plots/rspr_hspr_difference_" + str(num_leaves) + "_n_" + str(num_tree_pairs) + ".eps")
