@@ -356,7 +356,7 @@ def distance_del_leaf(num_leaves, num_deletions, num_tree_pairs, hspr = 1, outpu
 
 # use own implementation of coalescent to compare RSPR and HSPR distances between trees drawn from uniform distribution
 def compare_hspr_rspr_uniform(num_leaves, num_tree_pairs, distances_file = ''):
-    # Plotting the distances for num_tree_pairs simulated pairs of trees and save plot (if filehandle given) in output_file
+    # Plotting the distances for num_tree_pairs simulated pairs of trees and save distances (if file handle provided)
     distances = [] # contains HSPR-RSPR distance for all simulated tree pairs
     for i in range(0,int(num_tree_pairs)):
         if i%100 == 0:
