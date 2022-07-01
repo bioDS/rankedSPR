@@ -694,3 +694,109 @@ def path_rank_moves_first(num_leaves, num_repeats):
                 print("start:", tree1_str)
                 print("neighbour:", neighbour_str)
                 print("end:", tree2_str)
+
+
+# Compute the maximum number of rank moves on a shortest path in RSPR (using the distance matrix for the whole tree space computed by SEIDEL)
+def max_rank_move_shortest_path(tree1, tree2):
+    num_leaves = tree1.num_leaves
+    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
+    tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
+
+    tree1_index = tree_dict[tree1_str]
+    tree2_index = tree_dict[tree2_str]
+
+    distance = d[tree1_index][tree2_index]
+
+    # for every tree that is on a shortest path, save all predecessors of it in dictionary pred:
+    pred = dict()
+    for tree_index in range(0,len(d)):
+        if d[tree1_index][tree_index] + d[tree_index][tree2_index] == distance:
+            tree = read_from_cluster(tree_index_dict[tree_index])
+            neighbourhood = spr_neighbourhood(tree)
+            for i in range(0, neighbourhood.num_trees):
+                predecessor = neighbourhood.trees[i]
+                pred_str = str(tree_to_cluster_string(predecessor)).split("'")[1]
+                pred_index = tree_dict[pred_str]
+                if d[tree1_index][pred_index] + d[pred_index][tree_index] + d[tree_index][tree2_index] == distance: # if predecessor is on shortest path from tree1 to tree2
+                    if tree_index in pred:
+                        pred[tree_index].add(pred_index)
+                    else:
+                        pred[tree_index] = set([pred_index])
+
+    # print("starting tree:", tree1_str)
+    # print("destination tree:", tree2_str)
+    # for i in pred:
+    #     for j in pred[i]:
+    #         print(tree_index_dict[j], tree_index_dict[i])
+    # print(len(pred))
+
+    max_rank_moves = 0
+
+    # print("start second part")
+    # print(pred)
+
+    # We now need to transform the predecessor dict into actual shortest paths and count how many rank moves are on each of these paths.
+    found = False
+    while True:
+        # print("pred:", pred)
+        current_path_rank_moves = 0
+        # build path from end to beginning. Delete trees from pred dict, if all pred (i.e. all shortest path containing that tree) are considered.
+        last_tree_index = tree2_index
+        last_tree = read_from_cluster(tree_index_dict[tree2_index])
+        last_popped = -1 # index of the last tree removed from pred[last_pooped_pred]
+        last_popped_pred = -1
+        while last_tree_index != tree1_index:
+            # print(pred[last_tree_index])
+            tree_index = pred[last_tree_index].pop()
+            # print(tree_index)
+
+            # we only delete the index out of the pred values if it was the last one where there were multiple choices on the currently computed path.
+            if len(pred[last_tree_index]) >=1:
+                if last_popped != -1:
+                    if last_popped_pred in pred:
+                        pred[last_popped_pred].add(last_popped)
+                    else:
+                        pred[last_popped_pred] = set([last_popped])
+                else:
+                    last_popped = tree_index
+                    last_popped_pred = last_tree_index
+            else:
+                pred[last_tree_index].add(tree_index)
+            # if tree_index in pred and len(pred[tree_index])>1: # if there are further paths going through tree_index, we add it back to the predecessor list of last_tree_index
+            #     pred[last_tree_index].add(tree_index)
+            if len(pred[last_tree_index])==0:
+                pred.pop(last_tree_index)
+            tree_str = tree_index_dict[tree_index]
+            tree = read_from_cluster(tree_str)
+            if same_unranked_tree(tree,last_tree):
+                current_path_rank_moves += 1
+            else:
+                print("HSPR move")
+            last_tree_index = tree_index
+            last_tree = tree
+        if current_path_rank_moves > max_rank_moves:
+            max_rank_moves = current_path_rank_moves
+        # print(current_path_rank_moves)
+        if found == True:
+            break
+        done = True
+        for i in pred:
+            if len(pred[i]) != 1:
+                done = False
+        if done == True:
+            found = True
+    return(max_rank_moves)
