@@ -224,6 +224,7 @@ def rankedspr_bfs(start_tree, dest_tree, hspr=1):
     return(path)
 
 
+# Find the ranks on which moves are performed on shortest path resulting from BFS
 def bfs_path_rank_sequence(tree1, tree2):
     path = rankedspr_bfs(tree1, tree2, hspr=0)
     rank_list = []
@@ -659,7 +660,7 @@ def longest_rank_shortest_path(num_leaves):
         current_d -=1
 
 
-# find a shortest path with rank moves bundled at the beginning for trees on num_leaves leaves (use coalescent to simulate such trees)
+# simulate two trees (coalescent) and see whether there is a tree in 1-NH of starting tree resulting from rank move
 def path_rank_moves_first(num_leaves, num_repeats):
     d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
     f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
