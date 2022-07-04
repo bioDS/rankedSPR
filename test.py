@@ -18,8 +18,8 @@ t = "((1:1,2:1):2,(3:2,4:2):1);"
 r = "(((1:1,2:1):1,3:2):1,4:3);"
 s = "((3:1,4:1):2,(1:2,2:2):1);"
 
-q1 = "((((1:1,2:1):1,4:2):1,5:3):1,3:4);"
-q2 = "((((1:1,5:1):1,3:2):1,4:3):1,2:4);"
+q1 = "(((1:1,2:1):1,3:2):2,(4:3,5:3):1);"
+q2 = "((((4:1,5:1):1,1:2):1,3:3):1,2:4);"
 
 a = "(((1:1,2:1):1,3:2):3,((4:3,5:3):1,6:4):1);"
 b = "(((4:1,5:1):1,6:2):3,((1:3,2:3):1,3:4):1);"
@@ -56,8 +56,8 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 # tree4_1=read_newick(mrtree4_1)
 # tree4_2=read_newick(mrtree4_2)
 
-# tree5_1=read_newick(mrtree5_1)
-# tree5_2=read_newick(mrtree5_2)
+# tree6_1=read_newick(mrtree6_1)
+# tree6_2=read_newick(mrtree6_2)
 
 # tree6_1=read_newick(mrtree6_1)
 # tree6_2=read_newick(mrtree6_2)
@@ -74,11 +74,18 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 # print(shortest_rank_path(tree7_1, tree7_2))
 # print(shortest_rank_path(tree8_1, tree8_2))
 
-# print(rankedspr_bfs(tree8_1, tree8_2, hspr=1))
+# print(rankedspr_bfs(tree6_1, tree6_2, hspr=1))
+
+# tree1 = read_newick(q1)
+# tree2 = read_newick(q2)
+# print(len(rankedspr_bfs(tree1, tree2, hspr=1))-1)
+# print(max_rank_move_shortest_path(tree1, tree2))
+
+print(check_max_rank_move_shortest_path(7,10))
 
 # compare_hspr_rspr_uniform(6,100)
 
-path_rank_moves_first(5,10)
+# path_rank_moves_first(6,10)
 
 # ct = read_newick(e)
 # cs = read_newick(f)
