@@ -81,7 +81,9 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 # print(len(rankedspr_bfs(tree1, tree2, hspr=1))-1)
 # print(max_rank_move_shortest_path(tree1, tree2))
 
-print(check_max_rank_move_shortest_path(7,10))
+caterpillar_diameter_trees(6)
+
+# print(check_max_rank_move_shortest_path(7,10))
 
 # compare_hspr_rspr_uniform(6,100)
 
