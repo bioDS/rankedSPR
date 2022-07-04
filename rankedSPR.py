@@ -752,7 +752,6 @@ def max_rank_move_shortest_path(tree1, tree2):
     # We now need to transform the predecessor dict into actual shortest paths and count how many rank moves are on each of these paths.
     found = False
     while True:
-        # print("pred:", pred)
         current_path_rank_moves = 0
         # build path from end to beginning. Delete trees from pred dict, if all pred (i.e. all shortest path containing that tree) are considered.
         last_tree_index = tree2_index
@@ -771,14 +770,13 @@ def max_rank_move_shortest_path(tree1, tree2):
                         pred[last_popped_pred].add(last_popped)
                     else:
                         pred[last_popped_pred] = set([last_popped])
-                else:
-                    last_popped = tree_index
-                    last_popped_pred = last_tree_index
+                last_popped = tree_index
+                last_popped_pred = last_tree_index
             else:
                 pred[last_tree_index].add(tree_index)
             # if tree_index in pred and len(pred[tree_index])>1: # if there are further paths going through tree_index, we add it back to the predecessor list of last_tree_index
             #     pred[last_tree_index].add(tree_index)
-            if len(pred[last_tree_index])==0:
+            if len(pred[last_tree_index])==0: # delete empty sets from pred (all paths through corresponding tree have already been considered)
                 pred.pop(last_tree_index)
             tree_str = tree_index_dict[tree_index]
             tree = read_from_cluster(tree_str)
@@ -800,3 +798,17 @@ def max_rank_move_shortest_path(tree1, tree2):
         if done == True:
             found = True
     return(max_rank_moves)
+
+
+# check max number of rank moves on shortest path for num_tree_pairs pairs of coalescent trees in RPSR
+def check_max_rank_move_shortest_path(num_leaves, num_tree_pairs):
+    rank_moves = [] # list containing max number of rank moves among all shortest paths between simulated trees
+    for i in range(0,num_tree_pairs):
+        if i % 1 == 0:
+            print('iteration', i)
+        tree_list = sim_coal(num_leaves,2)
+        # print('trees:')
+        # print(tree_to_cluster_string(tree_list.trees[0]))
+        # print(tree_to_cluster_string(tree_list.trees[1]))
+        rank_moves.append(max_rank_move_shortest_path(tree_list.trees[0], tree_list.trees[1]))
+    return(max(rank_moves))
