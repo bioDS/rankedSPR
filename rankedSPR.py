@@ -784,8 +784,8 @@ def max_rank_move_shortest_path(tree1, tree2):
             tree = read_from_cluster(tree_str)
             if same_unranked_tree(tree,last_tree):
                 current_path_rank_moves += 1
-            else:
-                print("HSPR move")
+            # else:
+            #     print("HSPR move")
             last_tree_index = tree_index
             last_tree = tree
         if current_path_rank_moves > max_rank_moves:
