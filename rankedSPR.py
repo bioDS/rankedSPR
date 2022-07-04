@@ -417,13 +417,16 @@ def find_rank_moves(num_leaves, num_tree_pairs):
 
 
 
-def caterpillar_diameter_trees(n):
-    # Checking which caterpillar trees have diameter distance from identity caterpillar
+def caterpillar_diameter_trees(n, hspr=1):
+    # Checking which trees have diameter distance from identity caterpillar
     print("Reading trees")
-    file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
+    if hspr ==1:
+        file = open('SPR/tree_dict_' + str(n) + '_leaves.txt')
+        d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
+    else:
+        file = open('SPR/tree_dict_' + str(n) + '_leaves_hspr.txt')
+        d = np.load('SPR/distance_matrix_' + str(n) + '_leaves_hspr.npy')
     content = file.readlines()
-
-    d = np.load('SPR/distance_matrix_' + str(n) + '_leaves.npy')
     print("Done reading trees")
 
     max_indices = np.where(d == np.amax(d))
@@ -437,11 +440,11 @@ def caterpillar_diameter_trees(n):
         if max_indices[0][count] != 0:
             break
         count += 1
-    #    print(index1, len(content[index1]), content[index1])
+        print(index1, len(content[index1]), content[index1])
         # We only need to compare against first tree in file, as this is identity caterpillar tree (bc of symmetry)
-        if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
-            # print(content[0], content[index1])
-            num_max_dist +=1
+        # if content[index1].count(',') == content[0].count(','): # check if content[index2] is caterpillar tree
+        #     # print(content[0], content[index1])
+        #     num_max_dist +=1
 
     print("number of caterpillar trees with diameter distance from identity caterpillar:", num_max_dist)
     print("total number of trees with diameter distance from identity caterpillar:", count)
