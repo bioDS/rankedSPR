@@ -872,3 +872,39 @@ def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
                 # for k in range(0,path.num_trees):
                 #     print(tree_to_cluster_string(path.trees[k]))
     print(differences)
+
+
+def test_rankedspr_path_restricting_neighbourhood(num_leaves, hspr=0):
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+    else:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    differences = []
+    for i in range(0,len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+            approx_dist = rankedspr_path_restricting_neighbourhood(tree1,tree2,hspr)
+            actual_dist = d[i][j]
+            differences.append(approx_dist - actual_dist)
+            # if differences[len(differences)-1] > 0:
+            #     print(approx_dist, actual_dist)
+            #     print(tree1_str)
+            #     print(tree2_str)
+    print(max(differences))

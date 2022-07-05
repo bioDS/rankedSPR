@@ -18,8 +18,8 @@ t = "((1:1,2:1):2,(3:2,4:2):1);"
 r = "(((1:1,2:1):1,3:2):1,4:3);"
 s = "((3:1,4:1):2,(1:2,2:2):1);"
 
-q1 = "(((1:1,2:1):1,3:2):2,(4:3,5:3):1);"
-q2 = "((((4:1,5:1):1,1:2):1,3:3):1,2:4);"
+q1 = "(((1:1,2:1):1,5:2):2,(3:3,4:3):1);"
+q2 = "(((3:1,4:1):1,5:2):2,(1:3,2:3):1);"
 
 a = "(((1:1,2:1):1,3:2):3,((4:3,5:3):1,6:4):1);"
 b = "(((4:1,5:1):1,6:2):3,((1:3,2:3):1,3:4):1);"
@@ -74,16 +74,30 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 # print(shortest_rank_path(tree7_1, tree7_2))
 # print(shortest_rank_path(tree8_1, tree8_2))
 
-# print(rankedspr_bfs(tree6_1, tree6_2, hspr=1))
+# print(rankedspr_bfs(tree7_1, tree7_2, hspr=1))
 
 # tree1 = read_newick(q1)
 # tree2 = read_newick(q2)
 # print(len(rankedspr_bfs(tree1, tree2, hspr=1))-1)
 # print(max_rank_move_shortest_path(tree1, tree2))
 
-caterpillar_diameter_trees(6)
+# path = rankedspr_path_bottom_up_hspr(tree1, tree2)
+# print(path.num_trees-1)
+# for i in range(0,path.num_trees):
+#     print(tree_to_cluster_string(path.trees[i]))
 
-# print(check_max_rank_move_shortest_path(7,10))
+# for n in range(4,5):
+#     print("number of leaves:", n)
+#     rankedspr_seidel(n, hspr=0)
+#     print_orbits_with_trees(n, hspr=1)
+
+rankedspr_seidel(6,hspr=0)
+# test_bottom_up_hspr_approximation(5, hspr=0)
+test_rankedspr_path_restricting_neighbourhood(6,hspr=0)
+
+# caterpillar_diameter_trees(6)
+
+# print(check_max_rank_move_shortest_path(5))
 
 # compare_hspr_rspr_uniform(6,100)
 
@@ -112,10 +126,6 @@ caterpillar_diameter_trees(6)
 
 # check_HSPR_moves_per_rank(5,10)
 
-# for n in range(4,7):
-#     print("number of leaves:", n)
-#     rankedspr_seidel(n, hspr=1)
-#     print_orbits_with_trees(n, hspr=1)
 
 # test_restricted_neighbourhood_search_caterpillar(6,1000, hspr=0)
 
