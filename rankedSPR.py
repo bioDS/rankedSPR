@@ -839,8 +839,6 @@ def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
         d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
         f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
 
-    print(d)
-
     # Put all trees into a dict (note that indices are sorted increasingly in file)
     tree_strings = f.readlines()
     index = 0
