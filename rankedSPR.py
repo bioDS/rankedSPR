@@ -416,7 +416,6 @@ def find_rank_moves(num_leaves, num_tree_pairs):
                     print(tree)
 
 
-
 def caterpillar_diameter_trees(n, hspr=1):
     # Checking which trees have diameter distance from identity caterpillar
     print("Reading trees")
@@ -480,6 +479,7 @@ def print_orbits_with_trees(n, hspr=1):
     for i in range(0,len(orbits[0])):
         print(str(trees[orbits[1][i]]), orbits[0][i])
     f.close()
+
 
 def orbit_count_repetitions(tree, hspr=1):
     # print for every tree in 2-NH of tree how often it is counted if we perform two HSPR/RSPR moves on tree
@@ -555,6 +555,7 @@ def check_caterpillar_on_shortest_path(num_leaves, hspr=1):
             #     print(i, j)
     print(num_ctrees_on_paths, "out of", (num_trees**2-num_trees)/2, "tree pairs have a path that has at least one caterpillar tree in them")
     return(num_ctrees_on_paths, num_trees)
+
 
 def print_trees_at_diameter(num_leaves, hspr=1):
     if hspr == 1:
