@@ -855,11 +855,8 @@ def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
     differences = [] # array of differences between approximated and actual distances
     for i in range(0,len(d)):
         tree1 = read_from_cluster(tree_index_dict[i])
-        for j in range(0,len(d)):
+        for j in range(i+1,len(d)):
             tree2 = read_from_cluster(tree_index_dict[j])
-            # print('start tree:', tree_to_cluster_string(tree1))
-            # print('destination tree:', tree_to_cluster_string(tree2))
-            # print(d[i][j], len(rankedspr_bfs(tree1, tree2, hspr=0))-1, rankedspr_path_bottom_up_hspr_dist(tree1,tree2))
             # print("computed path:")
             # path = rankedspr_path_bottom_up_hspr(tree1,tree2)
             # for i in range(0,path.num_trees):
@@ -867,4 +864,8 @@ def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
             # for some reason using the matrix d gives wrong results.
             # there might be something wrong with the computation of d??
             differences.append(rankedspr_path_bottom_up_hspr_dist(tree1,tree2)-(len(rankedspr_bfs(tree1, tree2, hspr=0))-1))
+            if (differences[len(differences)-1] != 0):
+                print('start tree:', tree_to_cluster_string(tree1))
+                print('destination tree:', tree_to_cluster_string(tree2))
+                print(d[i][j], rankedspr_path_bottom_up_hspr_dist(tree1,tree2))
     print(differences)
