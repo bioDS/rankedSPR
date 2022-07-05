@@ -804,15 +804,29 @@ def max_rank_move_shortest_path(tree1, tree2):
     return(max_rank_moves)
 
 
-# check max number of rank moves on shortest path for num_tree_pairs pairs of coalescent trees in RPSR
-def check_max_rank_move_shortest_path(num_leaves, num_tree_pairs):
-    rank_moves = [] # list containing max number of rank moves among all shortest paths between simulated trees
-    for i in range(0,num_tree_pairs):
-        if i % 1 == 0:
-            print('iteration', i)
-        tree_list = sim_coal(num_leaves,2)
-        # print('trees:')
-        # print(tree_to_cluster_string(tree_list.trees[0]))
-        # print(tree_to_cluster_string(tree_list.trees[1]))
-        rank_moves.append(max_rank_move_shortest_path(tree_list.trees[0], tree_list.trees[1]))
-    return(max(rank_moves))
+# check max number of rank moves on shortest path for all tree pairs in RSPR
+def check_max_rank_move_shortest_path(num_leaves):
+    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    max_rank_moves = 0 # maximum number of rank moves among all shortest paths between all pairs of trees
+    for i in range(0,len(tree_index_dict)):
+        tree1 = read_from_cluster(tree_index_dict[i])
+        for j in range(i+1,len(tree_index_dict)):
+            tree2 = read_from_cluster(tree_index_dict[j])
+            current_rank_moves = max_rank_move_shortest_path(tree1,tree2)
+            if max_rank_moves < current_rank_moves:
+                max_rank_moves = current_rank_moves
+                print(tree_to_cluster_string(tree1), tree_to_cluster_string(tree2))
+    return(max_rank_moves)
+
