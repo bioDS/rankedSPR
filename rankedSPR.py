@@ -830,3 +830,41 @@ def check_max_rank_move_shortest_path(num_leaves):
                 print(tree_to_cluster_string(tree1), tree_to_cluster_string(tree2))
     return(max_rank_moves)
 
+
+def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+    else:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+    
+    # Most of the above is not necessary, as there seems to be a problem with dcd tr    
+
+    differences = [] # array of differences between approximated and actual distances
+    for i in range(0,len(d)):
+        tree1 = read_from_cluster(tree_index_dict[i])
+        for j in range(0,len(d)):
+            tree2 = read_from_cluster(tree_index_dict[j])
+            # print('start tree:', tree_to_cluster_string(tree1))
+            # print('destination tree:', tree_to_cluster_string(tree2))
+            # print(d[i][j], len(rankedspr_bfs(tree1, tree2, hspr=0))-1, rankedspr_path_bottom_up_hspr_dist(tree1,tree2))
+            # print("computed path:")
+            # path = rankedspr_path_bottom_up_hspr(tree1,tree2)
+            # for i in range(0,path.num_trees):
+            #     print(tree_to_cluster_string(path.trees[i]))
+            # for some reason using the matrix d gives wrong results.
+            # there might be something wrong with the computation of d??
+            differences.append(rankedspr_path_bottom_up_hspr_dist(tree1,tree2)-(len(rankedspr_bfs(tree1, tree2, hspr=0))-1))
+    print(differences)
