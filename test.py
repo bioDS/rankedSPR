@@ -18,8 +18,10 @@ t = "((1:1,2:1):2,(3:2,4:2):1);"
 r = "(((1:1,2:1):1,3:2):1,4:3);"
 s = "((3:1,4:1):2,(1:2,2:2):1);"
 
-q1 = "(((1:1,2:1):1,5:2):2,(3:3,4:3):1);"
+q1 = "(((1:1,2:1):1,3:2):2,(4:3,5:3):1);"
 q2 = "(((3:1,4:1):1,5:2):2,(1:3,2:3):1);"
+q3 = "(((4:1,5:1):2,1:3):1,(2:2,3:2):2);"
+q4 = "((4:1,5:1):3,((1:2,3:2):1,2:3):1)"
 
 a = "(((1:1,2:1):1,3:2):3,((4:3,5:3):1,6:4):1);"
 b = "(((4:1,5:1):1,6:2):3,((1:3,2:3):1,3:4):1);"
@@ -30,11 +32,15 @@ d = "(((5:1,6:1):2,4:3):2,((1:2,2:2):2,3:4):2);"
 e = "((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1)"
 f = "((((1:3,2:3):1,3:4):1,4:5):1,((5:1,6:1):1,7:2):4)"
 
+g = "((((2:1,3:1):2,6:3):1,(4:2,5:2):2):1,1:5);"
+
 
 t1 = "((((3:1,4:1):1,5:2):2,6:4):1,(1:3,2:3):2);"
 t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 
 test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
+
+ctree6 = "(((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5);"
 
 
 mrtree4_1="((1:1,2:1):2,(3:2,4:2):1);"
@@ -52,6 +58,14 @@ mrtree7_2="((((4:1,5:1):1,6:2):1,7:3):3,((1:4,2:4):1,3:5):1);"
 mrtree8_1="((((1:1,2:1):1,3:2):1,4:3):4,(((5:4,6:4):1,7:5):1,8:6):1);"
 mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 
+t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
+
+tree1 = read_newick(t8)
+tree2 = read_newick(mrtree8_2)
+
+print(len(rankedspr_bfs(tree1, tree2, hspr=1)))
+
+# find_longest_rnni_block(tree1, tree2)
 
 # tree4_1=read_newick(mrtree4_1)
 # tree4_2=read_newick(mrtree4_2)
@@ -74,7 +88,14 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 # print(shortest_rank_path(tree7_1, tree7_2))
 # print(shortest_rank_path(tree8_1, tree8_2))
 
-# print(rankedspr_bfs(tree7_1, tree7_2, hspr=1))
+
+# for i in range(0,10):
+#     tree_list = sim_coal(6,2)
+#     find_longest_rnni_block(tree_list.trees[0], tree_list.trees[1])
+#     print("")
+
+
+# print(rankedspr_bfs(tree1, tree2, hspr=0))
 
 # tree1 = read_newick(q1)
 # tree2 = read_newick(q2)
@@ -91,9 +112,9 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 #     rankedspr_seidel(n, hspr=0)
 #     print_orbits_with_trees(n, hspr=1)
 
-rankedspr_seidel(6,hspr=0)
+# rankedspr_seidel(6,hspr=0)
 # test_bottom_up_hspr_approximation(5, hspr=0)
-test_rankedspr_path_restricting_neighbourhood(6,hspr=0)
+# test_rankedspr_path_restricting_neighbourhood(6,hspr=0)
 
 # caterpillar_diameter_trees(6)
 
