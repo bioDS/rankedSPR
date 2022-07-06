@@ -63,7 +63,13 @@ t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
 tree1 = read_newick(t8)
 tree2 = read_newick(mrtree8_2)
 
-print(len(rankedspr_bfs(tree1, tree2, hspr=1)))
+# tree1=read_newick(mrtree5_1)
+# tree2=read_newick(mrtree5_2)
+
+n = rnni_neighbourhood(tree1)
+for i in range(0,n.num_trees):
+    print("current neighbour:", tree_to_cluster_string(n.trees[i]))
+    print("distance to destination tree:", len(set(rankedspr_bfs(n.trees[i], tree2, hspr=1)))-1)
 
 # find_longest_rnni_block(tree1, tree2)
 
