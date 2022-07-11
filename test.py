@@ -18,6 +18,9 @@ t = "((1:1,2:1):2,(3:2,4:2):1);"
 r = "(((1:1,2:1):1,3:2):1,4:3);"
 s = "((3:1,4:1):2,(1:2,2:2):1);"
 
+tr1 = "(((2:1,4:1):1,3:2):1,1:3);"
+tr2 = "(((1:1,3:1):1,4:2):1,2:3);"
+
 q1 = "(((1:1,2:1):1,3:2):2,(4:3,5:3):1);"
 q2 = "(((3:1,4:1):1,5:2):2,(1:3,2:3):1);"
 q3 = "(((4:1,5:1):2,1:3):1,(2:2,3:2):2);"
@@ -60,18 +63,29 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 
 t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
 
-tree1 = read_newick(t8)
-tree2 = read_newick(mrtree8_2)
+tree1 = read_newick(tr1)
+tree2 = read_newick(tr2)
+
+# mrcas = mrca_list(tree1, tree2)
+# for i in range(0,tree1.num_leaves-1):
+#     print(tree1.num_leaves + i - 1, mrcas[i+tree1.num_leaves])
 
 # tree1=read_newick(mrtree5_1)
 # tree2=read_newick(mrtree5_2)
 
-n = rnni_neighbourhood(tree1)
-for i in range(0,n.num_trees):
-    print("current neighbour:", tree_to_cluster_string(n.trees[i]))
-    print("distance to destination tree:", len(set(rankedspr_bfs(n.trees[i], tree2, hspr=1)))-1)
+# n = rnni_neighbourhood(tree1)
+# for i in range(0,n.num_trees):
+#     print("current neighbour:", tree_to_cluster_string(n.trees[i]))
+#     print("distance to destination tree:", len(set(rankedspr_bfs(n.trees[i], tree2, hspr=1)))-1)
 
-# find_longest_rnni_block(tree1, tree2)
+# test_rankedspr_path_rnni_mrca_diff(4)
+
+# for i in range(0,10):
+#     t_list = sim_coal(5,2)
+#     tree1 = t_list.trees[0]
+#     tree2 = t_list.trees[1]
+#     find_longest_rnni_block(tree1, tree2)
+#     print("")
 
 # tree4_1=read_newick(mrtree4_1)
 # tree4_2=read_newick(mrtree4_2)
