@@ -975,17 +975,19 @@ def test_rankedspr_path_rnni_mrca_diff(num_leaves):
             num_tree_pairs+=1
             tree2_str = tree_index_dict[j]
             tree2 = read_from_cluster(tree2_str)
+            print("tree1:", tree1_str)
+            print("tree2:", tree2_str)
             approx_rnni_path = rankedspr_path_rnni_mrca_diff(tree1, tree2)
+
+            print("path:")
+            for i in range(0,approx_rnni_path.num_trees):
+                print(tree_to_cluster_string(approx_rnni_path.trees[i]))
+
             approx_rnni_dist = approx_rnni_path.num_trees-1
             actual_rnni_dist = find_longest_rnni_block(tree1, tree2)
             print(approx_rnni_dist)
             print(actual_rnni_dist)
             if (approx_rnni_dist == actual_rnni_dist):
                 correct_distance += 1
-            else:
-                print("tree1:", tree1_str)
-                print("tree2:", tree2_str)
-                print("RNNI path wrong")
-                for i in range(0,approx_rnni_path.num_trees):
-                    print(tree_to_cluster_string(approx_rnni_path.trees[i]))
+            # else:
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
