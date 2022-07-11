@@ -932,9 +932,9 @@ def find_longest_rnni_block(tree1, tree2):
     tree1_index = tree_dict[tree1_str]
     tree2_index = tree_dict[tree2_str]
 
-    print("start:", tree1_str)
-    print("destination:", tree2_str)
-    print("hspr distance:", d[tree1_index][tree2_index])
+    # print("start:", tree1_str)
+    # print("destination:", tree2_str)
+    # print("hspr distance:", d[tree1_index][tree2_index])
 
     max_rnni_dist = 0
     max_rnni_tree_str = ''
@@ -945,5 +945,47 @@ def find_longest_rnni_block(tree1, tree2):
             if d[tree1_index][i] == drnni and drnni > max_rnni_dist:
                 max_rnni_dist = drnni
                 max_rnni_tree_str = tree_index_dict[i]
-    print("maximum number of rnni moves at beginning of path:", max_rnni_dist)
-    print("last tree in sequence of rnni moves:", max_rnni_tree_str)
+    # print("maximum number of rnni moves at beginning of path:", max_rnni_dist)
+    # print("last tree in sequence of rnni moves:", max_rnni_tree_str)
+    return(max_rnni_dist)
+
+
+def test_rankedspr_path_rnni_mrca_diff(num_leaves):
+    # Read distance matrix
+    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt')
+    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    num_tree_pairs=0
+    correct_distance = 0
+    for i in range(0,len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            num_tree_pairs+=1
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+            approx_rnni_path = rankedspr_path_rnni_mrca_diff(tree1, tree2)
+            approx_rnni_dist = approx_rnni_path.num_trees-1
+            actual_rnni_dist = find_longest_rnni_block(tree1, tree2)
+            print(approx_rnni_dist)
+            print(actual_rnni_dist)
+            if (approx_rnni_dist == actual_rnni_dist):
+                correct_distance += 1
+            else:
+                print("tree1:", tree1_str)
+                print("tree2:", tree2_str)
+                print("RNNI path wrong")
+                for i in range(0,approx_rnni_path.num_trees):
+                    print(tree_to_cluster_string(approx_rnni_path.trees[i]))
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
