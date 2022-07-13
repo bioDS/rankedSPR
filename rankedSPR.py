@@ -1046,9 +1046,9 @@ def find_longest_rank_block(tree1, tree2):
     tree1_index = tree_dict[tree1_str]
     tree2_index = tree_dict[tree2_str]
 
-    # print("start:", tree1_str)
-    # print("destination:", tree2_str)
-    # print("hspr distance:", d[tree1_index][tree2_index])
+    print("start:", tree1_str)
+    print("destination:", tree2_str)
+    print("hspr distance:", d[tree1_index][tree2_index])
 
     max_rank_dist = 0
     max_rank_tree_str = ''
@@ -1060,8 +1060,8 @@ def find_longest_rank_block(tree1, tree2):
                 max_rank_dist = drank
                 max_rank_tree_str = tree_index_dict[i]
                 # print(tree1_str, max_rank_tree_str)
-    # print("maximum number of rank moves at beginning of path:", max_rank_dist)
-    # print("last tree in sequence of rank moves:", max_rank_tree_str)
+    print("maximum number of rank moves at beginning of path:", max_rank_dist)
+    print("last tree in sequence of rank moves:", max_rank_tree_str)
     return(max_rank_dist)
 
 
@@ -1135,6 +1135,8 @@ def test_rankedspr_path_rank_mrca_diff(num_leaves):
             tree2 = read_from_cluster(tree2_str)
             approx_rank_path = rankedspr_path_rnni_mrca_diff(tree1, tree2, 0)
 
+            # print("tree1:", tree1_str)
+            # print("tree2:", tree2_str)
             # print("path:")
             # for i in range(0,approx_rank_path.num_trees):
             #     print(tree_to_cluster_string(approx_rank_path.trees[i]))
@@ -1146,7 +1148,5 @@ def test_rankedspr_path_rank_mrca_diff(num_leaves):
             if (approx_rank_dist == actual_rank_dist):
                 correct_distance += 1
             else:
-                print("tree1:", tree1_str)
-                print("tree2:", tree2_str)
                 print("approximation:", approx_rank_dist, "actual:", actual_rank_dist)
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
