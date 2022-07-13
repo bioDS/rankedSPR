@@ -1150,3 +1150,24 @@ def test_rankedspr_path_rank_mrca_diff(num_leaves):
             else:
                 print("approximation:", approx_rank_dist, "actual:", actual_rank_dist)
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
+
+
+# compute the sum of sizes of symmetric differences of sets of ancestors for every leaf between tree1 and tree2
+def symm_ancestor_diff(tree1, tree2):
+    num_leaves = tree1.num_leaves
+    symm_diff = 0
+    for i in range(0,num_leaves):
+        # get ancestors of tree1
+        ancestors1 = set([]) # set of ancestors of leaf i
+        next_ancestor1 = i
+        while next_ancestor1 != 2*num_leaves-2: # iterate until we reach root
+            next_ancestor1 = tree1.tree[next_ancestor1].parent
+            ancestors1.add(next_ancestor1)
+        # get ancestors of tree2
+        ancestors2 = set([]) # set of ancestors of leaf i
+        next_ancestor2 = i
+        while next_ancestor2 != 2*num_leaves-2: # iterate until we reach root
+            next_ancestor2 = tree2.tree[next_ancestor2].parent
+            ancestors2.add(next_ancestor2)
+        symm_diff += len(ancestors1.symmetric_difference(ancestors2))
+    return symm_diff
