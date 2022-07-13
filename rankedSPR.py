@@ -1,5 +1,6 @@
 __author__ = 'Lena Collienne'
 # Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
+from platform import architecture
 import sys
 sys.path.append('treeOclock/')
 sys.path.append('treeOclock/dct_parser/')
@@ -1055,9 +1056,10 @@ def find_longest_rank_block(tree1, tree2):
         if d[tree1_index][i] + d[i][tree2_index] == d[tree1_index][tree2_index]:
             tree = read_from_cluster(tree_index_dict[i])
             drank = findpath_distance(tree1, tree)
-            if d[tree1_index][i] == drank and same_unranked_tree(tree1, tree2) and drank > max_rank_dist:
+            if d[tree1_index][i] == drank and same_unranked_tree(tree, tree1) and drank > max_rank_dist:
                 max_rank_dist = drank
                 max_rank_tree_str = tree_index_dict[i]
+                # print(tree1_str, max_rank_tree_str)
     # print("maximum number of rank moves at beginning of path:", max_rank_dist)
     # print("last tree in sequence of rank moves:", max_rank_tree_str)
     return(max_rank_dist)
@@ -1146,4 +1148,5 @@ def test_rankedspr_path_rank_mrca_diff(num_leaves):
             else:
                 print("tree1:", tree1_str)
                 print("tree2:", tree2_str)
+                print("approximation:", approx_rank_dist, "actual:", actual_rank_dist)
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
