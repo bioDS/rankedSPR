@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import copy as cp
 import random
 import re
 from treeOclock.dct_parser.tree_io import *
@@ -1171,3 +1172,67 @@ def symm_ancestor_diff(tree1, tree2):
             ancestors2.add(next_ancestor2)
         symm_diff += len(ancestors1.symmetric_difference(ancestors2))
     return symm_diff
+
+
+def approx_symm_ancestor_dist(tree1, tree2, hspr=1):
+    # test if the idea of minimising the symmetric difference of ancestor sets for all leaves gives shortest paths -- allow to change between hspr&rspr
+    num_leaves = tree1.num_leaves
+    next_tree = tree1 # don't change input tree
+    approx_dist = 0 # approximated distance -- this will be the output
+    while (same_tree(next_tree,tree2) != 0):
+        neighbours = all_spr_neighbourhood(next_tree, hspr)
+        min_diff = symm_ancestor_diff(next_tree, tree2) # we aim to minimise this value
+        for i in range(0,neighbours.num_trees):
+            symm_diff = symm_ancestor_diff(neighbours.trees[i], tree2)
+            # print(min_diff, symm_diff)
+            if (symm_diff <= min_diff): # strict < doesn't always give a path!
+                min_diff = symm_diff
+                next_tree = neighbours.trees[i]
+        # print(tree_to_cluster_string(next_tree))
+        approx_dist += 1
+    return approx_dist
+
+
+def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
+    # test our appoximation of distances
+    # Read distance matrix
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+    else:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    num_tree_pairs=0
+    correct_distance = 0
+    for i in range(0,len(d)):
+        if ((100*i/len(d))%5==0):
+            print("progress:", int(100*i/len(d)), "percent")
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            num_tree_pairs+=1
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+
+            # print("tree1:", tree1_str)
+            # print("tree2:", tree2_str)
+            approx_dist = approx_symm_ancestor_dist(tree1, tree2, hspr)
+
+            actual_dist = d[i][j]
+            if (approx_dist == actual_dist):
+                correct_distance += 1
+            # else:
+            #     print("approximation:", approx_dist, "actual:", actual_dist)
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
