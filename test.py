@@ -45,6 +45,9 @@ test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
 ctree6 = "(((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5);"
 
+ctree5 = "((((1:1,2:1):1,3:2):1,4:3):1,5:4);"
+ctree5_2 = "((((4:1,5:1):1,2:2):1,1:3):1,3:4);"
+
 
 mrtree4_1="((1:1,2:1):2,(3:2,4:2):1);"
 mrtree4_2="((3:1,4:1):2,(1:2,2:2):1);"
@@ -63,8 +66,30 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 
 t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
 
-tree1 = read_newick(tr1)
-tree2 = read_newick(tr2)
+tree1 = read_newick(ctree5)
+tree2 = read_newick(ctree5_2)
+
+# print(approx_symm_ancestor_dist(tree1, tree2, hspr=1))
+print(test_approx_symm_ancestor_dist(5, hspr=1))
+
+# m = mrca_list(tree1, tree2)
+# for i in range(0,4):
+#     print(m[i+tree1.num_leaves])
+
+# print(tree_to_cluster_string(tree1))
+# decrease_mrca(tree1, 0, 1)
+# print(tree_to_cluster_string(tree1))
+# print(tree_to_cluster_string(tree2))
+# print("path:")
+# print(fp_rspr(tree1, tree2))
+
+
+# (adj, tree_dict) = rankedSPR_wo_RNNI_adjacency(3)
+# rankedspr_wo_RNNI_seidel(6)
+# for i in range(0,len(adj)):
+#     for j in range(i, len(adj)):
+#         if (adj[i][j]==1):
+#             print(list(tree_dict.keys())[list(tree_dict.values()).index(i)], list(tree_dict.keys())[list(tree_dict.values()).index(j)])
 
 # mrcas = mrca_list(tree1, tree2)
 # for i in range(0,tree1.num_leaves-1):
@@ -78,13 +103,13 @@ tree2 = read_newick(tr2)
 #     print("current neighbour:", tree_to_cluster_string(n.trees[i]))
 #     print("distance to destination tree:", len(set(rankedspr_bfs(n.trees[i], tree2, hspr=1)))-1)
 
-# test_rankedspr_path_rnni_mrca_diff(4)
+# test_rankedspr_path_rank_mrca_diff(4)
 
 # for i in range(0,10):
-#     t_list = sim_coal(5,2)
+#     t_list = sim_coal(6,2)
 #     tree1 = t_list.trees[0]
 #     tree2 = t_list.trees[1]
-#     find_longest_rnni_block(tree1, tree2)
+#     find_longest_rank_block(tree1, tree2)
 #     print("")
 
 # tree4_1=read_newick(mrtree4_1)
