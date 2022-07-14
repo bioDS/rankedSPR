@@ -1263,3 +1263,81 @@ def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
                 #     print(d[i][j], approx_dist, d[tree3_index, j])
 
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
+
+
+# compute the sum of rank differences of all mrcas for every pair of leaves
+def pw_mrca_diff(tree1, tree2):
+    num_leaves = tree1.num_leaves
+    diff = 0
+    for i in range(0,num_leaves):
+        for j in range(i+1, num_leaves):
+            diff += abs(mrca(tree1, i, j)-mrca(tree2, i, j))
+    return diff
+
+
+def approx_pw_mrca_diff_dist(tree1, tree2, hspr=1):
+    # test if the idea of minimising the sum of pairwise mrca differences gives us a shortest path
+    num_leaves = tree1.num_leaves
+    next_tree = tree1 # don't change input tree
+    approx_dist = 0 # approximated distance -- this will be the output
+    while (same_tree(next_tree,tree2) != 0):
+        neighbours = all_spr_neighbourhood(next_tree, hspr)
+        min_diff = pw_mrca_diff(next_tree, tree2) # we aim to minimise this value
+        for i in range(0,neighbours.num_trees):
+            symm_diff = pw_mrca_diff(neighbours.trees[i], tree2)
+            # print(min_diff, symm_diff)
+            if (symm_diff < min_diff): # strict < doesn't always give a path!
+                min_diff = symm_diff
+                next_tree = neighbours.trees[i]
+        # print(tree_to_cluster_string(next_tree))
+        approx_dist += 1
+    return approx_dist
+
+
+# compute a path by always choosing the neighbour of the current tree that minimises the sum of pairwise mrca differences
+def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
+    # test our appoximation of distances
+    # Read distance matrix
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+    elif hspr ==0:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    num_tree_pairs=0
+    correct_distance = 0
+    for i in range(0,len(d)):
+        if ((100*i/len(d))%5==0):
+            print("progress:", int(100*i/len(d)), "percent")
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            num_tree_pairs+=1
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+
+            # print("tree1:", tree1_str)
+            # print("tree2:", tree2_str)
+            approx_dist = approx_pw_mrca_diff_dist(tree1, tree2, hspr)
+            actual_dist = d[i][j]
+            if (approx_dist == actual_dist):
+                correct_distance += 1
+            else:
+                # if (approx_dist - actual_dist >1):
+                print(tree1_str, tree2_str, actual_dist)
+                print("approximation:", approx_dist, "actual:", actual_dist)
+
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
