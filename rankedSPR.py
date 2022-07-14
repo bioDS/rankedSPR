@@ -1195,7 +1195,7 @@ def approx_symm_ancestor_dist(tree1, tree2, hspr=1):
         change = True # indicates if we did a rank move in the last iteration
         while change == True:
             change = False
-            neighbours = all_rank_neighbours(next_tree)
+            neighbours = all_rank_neighbours(next_tree) # change this to rnni_neighbourhood(next_tree) to check the same for RNNI moves -- doesn't give shortest path either!
             min_diff = symm_ancestor_diff(next_tree, tree2) # we aim to minimise this value
             for i in range(0,neighbours.num_trees):
                 symm_diff = symm_ancestor_diff(neighbours.trees[i], tree2)
@@ -1258,8 +1258,8 @@ def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
                 tree3_index = tree_dict[tree3_str]
                 if (approx_dist + d[tree3_index][j] == d[i][j]):
                     correct_distance+=1
-                else:
-                    print(tree1_str, tree3_str, tree2_str)
-                    print(d[i][j], approx_dist, d[tree3_index, j])
+                # else:
+                #     print(tree1_str, tree3_str, tree2_str)
+                #     print(d[i][j], approx_dist, d[tree3_index, j])
 
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
