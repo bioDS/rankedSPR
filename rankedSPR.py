@@ -1179,24 +1179,39 @@ def approx_symm_ancestor_dist(tree1, tree2, hspr=1):
     num_leaves = tree1.num_leaves
     next_tree = tree1 # don't change input tree
     approx_dist = 0 # approximated distance -- this will be the output
-    while (same_tree(next_tree,tree2) != 0):
-        neighbours = all_spr_neighbourhood(next_tree, hspr)
-        min_diff = symm_ancestor_diff(next_tree, tree2) # we aim to minimise this value
-        for i in range(0,neighbours.num_trees):
-            symm_diff = symm_ancestor_diff(neighbours.trees[i], tree2)
-            # print(min_diff, symm_diff)
-            if (symm_diff <= min_diff): # strict < doesn't always give a path!
-                min_diff = symm_diff
-                next_tree = neighbours.trees[i]
-        # print(tree_to_cluster_string(next_tree))
-        approx_dist += 1
-    return approx_dist
+    if hspr >= 0:
+        while (same_tree(next_tree,tree2) != 0):
+            neighbours = all_spr_neighbourhood(next_tree, hspr)
+            min_diff = symm_ancestor_diff(next_tree, tree2) # we aim to minimise this value
+            for i in range(0,neighbours.num_trees):
+                symm_diff = symm_ancestor_diff(neighbours.trees[i], tree2)
+                # print(min_diff, symm_diff)
+                if (symm_diff <= min_diff): # strict < doesn't always give a path!
+                    min_diff = symm_diff
+                    next_tree = neighbours.trees[i]
+            # print(tree_to_cluster_string(next_tree))
+            approx_dist += 1
+    else: # if hspr is negative, we assume that we only want to get the number of rank moves at the beginning of a path that decrease symm_diff
+        change = True # indicates if we did a rank move in the last iteration
+        while change == True:
+            change = False
+            neighbours = all_rank_neighbours(next_tree)
+            min_diff = symm_ancestor_diff(next_tree, tree2) # we aim to minimise this value
+            for i in range(0,neighbours.num_trees):
+                symm_diff = symm_ancestor_diff(neighbours.trees[i], tree2)
+                if (symm_diff < min_diff):
+                    min_diff = symm_diff
+                    next_tree = neighbours.trees[i]
+                    change = True
+            if change == True:
+                approx_dist += 1
+    return approx_dist, next_tree # in case of hspr >= 0, next_tree is tree2
 
 
 def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
     # test our appoximation of distances
     # Read distance matrix
-    if hspr == 1:
+    if hspr == 1 or hspr<0:
         d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
         f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
     else:
@@ -1229,10 +1244,22 @@ def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
             # print("tree1:", tree1_str)
             # print("tree2:", tree2_str)
             approx_dist = approx_symm_ancestor_dist(tree1, tree2, hspr)
+            if hspr >= 0:
+                actual_dist = d[i][j]
+                if (approx_dist[0] == actual_dist):
+                    correct_distance += 1
+                else:
+                    if (approx_dist[0] - actual_dist >1):
+                        print(tree1_str, tree2_str, actual_dist)
+                #     print("approximation:", approx_dist, "actual:", actual_dist)
+            else:
+                [approx_dist, tree3] = approx_symm_ancestor_dist(tree1, tree2, hspr)
+                tree3_str = str(tree_to_cluster_string(tree3)).split("'")[1]
+                tree3_index = tree_dict[tree3_str]
+                if (approx_dist + d[tree3_index][j] == d[i][j]):
+                    correct_distance+=1
+                else:
+                    print(tree1_str, tree3_str, tree2_str)
+                    print(d[i][j], approx_dist, d[tree3_index, j])
 
-            actual_dist = d[i][j]
-            if (approx_dist == actual_dist):
-                correct_distance += 1
-            # else:
-            #     print("approximation:", approx_dist, "actual:", actual_dist)
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
