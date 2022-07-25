@@ -175,6 +175,100 @@ def rankedSPR_wo_RNNI_adjacency(num_leaves):
     return(adj, tree_index)
 
 
+def symmetric_child_cluster_diff(tree1, tree2):
+    # Let A_i and B_i be the clusters induces by the children of the node of rank i in tree1 and C_i and D_i those clusters in tree2
+    # This function computes the sum of min(|A_i \Delta C_i| + |B_i \Delta D_i|, |A_i \Delta D_i| + |B_i \Delta C_i|) for all internal nodes i = 1, ..., n-1
+    num_leaves = tree1.num_leaves
+    clusters1 = dict() # dict containing ranks as keys and clusters (as sets of leaves) as values
+    clusters2 = dict() # dict containing ranks as keys and clusters (as sets of leaves) as values
+    # fill cluster dictionaries with singletons for leaves and empty sets for internal nodes:
+    for i in range(0, 2*num_leaves):
+        if i < num_leaves:
+            clusters1[i] = set([i])
+            clusters2[i] = set([i])
+        else:
+            clusters1[i] = set([])
+            clusters2[i] = set([])
+
+    # now fill dicts with actual clusters
+    for i in range(0, num_leaves): # if we consider all leaves, we get all clusters (bc mrca of all leaves is root)
+        # fill cluster1 dictionary
+        j = i
+        while tree1.tree[j].parent != -1:
+            clusters1[tree1.tree[j].parent].add(i)
+            j = tree1.tree[j].parent
+        # same for clusters of tree2
+        j = i
+        while tree2.tree[j].parent != -1:
+            clusters2[tree2.tree[j].parent].add(i)
+            j = tree2.tree[j].parent
+
+    # compute sum of symmetric differences of clusters
+    sum = 0
+    for i in range(num_leaves, 2*num_leaves-1):
+        A = clusters1[tree1.tree[i].children[0]]
+        B = clusters1[tree1.tree[i].children[1]]
+        C = clusters2[tree2.tree[i].children[0]]
+        D = clusters2[tree2.tree[i].children[1]]
+        sum += min(len(A.symmetric_difference(C)) + len(B.symmetric_difference(D)), len(A.symmetric_difference(D)) + len(B.symmetric_difference(C)))
+        # print(i, A, B, C, D, sum)
+    return(sum)
+
+
+def dist_symmetric_child_cluster_diff(tree1, tree2):
+    distance = 0
+    current_tree = tree1
+    min_diff = symmetric_child_cluster_diff(current_tree, tree2)
+    while min_diff > 0:
+        distance += 1
+        neighbourhood = hspr_neighbourhood(current_tree)
+        for i in range(0, neighbourhood.num_trees):
+            current_diff = symmetric_child_cluster_diff(neighbourhood.trees[i], tree2)
+            if current_diff < min_diff:
+                current_tree = neighbourhood.trees[i]
+                min_diff= current_diff
+        print(tree_to_cluster_string(current_tree), min_diff)
+    return distance
+
+
+def test_dist_symmetric_child_cluster_diff(num_leaves):
+    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+
+    num_tree_pairs=0
+    correct_distance = 0
+    for i in range(0,len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            num_tree_pairs+=1
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+
+            # print("tree1:", tree1_str)
+            # print("tree2:", tree2_str)
+            approx_dist = dist_symmetric_child_cluster_diff(tree1, tree2)
+            actual_dist = d[i][j]
+            if (approx_dist == actual_dist):
+                correct_distance += 1
+            else:
+                # if (approx_dist - actual_dist >1):
+                print(tree1_str, tree2_str, actual_dist)
+                print("approximation:", approx_dist, "actual:", actual_dist)
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
+
+
 def test_restricted_neighbourhood_search(num_leaves, num_tree_pairs, hspr = 1):
     # Compute adjacency matrix & distance matrix
     rspr_adj = rankedSPR_adjacency(num_leaves, hspr)
