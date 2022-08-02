@@ -2,6 +2,8 @@ __author__ = 'Lena Collienne'
 # Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
 from platform import architecture
 import sys
+
+from analyse_distance_distribution import read_newick_tree_file
 sys.path.append('treeOclock/')
 sys.path.append('treeOclock/dct_parser/')
 
@@ -175,6 +177,29 @@ def rankedSPR_wo_RNNI_adjacency(num_leaves):
     return(adj, tree_index)
 
 
+def read_distance_matrix(num_leaves, hspr=1):
+    # read distance matrix and corresponding trees and return them as matrix and two dicts (index to tree and tree to index)
+    # Read distance matrix
+    if hspr == 1:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+    elif hspr ==0:
+        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+
+    # Put all trees into a dict (note that indices are sorted increasingly in file)
+    tree_strings = f.readlines()
+    index = 0
+    tree_dict = dict()
+    tree_index_dict = dict()
+    for tree_str in tree_strings:
+        tree_str = tree_str.split("'")[1]
+        tree_dict[tree_str]=index
+        tree_index_dict[index]=tree_str
+        index += 1
+    return(d, tree_dict, tree_index_dict)
+
+
 def symmetric_child_cluster_diff(tree1, tree2):
     # Let A_i and B_i be the clusters induces by the children of the node of rank i in tree1 and C_i and D_i those clusters in tree2
     # This function computes the sum of min(|A_i \Delta C_i| + |B_i \Delta D_i|, |A_i \Delta D_i| + |B_i \Delta C_i|) for all internal nodes i = 1, ..., n-1
@@ -232,19 +257,8 @@ def dist_symmetric_child_cluster_diff(tree1, tree2):
 
 
 def test_dist_symmetric_child_cluster_diff(num_leaves):
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d,tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr=0)
+    print(d, tree_dict, tree_index_dict)
 
     num_tree_pairs=0
     correct_distance = 0
@@ -796,24 +810,7 @@ def same_unranked_tree(tree1, tree2):
 
 # Find longest shortest paths with only rank moves on them
 def longest_rank_shortest_path(num_leaves):
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-
-    max_dist = np.amax(d)
-    print('Diameter:', max_dist)
-
-    tree_strings = f.readlines()
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
-
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
     current_d = max_dist
     found_path = False # did we find a path with only rank moves on it?
     while(found_path==False):
@@ -837,19 +834,7 @@ def longest_rank_shortest_path(num_leaves):
 
 # simulate two trees (coalescent) and see whether there is a tree in 1-NH of starting tree resulting from rank move
 def path_rank_moves_first(num_leaves, num_repeats):
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     for j in range(0,num_repeats):
         tree_list = sim_coal(num_leaves,2)
@@ -873,20 +858,7 @@ def path_rank_moves_first(num_leaves, num_repeats):
 
 # Compute the maximum number of rank moves on a shortest path in RSPR (using the distance matrix for the whole tree space computed by SEIDEL)
 def max_rank_move_shortest_path(tree1, tree2):
-    num_leaves = tree1.num_leaves
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
     tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
@@ -977,18 +949,7 @@ def max_rank_move_shortest_path(tree1, tree2):
 
 # check max number of rank moves on shortest path for all tree pairs in RSPR
 def check_max_rank_move_shortest_path(num_leaves):
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     max_rank_moves = 0 # maximum number of rank moves among all shortest paths between all pairs of trees
     for i in range(0,len(tree_index_dict)):
@@ -1003,23 +964,7 @@ def check_max_rank_move_shortest_path(num_leaves):
 
 
 def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
-    if hspr == 1:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    else:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
     
     # Most of the above is not necessary, as there seems to be a problem with dcd tr    
 
@@ -1046,23 +991,7 @@ def test_bottom_up_hspr_approximation(num_leaves, hspr=1):
 
 
 def test_rankedspr_path_restricting_neighbourhood(num_leaves, hspr=0):
-    if hspr == 1:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    else:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
 
     differences = []
     for i in range(0,len(d)):
@@ -1084,19 +1013,7 @@ def test_rankedspr_path_restricting_neighbourhood(num_leaves, hspr=0):
 # Try to find the longest sequence of RNNI moves at the beginning of a shortest path from tree1 to tree2
 def find_longest_rnni_block(tree1, tree2):
     num_leaves = tree1.num_leaves
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
     tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
@@ -1124,19 +1041,7 @@ def find_longest_rnni_block(tree1, tree2):
 # Try to find the longest sequence of RNNI moves at the beginning of a shortest path from tree1 to tree2
 def find_longest_rank_block(tree1, tree2):
     num_leaves = tree1.num_leaves
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
     tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
@@ -1163,20 +1068,7 @@ def find_longest_rank_block(tree1, tree2):
 
 
 def test_rankedspr_path_rnni_mrca_diff(num_leaves):
-    # Read distance matrix
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt')
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     num_tree_pairs=0
     correct_distance = 0
@@ -1206,20 +1098,7 @@ def test_rankedspr_path_rnni_mrca_diff(num_leaves):
 
 
 def test_rankedspr_path_rank_mrca_diff(num_leaves):
-    # Read distance matrix
-    f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt')
-    d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
     num_tree_pairs=0
     correct_distance = 0
@@ -1305,25 +1184,7 @@ def approx_symm_ancestor_dist(tree1, tree2, hspr=1):
 
 
 def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
-    # test our appoximation of distances
-    # Read distance matrix
-    if hspr == 1 or hspr<0:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    else:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
 
     num_tree_pairs=0
     correct_distance = 0
@@ -1392,26 +1253,7 @@ def approx_pw_mrca_diff_dist(tree1, tree2, hspr=1):
 
 # compute a path by always choosing the neighbour of the current tree that minimises the sum of pairwise mrca differences
 def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
-    # test our appoximation of distances
-    # Read distance matrix
-    if hspr == 1:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    elif hspr ==0:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
-
-
-    # Put all trees into a dict (note that indices are sorted increasingly in file)
-    tree_strings = f.readlines()
-    index = 0
-    tree_dict = dict()
-    tree_index_dict = dict()
-    for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
-        tree_dict[tree_str]=index
-        tree_index_dict[index]=tree_str
-        index += 1
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
 
     num_tree_pairs=0
     correct_distance = 0
@@ -1437,3 +1279,84 @@ def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
                 print("approximation:", approx_dist, "actual:", actual_dist)
 
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
+
+
+# Compute the maximum number of rank moves on a shortest path in RSPR (using the distance matrix for the whole tree space computed by SEIDEL)
+def count_rank_moves_all_shortest_paths(tree1, tree2):
+    num_leaves = tree1.num_leaves
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
+
+    tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
+    tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
+
+    tree1_index = tree_dict[tree1_str]
+    tree2_index = tree_dict[tree2_str]
+
+    distance = d[tree1_index][tree2_index]
+
+    # for every tree that is on a shortest path, save all predecessors of it in dictionary pred:
+    pred = dict()
+    for tree_index in range(0,len(d)):
+        if d[tree1_index][tree_index] + d[tree_index][tree2_index] == distance:
+            tree = read_from_cluster(tree_index_dict[tree_index])
+            neighbourhood = spr_neighbourhood(tree)
+            for i in range(0, neighbourhood.num_trees):
+                predecessor = neighbourhood.trees[i]
+                pred_str = str(tree_to_cluster_string(predecessor)).split("'")[1]
+                pred_index = tree_dict[pred_str]
+                if d[tree1_index][pred_index] + d[pred_index][tree_index] + d[tree_index][tree2_index] == distance: # if predecessor is on shortest path from tree1 to tree2
+                    if tree_index in pred:
+                        pred[tree_index].add(pred_index)
+                    else:
+                        pred[tree_index] = set([pred_index])
+
+    # We now need to transform the predecessor dict into actual shortest paths and count how many rank moves are on each of these paths.
+    found = False
+    while True:
+        current_path_rank_moves = 0
+        # build path from end to beginning. Delete trees from pred dict, if all pred (i.e. all shortest path containing that tree) are considered.
+        last_tree_index = tree2_index
+        last_tree = read_from_cluster(tree_index_dict[tree2_index])
+        last_popped = -1 # index of the last tree removed from pred[last_pooped_pred]
+        last_popped_pred = -1
+        while last_tree_index != tree1_index:
+            # print(pred[last_tree_index])
+            tree_index = pred[last_tree_index].pop()
+            # print(tree_index)
+
+            # we only delete the index out of the pred values if it was the last one where there were multiple choices on the currently computed path.
+            if len(pred[last_tree_index]) >=1:
+                if last_popped != -1:
+                    if last_popped_pred in pred:
+                        pred[last_popped_pred].add(last_popped)
+                    else:
+                        pred[last_popped_pred] = set([last_popped])
+                last_popped = tree_index
+                last_popped_pred = last_tree_index
+            else:
+                pred[last_tree_index].add(tree_index)
+            # if tree_index in pred and len(pred[tree_index])>1: # if there are further paths going through tree_index, we add it back to the predecessor list of last_tree_index
+            #     pred[last_tree_index].add(tree_index)
+            if len(pred[last_tree_index])==0: # delete empty sets from pred (all paths through corresponding tree have already been considered)
+                pred.pop(last_tree_index)
+            tree_str = tree_index_dict[tree_index]
+            tree = read_from_cluster(tree_str)
+            if same_unranked_tree(tree,last_tree):
+                current_path_rank_moves += 1
+            # else:
+            #     print("HSPR move")
+            last_tree_index = tree_index
+            last_tree = tree
+        rank_moves.append(current_path_rank_moves)
+        if found == True:
+            break
+        done = True
+        for i in pred:
+            if len(pred[i]) != 1:
+                done = False
+        if done == True:
+            found = True
+    return(rank_moves)
+
+
+# def rank_moves_distribution(num_leaves):
