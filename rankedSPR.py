@@ -1,5 +1,6 @@
 __author__ = 'Lena Collienne'
 # Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
+from itertools import count
 from platform import architecture
 import sys
 
@@ -1286,6 +1287,8 @@ def count_rank_moves_all_shortest_paths(tree1, tree2):
     num_leaves = tree1.num_leaves
     (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
 
+    rank_moves = [] # list of number of rank moves on every shortest path
+
     tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
     tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
 
@@ -1335,8 +1338,6 @@ def count_rank_moves_all_shortest_paths(tree1, tree2):
                 last_popped_pred = last_tree_index
             else:
                 pred[last_tree_index].add(tree_index)
-            # if tree_index in pred and len(pred[tree_index])>1: # if there are further paths going through tree_index, we add it back to the predecessor list of last_tree_index
-            #     pred[last_tree_index].add(tree_index)
             if len(pred[last_tree_index])==0: # delete empty sets from pred (all paths through corresponding tree have already been considered)
                 pred.pop(last_tree_index)
             tree_str = tree_index_dict[tree_index]
@@ -1359,4 +1360,47 @@ def count_rank_moves_all_shortest_paths(tree1, tree2):
     return(rank_moves)
 
 
-# def rank_moves_distribution(num_leaves):
+def rank_moves_distribution(num_leaves):
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
+    rank_move_dict = dict() #keys: distances between trees, values: lists of numbers of rank moves on every shortest path between every pair of trees with corresponding distance
+    # initialise rank_move_dict:
+    for i in range(1,np.amax(d)+1):
+        rank_move_dict[i] = []
+
+    # for every pair of trees, add list with number of rank moves on shortest paths to rank_move_dict[d] where d is the distance between them
+    for i in range(0,len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+            rank_move_dict[d[i][j]] = rank_move_dict[d[i][j]] + count_rank_moves_all_shortest_paths(tree1, tree2)
+
+    # display distribution of rank moves by creating one plot per distance
+    for i in rank_move_dict:
+        # Plot histogram
+        d = pd.DataFrame(data=rank_move_dict[i])
+        upper_bound = max(d)
+        sns.set_theme(font_scale=1.2)
+        sns.histplot(d, color = '#b02538', edgecolor = 'black', alpha=1, binwidth= 0.2, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+        plt.xlabel("Number of rank moves on shortest path")
+        plt.ylabel("Proportion of paths")
+        plt.savefig("SPR/plots/rank_move_distribution_" + str(num_leaves) + "_n_" + str(i) + "_d.eps")
+        plt.clf()
+
+
+    # plot the number of rank moves divided by distance (so we can display everything in one plot)
+    all_rank_moves = []
+    for i in rank_move_dict:
+        for j in rank_move_dict[i]:
+            all_rank_moves.append(j/i)
+    print(all_rank_moves)
+    # Plot histogram
+    d = pd.DataFrame(data=all_rank_moves)
+    upper_bound = max(d)
+    sns.set_theme(font_scale=1.2)
+    sns.histplot(d, color = '#b02538', edgecolor = 'black', alpha=1, binwidth= 0.2, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    plt.xlabel("Number of rank moves on shortest path")
+    plt.ylabel("Proportion of paths")
+    plt.savefig("SPR/plots/rank_move_distribution_" + str(num_leaves) + "_n.eps")
+    plt.clf()
