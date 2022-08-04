@@ -24,7 +24,7 @@ tr2 = "(((1:1,3:1):1,4:2):1,2:3);"
 q1 = "(((1:1,2:1):1,3:2):2,(4:3,5:3):1);"
 q2 = "(((3:1,4:1):1,5:2):2,(1:3,2:3):1);"
 q3 = "(((4:1,5:1):2,1:3):1,(2:2,3:2):2);"
-q4 = "((4:1,5:1):3,((1:2,3:2):1,2:3):1)"
+q4 = "((4:1,5:1):3,((2:2,3:2):1,1:3):1)"
 
 a = "(((1:1,2:1):1,3:2):3,((4:3,5:3):1,6:4):1);"
 b = "(((4:1,5:1):1,6:2):3,((1:3,2:3):1,3:4):1);"
@@ -66,11 +66,21 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 
 t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
 
-tree1 = read_newick(ctree5)
-tree2 = read_newick(ctree5_2)
+ctree6_diam_dist="(((4:1,6:1):2,2:3):2,((3:2,5:2):2,1:4):1);"
+
+
+tree1 = read_newick(q1)
+tree2 = read_newick(q4)
+
+
+rank_moves_distribution(4)
 
 # print(approx_symm_ancestor_dist(tree1, tree2, hspr=1))
-print(test_approx_symm_ancestor_dist(5, hspr=1))
+# print(test_approx_symm_ancestor_dist(5, hspr=1))
+
+# caterpillar_diameter_trees(5,0)
+# print(rankedspr_bfs(tree1, tree2, 0))
+
 
 # m = mrca_list(tree1, tree2)
 # for i in range(0,4):
