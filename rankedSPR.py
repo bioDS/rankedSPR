@@ -1372,13 +1372,15 @@ def rank_moves_distribution(num_leaves):
     norm = dict()
     for i in rank_move_dict:
         norm[i] = [float(x/sum(rank_move_dict[i])) for x in rank_move_dict[i]]
+    print(norm)
     plt.clf()
     # Plot relative number of rank moves per shortest paths, one line for each possible distance
     norm_d = pd.DataFrame(data=norm)
     print(norm_d)
     sns.set_theme(font_scale=1.2)
-    sns.lineplot(data = norm_d, markers = True)
-    plt.xlabel("Number of rank moves on shortest path")
-    plt.ylabel("Relative number of paths")
-    plt.savefig("SPR/plots/rank_move_distribution_norm_" + str(num_leaves) + "_n.eps")
+    sns.boxplot(data = norm_d)
+    sns.stripplot(data = norm_d, size = 4)
+    plt.xlabel("Length of shortest paths")
+    plt.ylabel("Relative number of rank moves")
+    plt.savefig("SPR/plots/rank_move_distribution_norm_" + str(num_leaves) + "_n_boxplot.eps")
     plt.show()
