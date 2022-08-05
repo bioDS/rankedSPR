@@ -73,7 +73,10 @@ tree1 = read_newick(q1)
 tree2 = read_newick(q4)
 
 
-rank_moves_distribution(4)
+time1 = time.time()
+rank_moves_distribution(5)
+time2 = time.time()
+print("Time: {:.3f}ms".format((time2 - time1)*1000.0))
 
 # print(approx_symm_ancestor_dist(tree1, tree2, hspr=1))
 # print(test_approx_symm_ancestor_dist(5, hspr=1))
