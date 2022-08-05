@@ -1283,12 +1283,7 @@ def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
 
 
 # Compute the maximum number of rank moves on a shortest path in RSPR (using the distance matrix for the whole tree space computed by SEIDEL)
-def count_rank_moves_all_shortest_paths(tree1, tree2):
-    num_leaves = tree1.num_leaves
-    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr = 1)
-
-    rank_moves = [] # list of number of rank moves on every shortest path
-
+def count_rank_moves_all_shortest_paths(tree1, tree2, d, tree_dict, tree_index_dict):
     tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
     tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
 
@@ -1324,7 +1319,7 @@ def count_rank_moves_all_shortest_paths(tree1, tree2):
         while current_tree_index in pred and len(pred[current_tree_index]) > 0:
             # in every loop update the number of rank moves from tree with index i to tree2_index, by adding all shortest path from current_tree to tree2 and add 1 if there is a rank move between tree_i and current_tree
             i = pred[current_tree_index].pop()
-            if i != tree1_index and i not in next_trees: # no need to try and find predecessors of tree1 in any future iteration``
+            if i != tree1_index and i not in next_trees: # no need to try and find predecessors of tree1 in any future iteration
                 next_trees.append(i)
             tree_i = read_from_cluster(tree_index_dict[i])
             if i not in num_rank_moves: # create a list with number of rank moves on all shortest paths from tree_i to tree2, if it doesn't exist already
@@ -1334,6 +1329,7 @@ def count_rank_moves_all_shortest_paths(tree1, tree2):
             else: # no rank moves added between tree_i and current_tree
                 num_rank_moves[i] = num_rank_moves[i] + num_rank_moves[current_tree_index]
         pred.pop(current_tree_index) # we are done with current_tree
+
     return(num_rank_moves[tree1_index])
 
 
@@ -1347,12 +1343,14 @@ def rank_moves_distribution(num_leaves):
 
     # for every pair of trees, add list with number of rank moves on shortest paths to rank_move_dict[d] where d is the distance between them
     for i in range(0,len(d)):
+        if i%(math.floor(len(d)/100)) == 0:
+            print("progress:", int(100*i/len(d)), "percent")
         tree1_str = tree_index_dict[i]
         tree1 = read_from_cluster(tree1_str)
         for j in range(i+1,len(d)):
             tree2_str = tree_index_dict[j]
             tree2 = read_from_cluster(tree2_str)
-            rm = count_rank_moves_all_shortest_paths(tree1, tree2) # list of number of rank moves on all shortest paths between tree1 and tree2
+            rm = count_rank_moves_all_shortest_paths(tree1, tree2, d, tree_dict, tree_index_dict) # list of number of rank moves on all shortest paths between tree1 and tree2
             for k in range(0,max(rm)+1):
                 rank_move_dict["dist" + str(d[i][j])][k] += rm.count(k)
 
@@ -1368,13 +1366,14 @@ def rank_moves_distribution(num_leaves):
     # plt.clf()
     # plt.show()
 
-    # also plot the 'normalised' number of rank moves on shortsest path, i.e. divide the number of paths with x rank moves by the total number of paths:
+    # also plot the 'normalised' number of rank moves on shortest path, i.e. divide the number of paths with x rank moves by the total number of paths:
     norm = dict()
     for i in rank_move_dict:
         norm[i] = [float(x/sum(rank_move_dict[i])) for x in rank_move_dict[i]]
     print(norm)
-    plt.clf()
+
     # Plot relative number of rank moves per shortest paths, one line for each possible distance
+    plt.clf()
     norm_d = pd.DataFrame(data=norm)
     print(norm_d)
     sns.set_theme(font_scale=1.2)
@@ -1383,4 +1382,13 @@ def rank_moves_distribution(num_leaves):
     plt.xlabel("Length of shortest paths")
     plt.ylabel("Relative number of rank moves")
     plt.savefig("SPR/plots/rank_move_distribution_norm_" + str(num_leaves) + "_n_boxplot.eps")
-    plt.show()
+    # plt.show()
+
+    # also do a lineplot for normalised number of rank moves on paths
+    plt.clf()
+    d = pd.DataFrame(data=norm)
+    sns.set_theme(font_scale=1.2)
+    sns.lineplot(data = d, markers = True)
+    plt.xlabel("Normalised number of rank moves on shortest path")
+    plt.ylabel("Number of paths")
+    plt.savefig("SPR/plots/rank_move_distribution_norm_" + str(num_leaves) + "_n.eps")
