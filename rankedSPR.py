@@ -1442,13 +1442,20 @@ def is_embedded(forest, tree):
                     conn_comp[i].add(p_i)
             elif mrca(forest, i, j) != -1:
                 return False
-    num_components = n
+    num_components = 0
+    leaves_covered = [] # list of leaves for which we already have connected component. This is to count the number of connected components
     for i in range(0,n):
         for j in range(i+1,n):
-            if len(conn_comp[i].intersection(conn_comp[j])) > 0:
-                num_components -= 1
-            if len(conn_comp[i].intersection(conn_comp[j])) not in [0,len(conn_comp[i])]:
+            intersect = conn_comp[i].intersection(conn_comp[j])
+            if len(intersect) > 0 and list(intersect).pop() not in leaves_covered:
+                leaves_covered = leaves_covered + list(intersect)
+                num_components += 1
+            if len(intersect) not in [0,len(conn_comp[i])]:
                 return False
+    # So far we only counted clusters of size > 1 as connected components. We now need to add count for singletons:
+    for i in range(0,n):
+        if i not in leaves_covered:
+            num_components += 1
     return num_components
 
 
@@ -1472,6 +1479,10 @@ def deep_copy(tree):
 
 def maf(tree1, tree2):
     # compute a maximum agreement forest for tree1, using exhaustive search (trying out all forests embedded in tree1) -- this is VERY inefficient, but we cannot go past 7 leaves for distance computation anyway, so we accept this for our tests
+
+    if same_tree(tree1, tree2) == 0:
+        return(tree1, 1)
+
     n = tree1.num_leaves
     m = 2*n-1 # number of nodes in node_list
     binary_strings = generate_binary_strings(m-1) # no 0/1 needed for root, bc we always del edge to parent
@@ -1488,26 +1499,47 @@ def maf(tree1, tree2):
     maf_size = n
 
     for i in range(0,len(binary_strings)):
-        currnet_maf = deep_copy(tree1) # deep copy tree1
+        current_maf = deep_copy(tree1) # deep copy tree1
         # only consider constructing AF if it has less trees than already found AF
         for j in range(0,m-1):
             if binary_strings[i][j] == '1':
                 # delete edge between node at position j in node_list and its parent
-                p = currnet_maf.tree[j].parent
-                currnet_maf.tree[p].children[0] = -1
-                currnet_maf.tree[p].children[1] = -1
-                currnet_maf.tree[j].parent = -1
+                p = current_maf.tree[j].parent
+                current_maf.tree[p].children[0] = -1
+                current_maf.tree[p].children[1] = -1
+                current_maf.tree[j].parent = -1
         # print('MAF:')
         # for j in range(0,m):
-        #     print(j,currnet_maf.tree[j].parent, currnet_maf.tree[j].children[0], currnet_maf.tree[j].children[1])
+        #     print(j,current_maf.tree[j].parent, current_maf.tree[j].children[0], current_maf.tree[j].children[1])
         # print('end MAF')
-        currnet_maf_size = is_embedded(currnet_maf, tree2)
-        if currnet_maf_size != False and currnet_maf_size < maf_size:
+        current_maf_size = is_embedded(current_maf, tree2)
+        if current_maf_size != False and current_maf_size < maf_size:
             #update maf if it is smaller than previously found af and it is actually an agrrement forest for tree1 and tree2
-            maf = deep_copy(currnet_maf)
-            maf_size = currnet_maf_size
+            maf = deep_copy(current_maf)
+            maf_size = current_maf_size
 
-    print('MAF:')
-    for j in range(0,m):
-        print(j,maf.tree[j].parent, maf.tree[j].children[0], maf.tree[j].children[1])
+    # print('MAF:')
+    # for j in range(0,m):
+    #     print(j, maf.tree[j].parent, maf.tree[j].children[0], maf.tree[j].children[1])
     return(maf, maf_size)
+
+
+def test_mafs_caterpillar(n, num_repeats):
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(n, hspr = 1)
+    tree1 = identity_caterpillar(n)
+    tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
+    tree1_index = tree_dict[tree1_str]
+    for i in range(0,num_repeats):
+        tree2 = sim_cat(n,1).trees[0]
+        tree2_str = str(tree_to_cluster_string(tree2)).split("'")[1]
+        tree2_index = tree_dict[tree2_str]
+        MAF = maf(tree1, tree2)
+        dist = d[tree1_index][tree2_index]
+        if MAF[1]-1 != dist:
+            print("MAF doesn't give distance for trees:")
+            print(tree1_str)
+            print(tree2_str)
+            print('MAF size:', MAF[1])
+            print('MAF:')
+            for j in range(0,2*n-1):
+                print(j, MAF[0].tree[j].parent, MAF[0].tree[j].children[0], MAF[0].tree[j].children[1])
