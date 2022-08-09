@@ -1392,3 +1392,122 @@ def rank_moves_distribution(num_leaves):
     plt.xlabel("Normalised number of rank moves on shortest path")
     plt.ylabel("Number of paths")
     plt.savefig("SPR/plots/rank_move_distribution_norm_" + str(num_leaves) + "_n.eps")
+
+
+def generate_binary_strings(n):
+    # generate list of all binary trings on n leaves (recursively)
+    binary_strings = []
+    def genbin(n, string=''):
+        if len(string) == n:
+            binary_strings.append(string)
+        else:
+            genbin(n, string + '0')
+            genbin(n, string + '1')
+    genbin(n)
+    return binary_strings
+
+
+def is_embedded(forest, tree):
+    # checks if forest is embedded in tree (i.e. forest could be agreement forest for tree) and returns number of connected components
+    # The running time of this is VERY low, this function is only used for test on trees on a small number of leaves!
+    n = tree.num_leaves
+    m = 2*n-1
+    conn_comp = dict() # save for every leaf i all other leaves j in same connected component
+    for i in range(0,m):
+        conn_comp[i] = set([i])
+
+    # Check if for every pair of trees the mrca in forest is either -1 or the same as in tree.
+    # If this is the case, all subtrees of forest are subtrees in tree (but: potentially overlapping. we take care of this later)
+    # At the same time, we fill the dictionary conn_comp
+    for i in range(0,n):
+        for j in range(i+1,n):
+            if mrca(forest, i, j) == mrca(tree, i, j):
+                conn_comp[i].add(j)
+                conn_comp[j].add(i)
+                # additionally, add all leaves on path from i to mrca to connected component:
+                p_i = tree.tree[i].parent
+                conn_comp[i].add(p_i)
+                conn_comp[j].add(p_i)
+                while (p_i != mrca(tree,i,j)):
+                    p_i = tree.tree[p_i].parent
+                    conn_comp[i].add(p_i)
+                    conn_comp[j].add(p_i)
+                # the same for j:
+                p_j = tree.tree[j].parent
+                conn_comp[j].add(p_j)
+                conn_comp[i].add(p_j)
+                while (p_j != mrca(tree,i,j)):
+                    p_j = tree.tree[p_j].parent
+                    conn_comp[j].add(p_j)
+                    conn_comp[i].add(p_i)
+            elif mrca(forest, i, j) != -1:
+                return False
+    num_components = n
+    for i in range(0,n):
+        for j in range(i+1,n):
+            if len(conn_comp[i].intersection(conn_comp[j])) > 0:
+                num_components -= 1
+            if len(conn_comp[i].intersection(conn_comp[j])) not in [0,len(conn_comp[i])]:
+                return False
+    return num_components
+
+
+def deep_copy(tree):
+    n = tree.num_leaves
+
+    # Create a tree in the C data structure
+    num_nodes = 2*n-1
+    node_list = (NODE * num_nodes)()
+
+    # Initialise Node list
+    for i in range(0, num_nodes):
+        node_list[i].parent = tree.tree[i].parent
+        node_list[i].children[0] = tree.tree[i].children[0]
+        node_list[i].children[1] = tree.tree[i].children[1]
+        node_list[i].time = tree.tree[i].time
+
+    output = TREE(node_list, n, node_list[num_nodes-1].time,0)
+    return(output)
+
+
+def maf(tree1, tree2):
+    # compute a maximum agreement forest for tree1, using exhaustive search (trying out all forests embedded in tree1) -- this is VERY inefficient, but we cannot go past 7 leaves for distance computation anyway, so we accept this for our tests
+    n = tree1.num_leaves
+    m = 2*n-1 # number of nodes in node_list
+    binary_strings = generate_binary_strings(m-1) # no 0/1 needed for root, bc we always del edge to parent
+
+    # Initialise current_maf as consisting of n singletons
+    m = 2*n-1
+    node_list = (NODE * m)()
+    for i in range(0, m):
+        node_list[i].parent = -1
+        node_list[i].children[0] = -1
+        node_list[i].children[1] = -1
+        node_list[i].time = 0
+    maf = TREE(node_list, n, node_list[m-1].time,0)
+    maf_size = n
+
+    for i in range(0,len(binary_strings)):
+        currnet_maf = deep_copy(tree1) # deep copy tree1
+        # only consider constructing AF if it has less trees than already found AF
+        for j in range(0,m-1):
+            if binary_strings[i][j] == '1':
+                # delete edge between node at position j in node_list and its parent
+                p = currnet_maf.tree[j].parent
+                currnet_maf.tree[p].children[0] = -1
+                currnet_maf.tree[p].children[1] = -1
+                currnet_maf.tree[j].parent = -1
+        # print('MAF:')
+        # for j in range(0,m):
+        #     print(j,currnet_maf.tree[j].parent, currnet_maf.tree[j].children[0], currnet_maf.tree[j].children[1])
+        # print('end MAF')
+        currnet_maf_size = is_embedded(currnet_maf, tree2)
+        if currnet_maf_size != False and currnet_maf_size < maf_size:
+            #update maf if it is smaller than previously found af and it is actually an agrrement forest for tree1 and tree2
+            maf = deep_copy(currnet_maf)
+            maf_size = currnet_maf_size
+
+    print('MAF:')
+    for j in range(0,m):
+        print(j,maf.tree[j].parent, maf.tree[j].children[0], maf.tree[j].children[1])
+    return(maf, maf_size)
