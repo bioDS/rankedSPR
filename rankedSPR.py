@@ -1252,7 +1252,7 @@ def approx_pw_mrca_diff_dist(tree1, tree2, hspr=1):
     return approx_dist
 
 
-# compute a path by always choosing the neighbour of the current tree that minimises the sum of pairwise mrca differences
+# test if approx_symm_ancestor_dist produces distances for all pairs of trees on num_leaves leaves
 def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
     (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
 
@@ -1278,7 +1278,46 @@ def test_approx_symm_ancestor_dist(num_leaves, hspr=1):
                 # if (approx_dist - actual_dist >1):
                 print(tree1_str, tree2_str, actual_dist)
                 print("approximation:", approx_dist, "actual:", actual_dist)
+    print('correct distance:', correct_distance, 'out of', num_tree_pairs)
 
+
+def min_rnni_spr_neighbour_dist(tree1, tree2, hspr=1):
+    # compute a path from tree1 to tree2 iteratively by choosing in every iteration the tree in neighbourhood that has minimum RNNI distance to tree2
+    num_leaves = tree1.num_leaves
+    next_tree = tree1
+    approx_dist = 0
+    while (same_tree(next_tree,tree2) != 0):
+        neighbours = all_spr_neighbourhood(next_tree, hspr)
+        min_diff = findpath_distance(next_tree, tree2)
+        for i in range(0,neighbours.num_trees):
+            rnni_diff = findpath_distance(neighbours.trees[i], tree2)
+            if rnni_diff < min_diff:
+                min_diff = rnni_diff
+                next_tree = neighbours.trees[i]
+        approx_dist += 1
+    return approx_dist
+
+
+# test if min_rnni_spr_neighbour_dist produces distances for all pairs of trees on num_leaves leaves
+def test_min_rnni_spr_neighbour_dist(num_leaves, hspr=1):
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
+
+    num_tree_pairs=0
+    correct_distance = 0
+    for i in range(0,len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            num_tree_pairs+=1
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+            approx_dist = min_rnni_spr_neighbour_dist(tree1, tree2, hspr)
+            actual_dist = d[i][j]
+            if (approx_dist == actual_dist):
+                correct_distance += 1
+            # else:
+            #     print(tree1_str, tree2_str, actual_dist)
+            #     print("approximation:", approx_dist, "actual:", actual_dist)
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
 
 
