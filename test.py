@@ -69,16 +69,23 @@ mrtree8_2="((((5:1,6:1):1,7:2):1,8:3):4,(((1:4,2:4):1,3:5):1,4:6):1);"
 
 t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
 
+diam_tree_7_1 = "((((1:1,2:1):2,3:3):1,4:4):2,((6:2,7:2):3,5:5):1);"
+diam_tree_7_2 = "((((1:2,2:2):2,3:4):1,4:5):2,((6:1,7:1):2,5:3):3);"
+
+diam_tree_8_1 = "((((1:1,2:1):2,3:3):2,4:5):2,(((5:2,6:2):2,7:4):2,8:6):1);"
+diam_tree_8_2 = "((((1:2,2:2):2,3:4):2,4:6):1,(((5:1,6:1):2,7:3):2,8:5):2);"
+
+
 ctree6_diam_dist="(((4:1,6:1):2,2:3):2,((3:2,5:2):2,1:4):1);"
 
 
-# tree1 = read_newick(ctree5)
-# tree2 = read_newick(ctree5_2)
+tree1 = read_newick(diam_tree_7_1)
+tree2 = read_newick(diam_tree_7_2)
 
 # print(maf(tree1, tree2))
-# print(rankedspr_bfs(tree1, tree2))
+print(rankedspr_bfs(tree1, tree2))
 
-test_min_rnni_spr_neighbour_dist(6)
+# test_min_rnni_spr_neighbour_dist(5)
 
 # test_mafs_caterpillar(5,100)
 
