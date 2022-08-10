@@ -43,10 +43,13 @@ t2 = "((1:1,2:1):4,(((4:2,5:2):1,3:3):1,6:4):1);"
 
 test = "(((2:1,3:1):2,1:3):1,(4:2,5:2):2);"
 
+ctree4 = "(((1:1,2:1):1,3:2):1,4:3);"
+ctree4_1 = "(((1:1,3:1):1,2:2):1,4:3);"
+
 ctree6 = "(((((1:1,2:1):1,3:2):1,4:3):1,5:4):1,6:5);"
 
 ctree5 = "((((1:1,2:1):1,3:2):1,4:3):1,5:4);"
-ctree5_2 = "((((4:1,5:1):1,2:2):1,1:3):1,3:4);"
+ctree5_2 = "((((4:1,5:1):1,1:2):1,2:3):1,3:4);"
 
 
 mrtree4_1="((1:1,2:1):2,(3:2,4:2):1);"
@@ -69,14 +72,29 @@ t8 = "(((((1:1,2:1):1,3:2):1,4:3):3,((5:4,6:4):1,7:5):1):1,8:7);"
 ctree6_diam_dist="(((4:1,6:1):2,2:3):2,((3:2,5:2):2,1:4):1);"
 
 
-tree1 = read_newick(q1)
-tree2 = read_newick(q4)
+# tree1 = read_newick(ctree5)
+# tree2 = read_newick(ctree5_2)
+
+# print(maf(tree1, tree2))
+# print(rankedspr_bfs(tree1, tree2))
+
+test_min_rnni_spr_neighbour_dist(6)
+
+# test_mafs_caterpillar(5,100)
+
+# m=10
+# queue = [x for x in range(0,m)]
+# print(queue)
+
+# print(maf(tree1, tree2))
+# time1 = time.time()
+# rank_moves_distribution(5)
+# time2 = time.time()
+# print("Time: {:.3f}ms".format((time2 - time1)*1000.0))
 
 
-time1 = time.time()
-rank_moves_distribution(5)
-time2 = time.time()
-print("Time: {:.3f}ms".format((time2 - time1)*1000.0))
+# binary_strings = generate_binary_strings(6)
+# print(binary_strings)
 
 # print(approx_symm_ancestor_dist(tree1, tree2, hspr=1))
 # print(test_approx_symm_ancestor_dist(5, hspr=1))
