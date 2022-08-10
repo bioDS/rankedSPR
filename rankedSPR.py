@@ -359,7 +359,7 @@ def test_top_down_neighbourhood_search(num_leaves, num_tree_pairs):
 
 
 # Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
-def rankedspr_bfs(start_tree, dest_tree, hspr=1):
+def rankedspr_bfs(start_tree, dest_tree, hspr=1, rnni = False):
     num_leaves = start_tree.num_leaves
     tree_dict = dict() # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
     index_dict = dict() # reverse of tree_dict (indices as keys and trees as values)
@@ -385,11 +385,12 @@ def rankedspr_bfs(start_tree, dest_tree, hspr=1):
             tree = neighbours.trees[i]
             neighbour_string = tree_to_cluster_string(tree)
             if neighbour_string not in tree_dict:
-                to_visit.append(tree)
-                tree_dict[neighbour_string] = index
-                index_dict[index]=neighbour_string
-                predecessor.append(tree_dict[current_tree_str])
-                index+=1
+                if rnni == False or (rnni == True and findpath_distance(neighbours.trees[i], dest_tree) < findpath_distance(current_tree, dest_tree)): # only add neighbour if RNNI dist to dest_tree is smaller than from current_tree to dest_tree (if rnni=True):
+                    to_visit.append(tree)
+                    tree_dict[neighbour_string] = index
+                    index_dict[index]=neighbour_string
+                    predecessor.append(tree_dict[current_tree_str])
+                    index+=1
             if neighbour_string == dest_tree_string:
                 found = True
                 break
@@ -406,6 +407,22 @@ def rankedspr_bfs(start_tree, dest_tree, hspr=1):
     for i in range(len(path_indices)-1, -1, -1):
         path.append(index_dict[path_indices[i]])
     return(path)
+
+
+def test_decreasing_rnni_dist(num_leaves, hspr=1):
+    # test if there is always a shortest path between any two trees on num_leaves leaves for which the RNNI distance decreases in every step
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
+    no_rnni_decreasing_path = 0 # number of tree pairs not connected by any path that decreases rnni distance in every step
+    for i in range(0, len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1, len(d)):
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+            if d[i][j] != len(rankedspr_bfs(tree1, tree2, hspr, rnni=True))-1:
+                print(tree1_str, tree2_str)
+                no_rnni_decreasing_path += 1
+    print("Number of tree pairs with no path on which RNNI distance decreases monotonically:", no_rnni_decreasing_path)
 
 
 # Find the ranks on which moves are performed on shortest path resulting from BFS
