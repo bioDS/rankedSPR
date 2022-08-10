@@ -1302,6 +1302,7 @@ def min_rnni_spr_neighbour_dist(tree1, tree2, hspr=1):
 def test_min_rnni_spr_neighbour_dist(num_leaves, hspr=1):
     (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
 
+    false_distance =[]
     num_tree_pairs=0
     correct_distance = 0
     for i in range(0,len(d)):
@@ -1318,7 +1319,20 @@ def test_min_rnni_spr_neighbour_dist(num_leaves, hspr=1):
             # else:
             #     print(tree1_str, tree2_str, actual_dist)
             #     print("approximation:", approx_dist, "actual:", actual_dist)
+            false_distance.append(approx_dist - actual_dist)
     print('correct distance:', correct_distance, 'out of', num_tree_pairs)
+
+    # Plot difference in approximated distances as historgam
+    plt.clf()
+    d = pd.DataFrame(data=false_distance)
+    upper_bound = max(false_distance)
+    b = np.arange(-.5, upper_bound + 1.5, 1)
+    sns.set_theme(font_scale=1.2)
+    sns.histplot(d, palette=['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    plt.xlabel("Difference between approximation and actual distance")
+    plt.ylabel("Number of tree pairs")
+    plt.savefig("SPR/plots/rnni_to_approx_spr_" + str(num_leaves) + "_n.eps")
+    # plt.show()
 
 
 # Compute the maximum number of rank moves on a shortest path in RSPR (using the distance matrix for the whole tree space computed by SEIDEL)
