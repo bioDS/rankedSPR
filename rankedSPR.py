@@ -1596,3 +1596,46 @@ def test_mafs_caterpillar(n, num_repeats):
             print('MAF:')
             for j in range(0,2*n-1):
                 print(j, MAF[0].tree[j].parent, MAF[0].tree[j].children[0], MAF[0].tree[j].children[1])
+
+# Use BFS to compute the maximum distance any tree has from start_tree
+def max_dist_from_tree(start_tree, hspr=1):
+    tree_dict = dict() # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
+    index_dict = dict() # reverse of tree_dict (indices as keys and trees as values)
+    predecessor = []
+    to_visit = [] # queue containing next trees to be visited in BFS
+
+    # Initialise path?
+    current_tree = start_tree
+
+    tree_dict[tree_to_cluster_string(start_tree)] = 0
+    index_dict[0] = tree_to_cluster_string(start_tree)
+    index = 1 # index of the tree we currently consider (to be put as value for that tree into tree_dict)
+    to_visit.append(current_tree)
+    # Start BFS
+    while len(to_visit) > 0:
+        current_tree = to_visit.pop(0)
+        current_tree_str = tree_to_cluster_string(current_tree)
+        neighbours = all_spr_neighbourhood(current_tree,hspr)
+        for i in range(0,neighbours.num_trees):
+            tree = neighbours.trees[i]
+            neighbour_string = tree_to_cluster_string(tree)
+            if neighbour_string not in tree_dict:
+                to_visit.append(tree)
+                tree_dict[neighbour_string] = index
+                index_dict[index]=neighbour_string
+                predecessor.append(tree_dict[current_tree_str])
+                index+=1
+    print('number of trees visited:', len(tree_dict))
+    # backtracking to find actual distances
+    diameter = 0
+    for dest_tree_str in tree_dict:
+        current_index = tree_dict[dest_tree_str]
+        path_indices = [current_index]
+        while (predecessor[current_index-1] != 0):
+            path_indices.append(predecessor[current_index-1])
+            current_index = predecessor[current_index-1]
+        path_indices.append(0)
+        # now turn path_indices array into path:
+        if len(path_indices)-1 > diameter:
+            diameter = len(path_indices)-1
+    return diameter

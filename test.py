@@ -79,11 +79,16 @@ diam_tree_8_2 = "((((1:2,2:2):2,3:4):2,4:6):1,(((5:1,6:1):2,7:3):2,8:5):2);"
 ctree6_diam_dist="(((4:1,6:1):2,2:3):2,((3:2,5:2):2,1:4):1);"
 
 
-tree1 = read_newick(diam_tree_7_1)
-tree2 = read_newick(diam_tree_7_2)
+tree1 = read_newick(diam_tree_8_1)
+# tree2 = read_newick(diam_tree_7_2)
+print('number of leaves:', tree1.num_leaves)
+time1 = time.time()
+print('max_dist_tree:', max_dist_from_tree(tree1, hspr=0))
+time2 = time.time()
+print("Diameter computation took: {:.3f}ms".format((time2 - time1)*1000.0))
 
 # print(maf(tree1, tree2))
-print(rankedspr_bfs(tree1, tree2))
+# print(rankedspr_bfs(tree1, tree2))
 
 # test_min_rnni_spr_neighbour_dist(5)
 
