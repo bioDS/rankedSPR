@@ -1591,7 +1591,7 @@ def test_mafs_caterpillar(n, num_repeats):
                 print(j, MAF[0].tree[j].parent, MAF[0].tree[j].children[0], MAF[0].tree[j].children[1])
 
 
-# Use BFS to compute the maximum distance any tree has from start_tree
+# Use BFS to compute the maximum distance any tree has from start_tree -- save all distances in file
 def max_dist_from_tree(start_tree, hspr=1):
     tree_dict = dict() # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
     index_dict = dict() # reverse of tree_dict (indices as keys and trees as values)
@@ -1620,6 +1620,7 @@ def max_dist_from_tree(start_tree, hspr=1):
                 predecessor.append(tree_dict[current_tree_str])
                 index+=1
     print('number of trees visited:', len(tree_dict))
+    f = open("SPR/distance_single_source/tree_" + str(tree_to_cluster_string(start_tree)).split("'")[1] + ".txt", 'w')
     # backtracking to find actual distances
     diameter = 0
     for dest_tree_str in tree_dict:
@@ -1629,7 +1630,9 @@ def max_dist_from_tree(start_tree, hspr=1):
             path_indices.append(predecessor[current_index-1])
             current_index = predecessor[current_index-1]
         path_indices.append(0)
+        f.write(str(dest_tree_str).split("'")[1] + "\t" + str(len(path_indices)-1) + "\n")
         # now turn path_indices array into path:
         if len(path_indices)-1 > diameter:
             diameter = len(path_indices)-1
+    f.close()
     return diameter
