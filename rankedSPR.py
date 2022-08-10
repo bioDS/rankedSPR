@@ -744,23 +744,16 @@ def check_caterpillar_on_shortest_path(num_leaves, hspr=1):
 
 
 def print_trees_at_diameter(num_leaves, hspr=1):
-    if hspr == 1:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    else:
-        d = np.load('SPR/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('SPR/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
-    tree_dict = f.readlines()
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(num_leaves, hspr)
     d_max = np.amax(d)
+    print('diameter:', d_max)
     # print('trees at diameter distance:')
     tree_pairs = [] # actual trees at diameter distance (only one per topology pair)
     count = 0
     for coord in np.argwhere(d == d_max):
-        if count%100==0:
-            print("number of tree pairs considered: ", count)
         count+=1
-        tree1_str = tree_dict[coord[0]].split("'")[1]
-        tree2_str = tree_dict[coord[1]].split("'")[1]
+        tree1_str = tree_index_dict[coord[0]]
+        tree2_str = tree_index_dict[coord[1]]
         tree1 = read_from_cluster(tree1_str)
         tree2 = read_from_cluster(tree2_str)
         # print('tree1:', tree1_str)
@@ -782,7 +775,7 @@ def print_trees_at_diameter(num_leaves, hspr=1):
                 break
         if topology_already_counted == False:
             tree_pairs.append(set([tree1_str, tree2_str]))
-    print('tree pairs at diameter distance:')
+    print('tree pairs at diameter distance (only one pair given per topology):')
     for pair in tree_pairs:
         print(pair)
     # print("diameter dist trees per topology:")
@@ -1596,6 +1589,7 @@ def test_mafs_caterpillar(n, num_repeats):
             print('MAF:')
             for j in range(0,2*n-1):
                 print(j, MAF[0].tree[j].parent, MAF[0].tree[j].children[0], MAF[0].tree[j].children[1])
+
 
 # Use BFS to compute the maximum distance any tree has from start_tree
 def max_dist_from_tree(start_tree, hspr=1):
