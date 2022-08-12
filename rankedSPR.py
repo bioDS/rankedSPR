@@ -672,6 +672,7 @@ def orbit_sizes(n, hspr=1):
     unique_rows = np.unique(orbit_size, axis=0, return_index = True)
     return(unique_rows) # unique_rows[0] contains the unique orbit sizes and unique_rows[1] contains the indices belonging to trees having those orbit sizes.
 
+
 def print_orbits_with_trees(n, hspr=1):
     orbits = orbit_sizes(n, hspr)
     if hspr == 0:
@@ -1588,7 +1589,8 @@ def maf(tree1, tree2):
 
 
 def test_mafs_caterpillar(n, num_repeats):
-    (d, tree_dict, tree_index_dict) = read_distance_matrix(n, hspr = 1)
+    # test if MAF(T,R)-1 = d(T,R) if T is identity caterpillar tree on n leaves and R random caterpillar tree (num_repeats repitition of the experiment)
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(n, hspr = 0)
     tree1 = identity_caterpillar(n)
     tree1_str = str(tree_to_cluster_string(tree1)).split("'")[1]
     tree1_index = tree_dict[tree1_str]
@@ -1606,6 +1608,34 @@ def test_mafs_caterpillar(n, num_repeats):
             print('MAF:')
             for j in range(0,2*n-1):
                 print(j, MAF[0].tree[j].parent, MAF[0].tree[j].children[0], MAF[0].tree[j].children[1])
+
+
+def test_mafs(n, hspr=0):
+    # check for how many trees on n leaves MAF(T,R)-1 != d(T,R)
+    (d, tree_dict, tree_index_dict) = read_distance_matrix(n, hspr)
+    d_maf_diff = [] # save difference MAF(T,R)-d(T,R) to plot it later
+    num_pairs = 0 # total number of pairs we consider
+    for i in range(0,len(d)):
+        tree1_str = tree_index_dict[i]
+        tree1 = read_from_cluster(tree1_str)
+        for j in range(i+1,len(d)):
+            num_pairs+=1
+            tree2_str = tree_index_dict[j]
+            tree2 = read_from_cluster(tree2_str)
+            MAF = maf(tree1, tree2)
+            dist = d[i][j]
+            d_maf_diff.append(MAF[1]-1-dist)
+    print("MAF greater than distance for", num_pairs - d_maf_diff.count(0), "out of", num_pairs, "tree pairs")
+    # Plot difference MAF(T,R)-d(T,R) in histogram
+    plt.clf()
+    d = pd.DataFrame(data=d_maf_diff)
+    upper_bound = max(d_maf_diff)
+    b = np.arange(-.5, upper_bound + 1.5, 1)
+    sns.set_theme(font_scale=1.2)
+    sns.histplot(d, palette=['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    plt.xlabel("|MAF(T,R)|-1-d(T,R)")
+    plt.ylabel("Number of tree pairs")
+    plt.savefig("SPR/plots/maf_dist_diff_" + str(n) + "_n.eps")
 
 
 # Use BFS to compute the maximum distance any tree has from start_tree -- save all distances in file
