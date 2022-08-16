@@ -1624,18 +1624,24 @@ def test_mafs(n, hspr=0):
             tree2 = read_from_cluster(tree2_str)
             MAF = maf(tree1, tree2)
             dist = d[i][j]
+            # if dist - (MAF[1]-1) != 0:
+            #     print(tree1_str, tree2_str, dist, (MAF[1]-1))
             d_maf_diff.append(dist - (MAF[1]-1))
     print("MAF greater than distance for", num_pairs - d_maf_diff.count(0), "out of", num_pairs, "tree pairs")
     # Plot difference MAF(T,R)-d(T,R) in histogram
     plt.clf()
     diff = pd.DataFrame(data=d_maf_diff)
     upper_bound = max(d_maf_diff)
-    b = np.arange(-.5, upper_bound + 1.5, 1)
+    lower_bound = min(d_maf_diff)
+    b = np.arange(lower_bound -.5, upper_bound + .5, 1)
     sns.set_theme(font_scale=1.2)
-    sns.histplot(diff, palette=['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [-.5,upper_bound+1.5], stat = 'density', legend = False)
+    sns.histplot(diff, palette=['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [lower_bound - .5,upper_bound+.5], stat = 'density', legend = False)
     plt.xlabel("|MAF(T,R)|-1-d(T,R)")
     plt.ylabel("Number of tree pairs")
-    plt.savefig("SPR/plots/maf_dist_diff_" + str(n) + "_n.eps")
+    if hspr == 0:
+        plt.savefig("SPR/plots/maf_dist_diff_" + str(n) + "_n_hspr.eps")
+    else:
+        plt.savefig("SPR/plots/maf_dist_diff_" + str(n) + "_n_rspr.eps")
 
 
 # Use BFS to compute the maximum distance any tree has from start_tree -- save all distances in file
