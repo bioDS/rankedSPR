@@ -1,14 +1,14 @@
 __author__ = 'Lena Collienne'
 # Compute distance matrix for rankedSPR graph (from adjacency matrix, using SEIDEL implementation from RNNI_code package)
 import sys
-sys.path.append('treeOclock/')
-sys.path.append('treeOclock/dct_parser/')
+
+sys.path.append('../')
 
 import ctypes
 import numpy as np
 from numpy.ctypeslib import ndpointer
 import time
-from rankedSPR import *
+from rankedspr_distances import *
 from os.path import exists
 
 
@@ -25,9 +25,9 @@ def rankedspr_seidel(n, hspr=1):
     time1 = time.time()
     _seidel.seidel(A, A.shape[0])
     if(hspr==0):
-        np.save('SPR/distance_matrix_' + str(n) + '_leaves_hspr', A)
+        np.save('output/distance_matrix_' + str(n) + '_leaves_hspr', A)
     else:
-        np.save('SPR/distance_matrix_' + str(n) + '_leaves', A)
+        np.save('output/distance_matrix_' + str(n) + '_leaves', A)
     time2 = time.time()
     print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
     print("diameter: ", np.amax(A))
@@ -39,7 +39,7 @@ def rankedspr_wo_RNNI_seidel(n):
     A = np.ascontiguousarray(AI[0], dtype=np.int32)
     time1 = time.time()
     _seidel.seidel(A, A.shape[0])
-    np.save('SPR/wo_RNNI_distance_matrix_' + str(n) + '_leaves', A)
+    np.save('output/wo_RNNI_distance_matrix_' + str(n) + '_leaves', A)
     time2 = time.time()
     print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
     print("diameter: ", np.amax(A))
