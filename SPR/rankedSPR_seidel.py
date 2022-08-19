@@ -45,6 +45,7 @@ def rankedspr_wo_RNNI_seidel(n):
     print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
     print("diameter: ", np.amax(A))
 
+# SOMETHING SEEMS WRONG HERE -- reading the same adjacency matrix results in different distance matrices!
 def unlabelled_ranked_spr_seidel(n, hspr = 0):
     # compute distance matrix for RSPR (or HSPR if HSPR=0), for trees on n leaves
     print('number of leaves:', n)
