@@ -4,7 +4,6 @@ from itertools import count
 from platform import architecture
 import sys
 
-from analyse_distance_distribution import read_newick_tree_file
 sys.path.append('../treeOclock/')
 sys.path.append('../treeOclock/dct_parser/')
 
