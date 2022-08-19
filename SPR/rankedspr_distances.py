@@ -178,15 +178,23 @@ def rankedSPR_wo_RNNI_adjacency(num_leaves):
     return(adj, tree_index)
 
 
-def read_distance_matrix(num_leaves, hspr=1):
+def read_distance_matrix(num_leaves, hspr=1, unlabelled = 1):
     # read distance matrix and corresponding trees and return them as matrix and two dicts (index to tree and tree to index)
     # Read distance matrix
-    if hspr == 1:
-        d = np.load('output/distance_matrix_' + str(num_leaves) + '_leaves.npy')
-        f = open('output/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-    elif hspr ==0:
-        d = np.load('output/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
-        f = open('output/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+    if unlabelled != 0:
+        if hspr == 1:
+            d = np.load('output/distance_matrix_' + str(num_leaves) + '_leaves.npy')
+            f = open('output/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+        elif hspr ==0:
+            d = np.load('output/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+            f = open('output/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
+    else:
+        if hspr == 1:
+            d = np.load('output/unlabelled_distance_matrix_' + str(num_leaves) + '_leaves.npy')
+            f = open('output/unlabelled_tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
+        elif hspr ==0:
+            d = np.load('output/unlabelled_distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
+            f = open('output/unlabelled_tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
 
     # Put all trees into a dict (note that indices are sorted increasingly in file)
     tree_strings = f.readlines()
@@ -194,7 +202,10 @@ def read_distance_matrix(num_leaves, hspr=1):
     tree_dict = dict()
     tree_index_dict = dict()
     for tree_str in tree_strings:
-        tree_str = tree_str.split("'")[1]
+        if unlabelled == 1:
+            tree_str = tree_str.split("'")[1]
+        else:
+            tree_str = tree_str.split(" ")[1].split("\n")[0]
         tree_dict[tree_str]=index
         tree_index_dict[index]=tree_str
         index += 1
