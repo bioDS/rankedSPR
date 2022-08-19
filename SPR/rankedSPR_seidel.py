@@ -9,6 +9,7 @@ import numpy as np
 from numpy.ctypeslib import ndpointer
 import time
 from rankedspr_distances import *
+from unlabelled_rankedspr_distances import *
 from os.path import exists
 
 
@@ -44,3 +45,17 @@ def rankedspr_wo_RNNI_seidel(n):
     print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
     print("diameter: ", np.amax(A))
 
+def unlabelled_ranked_spr_seidel(n, hspr = 0):
+    # compute distance matrix for RSPR (or HSPR if HSPR=0), for trees on n leaves
+    print('number of leaves:', n)
+    AI = unlabelled_rankedSPR_adjacency(n, hspr)
+    A = np.ascontiguousarray(AI[0], dtype=np.int32)
+    time1 = time.time()
+    _seidel.seidel(A, A.shape[0])
+    if(hspr==0):
+        np.save('output/unlabelled_distance_matrix_' + str(n) + '_leaves_hspr', A)
+    else:
+        np.save('output/unlabelled_distance_matrix_' + str(n) + '_leaves', A)
+    time2 = time.time()
+    print("C Seidel took {:.3f}ms".format((time2 - time1)*1000.0))
+    print("diameter: ", np.amax(A))
