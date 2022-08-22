@@ -48,7 +48,12 @@ dm seidel_recursive(dm A, int n, int depth) {
 	const int verbose = 0; // optionally print entire matrices at each stop for debugging.
 	printf("recursion\n");
 	// test the base case
-	int done = 1;
+	/* int done = 1; */
+	int thread_done[num_threads];
+	for (int i = 0; i < num_threads; i++) {
+		thread_done[i] = 1;
+	}
+
 	if (verbose) {
 		printf("A:\n");
 		print(A, n);
@@ -69,29 +74,42 @@ dm seidel_recursive(dm A, int n, int depth) {
 		col_B[i] = malloc(BUF_SIZE(n)*sizeof(uint32_t));
 		col_B_buf[i] = malloc(BUF_SIZE(n)*sizeof(uint32_t));
 	}
-	#pragma omp parallel for shared(done)
+	#pragma omp parallel for
 	for (int i = 0; i < n; i++) {
 		int thread_id = omp_get_thread_num();
 		p4ndec32(A.sa[i], n, row_A[thread_id]);
 		for (int j = 0; j < n; j++) {
 			if (i != j && row_A[thread_id][j] != 1) {
-				done = 0;
+				thread_done[thread_id] = 0;
 			}
 		}
+	}
+	int done = 1;
+	for (int i = 0; i < num_threads; i++) {
+		if (thread_done[i] == 0)
+			done = 0;
 	}
 	printf("done checking A\n");
 	// the array is all ones. We can just return it.
 	if (done) {
 		printf("floor\n");
-		uint32_t *row_A = malloc(BUF_SIZE(n)*sizeof(uint32_t));
+		uint32_t *tmp_row_A = malloc(BUF_SIZE(n)*sizeof(uint32_t));
 		dm D;
 		D.sa = malloc(n*sizeof(unsigned char*));
 		for (int i = 0; i < n; i++) {
-			size_t row_size = p4ndec32(A.sa[i], n, row_A);
+			size_t row_size = p4ndec32(A.sa[i], n, tmp_row_A);
 			D.sa[i] = malloc(row_size);
 			memcpy(D.sa[i], A.sa[i], row_size);
 		}
-		free(row_A);
+		free(tmp_row_A);
+		for (int i = 0; i < num_threads; i++) {
+			free(row_A[i]);
+			free(row_B[i]);
+			free(row_B_buf[i]);
+			free(col_A[i]);
+			free(col_B[i]);
+			free(col_B_buf[i]);
+		}
 
 		return D;
 	}
@@ -282,6 +300,12 @@ void seidel(unsigned int *A, int n) {
 			A[i*n+j] = row_A[j];
 		}
 	}
+	for (int i = 0; i < n; i++) {
+		free(sa[i]);
+		free(sat[i]);
+	}
+	free(sa);
+	free(sat);
 	free(row_A);
 	free_matrix(D.sa, n);
 }
