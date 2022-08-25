@@ -23,7 +23,7 @@ from os.path import exists
 from numpy.ctypeslib import ndpointer
 
 
-_seidel = ctypes.CDLL('./libseidel.so')
+_seidel = ctypes.CDLL('../seidel/libseidel.so')
 _seidel.test_function.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32)
 _seidel.seidel.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32)
 _seidel.seidel_recursive.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS"), ctypes.c_int32, ctypes.c_int32)
