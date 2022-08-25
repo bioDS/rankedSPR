@@ -6,6 +6,7 @@ import sys
 
 sys.path.append('../treeOclock/')
 sys.path.append('../treeOclock/dct_parser/')
+sys.path.append('..')
 
 import ctypes
 import math
