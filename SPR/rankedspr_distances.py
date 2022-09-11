@@ -31,8 +31,8 @@ _seidel.seidel_recursive.argtypes = (ndpointer(ctypes.c_int, flags="C_CONTIGUOUS
 
 
 # Compute the adjacency matrix of the rankedSPR graph
-# If hspr = 1, compute matrix for rankedSPR graph, otherwise for HSPR graph
-def rankedSPR_adjacency(num_leaves, hspr = 1):
+# If hspr = False, compute matrix for rankedSPR graph, otherwise for HSPR graph
+def rankedSPR_adjacency(num_leaves, hspr = False):
     num_trees = math.factorial(num_leaves - 1) * math.factorial(num_leaves) / (2**(num_leaves - 1))
     tree_index = dict() # dict containing trees as keys (as strings of cluster representation) and their index in adjacency matrix as values.
     index = 0 # Index of the last added tree in tree_index
@@ -82,7 +82,7 @@ def rankedSPR_adjacency(num_leaves, hspr = 1):
 
     # Save tree dict in file:
     # open file for writing
-    if hspr == 0:
+    if hspr == True:
         f = open("output/tree_dict_" + str(num_leaves) + "_leaves_hspr.txt","w")
     else:
         f = open("output/tree_dict_" + str(num_leaves) + "_leaves.txt","w")
@@ -96,7 +96,7 @@ def rankedSPR_adjacency(num_leaves, hspr = 1):
     f.close()
 
     # Save adjacency matrix in file
-    if hspr ==1:
+    if hspr == False:
         if not exists('output/adj_matrix_%s_leaves.npy' %num_leaves):
             np.save("output/adj_matrix_" + str(num_leaves) + "_leaves.npy", adj)
     else:
@@ -178,21 +178,21 @@ def rankedSPR_wo_RNNI_adjacency(num_leaves):
     return(adj, tree_index)
 
 
-def read_distance_matrix(num_leaves, hspr=1, unlabelled = 1):
+def read_distance_matrix(num_leaves, hspr = False, unlabelled = 1):
     # read distance matrix and corresponding trees and return them as matrix and two dicts (index to tree and tree to index)
     # Read distance matrix
     if unlabelled != 0:
-        if hspr == 1:
+        if hspr == False:
             d = np.load('output/distance_matrix_' + str(num_leaves) + '_leaves.npy')
             f = open('output/tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-        elif hspr ==0:
+        elif hspr == True:
             d = np.load('output/distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
             f = open('output/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
     else:
-        if hspr == 1:
+        if hspr == False:
             d = np.load('output/unlabelled_distance_matrix_' + str(num_leaves) + '_leaves.npy')
             f = open('output/unlabelled_tree_dict_' + str(num_leaves) + '_leaves.txt', 'r')
-        elif hspr ==0:
+        elif hspr == True:
             d = np.load('output/unlabelled_distance_matrix_' + str(num_leaves) + '_leaves_hspr.npy')
             f = open('output/unlabelled_tree_dict_' + str(num_leaves) + '_leaves_hspr.txt', 'r')
 
@@ -213,7 +213,7 @@ def read_distance_matrix(num_leaves, hspr=1, unlabelled = 1):
 
 
 # Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
-def rankedspr_bfs(start_tree, dest_tree, hspr=1, rnni = False):
+def rankedspr_bfs(start_tree, dest_tree, hspr = False, rnni = False):
     num_leaves = start_tree.num_leaves
     tree_dict = dict() # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
     index_dict = dict() # reverse of tree_dict (indices as keys and trees as values)
