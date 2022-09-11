@@ -5,7 +5,7 @@ from platform import architecture
 import sys
 
 sys.path.append('../treeOclock/')
-sys.path.append('../treeOclock/dct_parser/')
+sys.path.append('../treeOclock/tree_parser/')
 sys.path.append('..')
 
 import ctypes
@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import copy as cp
 import random
 import re
-from treeOclock.dct_parser.tree_io import *
+from treeOclock.tree_parser.tree_io import *
 from treeOclock import *
 from simulate_trees import *
 from os.path import exists
