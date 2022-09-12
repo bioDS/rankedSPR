@@ -202,7 +202,7 @@ def read_distance_matrix(num_leaves, hspr = False, unlabelled = 1):
     tree_dict = dict()
     tree_index_dict = dict()
     for tree_str in tree_strings:
-        if unlabelled == 1:
+        if unlabelled == 1 and "'" in tree_str:
             tree_str = tree_str.split("'")[1]
         else:
             tree_str = tree_str.split(" ")[1].split("\n")[0]
