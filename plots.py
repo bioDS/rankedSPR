@@ -1,24 +1,28 @@
-__author__ = 'Lena Collienne'
-
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
-def plot_hist(d, bins, filehandle = '', density = True):
+
+def plot_hist(d, xlabel = 'distance', ylabel = 'frequency', filehandle = '', density = True):
     # Shows and saves histogram (to specified file)
+    plt.clf()
     df = pd.DataFrame(data = d)
+    upper_bound = df.max()[0]
+    lower_bound = df.min()[0]
+    sns.set_theme(font_scale=1.2)
     if density == True:
-        p = sns.histplot(data=df, bins = bins, stat = 'density', legend = True)
+        sns.histplot(df, palette = ['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [ lower_bound - 0.5, upper_bound + 1.5], stat = 'density', legend = False)
     else:
-        p = sns.histplot(data=df, bins = bins, stat = 'count', legend = True)
-    p.set_xlabel('distance')
-    p.set_ylabel('frequency')
+        sns.histplot(df, palette = ['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [ lower_bound - 0.5, upper_bound + 1.5], stat = 'count', legend = False)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.tight_layout()
     if filehandle != '':
         plt.savefig(filehandle)
-    plt.tight_layout()
     plt.show()
+
 
 def plot_dots(d, ylimits = None, filehandle = '', lgnd = False, line = False):
     # Shows and saves values (to specified file)
@@ -35,6 +39,7 @@ def plot_dots(d, ylimits = None, filehandle = '', lgnd = False, line = False):
         plt.savefig(filehandle)
     plt.tight_layout()
     plt.show()
+
 
 def mean_comparison():
     mean_list_caterpillar = np.loadtxt('../simulations/distance_distribution/coalescent/mean_to_caterpillar_distance_repeat_n_16_N_10000_500_iterations.np')
