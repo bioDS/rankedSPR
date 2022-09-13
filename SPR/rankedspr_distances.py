@@ -212,6 +212,15 @@ def read_distance_matrix(num_leaves, hspr = False, unlabelled = 1):
     return(d, tree_dict, tree_index_dict)
 
 
+def get_distance_matrix(num_leaves, hspr):
+    '''get the distance matrix for trees on num_leaves leaves for hspr (HSPR=TRUE) or rspr.'''
+    if (hspr == True and not exists("output/distance_matrix_" + str(num_leaves) + "_leaves_hspr.npy")) or (hspr == False and not exists("output/distance_matrix_" + str(num_leaves) + "_leaves.npy")):
+        print("start computing distance matrix")
+        rankedspr_seidel(num_leaves, hspr)
+        print("finish computing distance matrix")
+    return read_distance_matrix(num_leaves, hspr)
+
+
 # Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
 def rankedspr_bfs(start_tree, dest_tree, hspr = False, rnni = False):
     num_leaves = start_tree.num_leaves
