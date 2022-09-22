@@ -1,6 +1,6 @@
 default: spr_playground.so
 
-spr_playground.so: spr_playground.o queue.o treeOclock
+spr_playground.so: treeOclock spr_playground.o queue.o
 	gcc -shared -o spr_playground.so queue.o ../treeOclock/tree.o ../treeOclock/rnni.o ../treeOclock/spr.o ../treeOclock/unlabelled_rnni.o
 
 spr_playground.o: spr_playground.c spr_playground.h
