@@ -1,7 +1,13 @@
-default: treeOclock
-	# gcc -fPIC -Wall -c -g -O2 -fsanitize=address tree.c
+default: spr_playground.so
+
+spr_playground.so: spr_playground.o queue.o treeOclock
+	gcc -shared -o spr_playground.so queue.o ../treeOclock/tree.o ../treeOclock/rnni.o ../treeOclock/spr.o ../treeOclock/unlabelled_rnni.o
+
+spr_playground.o: spr_playground.c spr_playground.h
 	gcc -fPIC -Wall -c -g -O2 spr_playground.c
-	gcc -shared -o spr_playground.so ../treeOclock/tree.o ../treeOclock/rnni.o ../treeOclock/spr.o ../treeOclock/queue.o ../treeOclock/unlabelled_rnni.o
 
 treeOclock:
 	make -C ../treeOclock
+
+queue.o: queue.c queue.h
+	gcc -fPIC -Wall -c -g -O2 queue.c
