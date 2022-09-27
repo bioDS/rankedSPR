@@ -1,3 +1,10 @@
+from os.path import exists
+from unlabelled_rankedspr_distances import *
+from rankedspr_distances import *
+import time
+from numpy.ctypeslib import ndpointer
+import numpy as np
+import ctypes
 __author__ = 'Lena Collienne'
 # Compute distance matrix for rankedSPR graph (from adjacency matrix, using SEIDEL implementation from RNNI_code package)
 from pickle import FALSE
@@ -5,13 +12,6 @@ import sys
 
 sys.path.append('../seidel/')
 
-import ctypes
-import numpy as np
-from numpy.ctypeslib import ndpointer
-import time
-from rankedspr_distances import *
-from unlabelled_rankedspr_distances import *
-from os.path import exists
 
 _seidel = ctypes.CDLL("../seidel/libseidel.so")
 _seidel.test_function.argtypes = (ndpointer(ctypes.c_int,

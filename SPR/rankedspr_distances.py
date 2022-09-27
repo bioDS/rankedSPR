@@ -1,3 +1,17 @@
+from numpy.ctypeslib import ndpointer
+from os.path import exists
+from simulate_trees import *
+from treeOclock import *
+from treeOclock.tree_parser.tree_io import *
+import re
+import random
+import copy as cp
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+import math
+import ctypes
 __author__ = 'Lena Collienne'
 # Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
 from itertools import count
@@ -8,20 +22,6 @@ sys.path.append('../treeOclock/')
 sys.path.append('../treeOclock/tree_parser/')
 sys.path.append('..')
 
-import ctypes
-import math
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import copy as cp
-import random
-import re
-from treeOclock.tree_parser.tree_io import *
-from treeOclock import *
-from simulate_trees import *
-from os.path import exists
-from numpy.ctypeslib import ndpointer
 
 _seidel = ctypes.CDLL('../seidel/libseidel.so')
 _seidel.test_function.argtypes = (ndpointer(ctypes.c_int,
@@ -37,10 +37,10 @@ _seidel.seidel_recursive.argtypes = (ndpointer(ctypes.c_int,
 # Compute the adjacency matrix of the rankedSPR graph
 # If hspr = False, compute matrix for rankedSPR graph, otherwise for HSPR graph
 def rankedSPR_adjacency(num_leaves, hspr=False):
-    num_trees = math.factorial(num_leaves - 1) * math.factorial(num_leaves) / (
-        2**(num_leaves - 1))
-    tree_index = dict(
-    )  # dict containing trees as keys (as strings of cluster representation) and their index in adjacency matrix as values.
+    num_trees = math.factorial(num_leaves - 1) * \
+        math.factorial(num_leaves) / (2**(num_leaves - 1))
+    # dict containing trees as keys (as strings of cluster representation) and their index in adjacency matrix as values.
+    tree_index = dict()
     index = 0  # Index of the last added tree in tree_index
     not_visited = [
     ]  # Save the trees that are already generated, but have not been added to adjacency matrix, in list
@@ -108,25 +108,23 @@ def rankedSPR_adjacency(num_leaves, hspr=False):
     # Save adjacency matrix in file
     if hspr == False:
         if not exists('output/adj_matrix_%s_leaves.npy' % num_leaves):
-            np.save("output/adj_matrix_" + str(num_leaves) + "_leaves.npy",
-                    adj)
+            np.save("output/adj_matrix_" +
+                    str(num_leaves) + "_leaves.npy", adj)
     else:
         if not exists('output/adj_matrix_%s_leaves_hspr.npy' % num_leaves):
-            np.save(
-                "output/adj_matrix_" + str(num_leaves) + "_leaves_hspr.npy",
-                adj)
+            np.save("output/adj_matrix_" +
+                    str(num_leaves) + "_leaves_hspr.npy", adj)
     return (adj, tree_index)
 
 
 # Compute the adjacency matrix of the rankedSPR graph without RNNI moves
 def rankedSPR_wo_RNNI_adjacency(num_leaves):
-    num_trees = math.factorial(num_leaves - 1) * math.factorial(num_leaves) / (
-        2**(num_leaves - 1))
-    tree_index = dict(
-    )  # dict containing trees as keys (as strings of cluster representation) and their index in adjacency matrix as values.
+    num_trees = math.factorial(num_leaves - 1) * \
+        math.factorial(num_leaves) / (2**(num_leaves - 1))
+    # dict containing trees as keys (as strings of cluster representation) and their index in adjacency matrix as values.
+    tree_index = dict()
     index = 0  # Index of the last added tree in tree_index
-    visited = [
-    ]  # Save the trees that have already been used, i.e. their 1-neighbourhoods have already been considered
+    visited = []  # Save the trees that have already been used, i.e. their 1-neighbourhoods have already been considered
     start_tree = identity_caterpillar(num_leaves)
     start_tree_str = tree_to_cluster_string(start_tree)
     tree_index[start_tree_str] = 0
@@ -179,9 +177,8 @@ def rankedSPR_wo_RNNI_adjacency(num_leaves):
 
     # Save tree dict in file:
     # open file for writing
-    f = open(
-        "output/wo_RNNI_tree_dict_" + str(num_leaves) + "_leaves_hspr.txt",
-        "w")
+    f = open("output/wo_RNNI_tree_dict_" +
+             str(num_leaves) + "_leaves_hspr.txt", "w")
 
     # write file
     for key in tree_index:
@@ -210,22 +207,19 @@ def read_distance_matrix(num_leaves, hspr=False, unlabelled=1):
         elif hspr == True:
             d = np.load('output/distance_matrix_' + str(num_leaves) +
                         '_leaves_hspr.npy')
-            f = open(
-                'output/tree_dict_' + str(num_leaves) + '_leaves_hspr.txt',
-                'r')
+            f = open('output/tree_dict_' + str(num_leaves) +
+                     '_leaves_hspr.txt', 'r')
     else:
         if hspr == False:
             d = np.load('output/unlabelled_distance_matrix_' +
                         str(num_leaves) + '_leaves.npy')
-            f = open(
-                'output/unlabelled_tree_dict_' + str(num_leaves) +
-                '_leaves.txt', 'r')
+            f = open('output/unlabelled_tree_dict_' +
+                     str(num_leaves) + '_leaves.txt', 'r')
         elif hspr == True:
             d = np.load('output/unlabelled_distance_matrix_' +
                         str(num_leaves) + '_leaves_hspr.npy')
-            f = open(
-                'output/unlabelled_tree_dict_' + str(num_leaves) +
-                '_leaves_hspr.txt', 'r')
+            f = open('output/unlabelled_tree_dict_' + str(num_leaves) +
+                     '_leaves_hspr.txt', 'r')
 
     # Put all trees into a dict (note that indices are sorted increasingly in file)
     tree_strings = f.readlines()
@@ -256,10 +250,8 @@ def get_distance_matrix(num_leaves, hspr):
 # Very slow and inefficient implementation of BFS for rankedSPR -- only useful for VERY small number of leaves
 def rankedspr_bfs(start_tree, dest_tree, hspr=False, rnni=False):
     num_leaves = start_tree.num_leaves
-    tree_dict = dict(
-    )  # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
-    index_dict = dict(
-    )  # reverse of tree_dict (indices as keys and trees as values)
+    tree_dict = dict()  # save trees (as cluster strings) and an index for each tree as value, so we can recover the path after running BFS (backtracking)
+    index_dict = dict()  # reverse of tree_dict (indices as keys and trees as values)
     predecessor = []
     to_visit = []  # queue containing next trees to be visited in BFS
 
@@ -270,7 +262,8 @@ def rankedspr_bfs(start_tree, dest_tree, hspr=False, rnni=False):
 
     tree_dict[tree_to_cluster_string(start_tree)] = 0
     index_dict[0] = tree_to_cluster_string(start_tree)
-    index = 1  # index of the tree we currently consider (to be put as value for that tree into tree_dict)
+    # index of the tree we currently consider (to be put as value for that tree into tree_dict)
+    index = 1
     to_visit.append(current_tree)
     found = False  # True if we found dest_tree
     # Start BFS
@@ -282,11 +275,10 @@ def rankedspr_bfs(start_tree, dest_tree, hspr=False, rnni=False):
             tree = neighbours.trees[i]
             neighbour_string = tree_to_cluster_string(tree)
             if neighbour_string not in tree_dict:
-                if rnni == False or (
-                        rnni == True
-                        and findpath_distance(neighbours.trees[i], dest_tree) <
-                        findpath_distance(current_tree, dest_tree)
-                ):  # only add neighbour if RNNI dist to dest_tree is smaller than from current_tree to dest_tree (if rnni=True):
+                if rnni == False or (rnni == True
+                                     and findpath_distance(neighbours.trees[i], dest_tree) <
+                                     findpath_distance(current_tree, dest_tree)
+                                     ):  # only add neighbour if RNNI dist to dest_tree is smaller than from current_tree to dest_tree (if rnni=True):
                     to_visit.append(tree)
                     tree_dict[neighbour_string] = index
                     index_dict[index] = neighbour_string
