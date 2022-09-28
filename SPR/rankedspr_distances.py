@@ -1,3 +1,9 @@
+import sys
+
+sys.path.append('../treeOclock/')
+sys.path.append('../treeOclock/tree_parser/')
+sys.path.append('..')
+
 from numpy.ctypeslib import ndpointer
 from os.path import exists
 from simulate_trees import *
@@ -16,11 +22,6 @@ __author__ = 'Lena Collienne'
 # Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
 from itertools import count
 from platform import architecture
-import sys
-
-sys.path.append('../treeOclock/')
-sys.path.append('../treeOclock/tree_parser/')
-sys.path.append('..')
 
 
 _seidel = ctypes.CDLL('../seidel/libseidel.so')
@@ -227,8 +228,7 @@ def read_distance_matrix(num_leaves, hspr=False, unlabelled=1):
     tree_dict = dict()
     tree_index_dict = dict()
     for tree_str in tree_strings:
-        if unlabelled == 0:
-            tree_str = tree_str.split(" ")[1].split("\n")[0]
+        tree_str = tree_str.split(" ")[1].split("\n")[0]
         tree_dict[tree_str] = index
         tree_index_dict[index] = tree_str
         index += 1
