@@ -1,3 +1,6 @@
+__author__ = 'Lena Collienne'
+# Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
+
 import sys
 
 sys.path.append('../treeOclock/')
@@ -7,21 +10,10 @@ sys.path.append('..')
 from numpy.ctypeslib import ndpointer
 from os.path import exists
 from simulate_trees import *
-from treeOclock import *
 from treeOclock.tree_parser.tree_io import *
-import re
-import random
-import copy as cp
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 import numpy as np
 import math
 import ctypes
-__author__ = 'Lena Collienne'
-# Computing the rankedSPR graph to test algorithms for computing distances for trees on a small number of leaves
-from itertools import count
-from platform import architecture
 
 
 _seidel = ctypes.CDLL('../seidel/libseidel.so')
