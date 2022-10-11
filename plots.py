@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 
 
-def plot_hist(d, xlabel = 'distance', ylabel = 'frequency', filehandle = '', density = True):
+def plot_hist(d, xlabel = 'distance', ylabel = 'frequency', filehandle = '', density = True, bwidth = 1):
     # Shows and saves histogram (to specified file)
     plt.clf()
     df = pd.DataFrame(data = d)
@@ -13,9 +13,9 @@ def plot_hist(d, xlabel = 'distance', ylabel = 'frequency', filehandle = '', den
     lower_bound = df.min()[0]
     sns.set_theme(font_scale=1.2)
     if density == True:
-        sns.histplot(df, palette = ['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [ lower_bound - 0.5, upper_bound + 1.5], stat = 'density', legend = False)
+        sns.histplot(df, palette = ['#b02538'], edgecolor = 'black', alpha=1, binwidth=bwidth, binrange = [ lower_bound - bwidth/2, upper_bound + bwidth/2], stat = 'density', legend = False)
     else:
-        sns.histplot(df, palette = ['#b02538'], edgecolor = 'black', alpha=1, binwidth=1, binrange = [ lower_bound - 0.5, upper_bound + 1.5], stat = 'count', legend = False)
+        sns.histplot(df, palette = ['#b02538'], edgecolor = 'black', alpha=1, binwidth=bwidth, binrange = [ lower_bound - bwidth/2, upper_bound + bwidth/2], stat = 'count', legend = False)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.tight_layout()
