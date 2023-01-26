@@ -7,49 +7,6 @@ from plots import *
 import gc
 
 
-def add_unique_topology_pair(tree_pairs, tree1, tree2):
-    # only add tree1 and tree2 to tree_pairs if permuting leaves of tree1 and tree2 in the same way does not give a tree pair in tree_pairs.
-    tp_exists = False
-    for tp in tree_pairs:
-        tree3_str = min(tp)
-        tree4_str = max(tp)
-        tree3 = read_from_cluster(tree3_str)
-        tree4 = read_from_cluster(tree4_str)
-        if tree_pairs_permutations(tree1, tree2, tree3, tree4):
-            tp_exists = True
-            break
-    if tp_exists == False:
-        tree1_str = tree_to_cluster_string(tree1)
-        tree2_str = tree_to_cluster_string(tree2)
-        tree_pairs.append(set([tree1_str, tree2_str]))
-    return tree_pairs
-
-
-# Find the ranks on which moves are performed on shortest path resulting from BFS
-def bfs_path_rank_sequence(tree1, tree2):
-    path = rankedspr_bfs(tree1, tree2, hspr=True)
-    rank_list = []
-    rank_count = []
-    for i in range(0, len(path) - 1):
-        # for each move, find the lowest rank for which induced cluster changes -- this is the rank on which the HSPR move happened
-        path[i] = str(path[i])
-        path[i + 1] = str(path[i + 1])
-        rank = 0
-        for j in range(0, len(path[i]) - 1):
-            if path[i][j] == '{':
-                rank += 1
-            if path[i][j] != path[i + 1][j]:
-                rank_list.append(rank)
-                break
-    for i in range(1, tree1.num_leaves - 1):
-        rank_count.append(rank_list.count(i))
-    if max(rank_count) > 3:
-        print("There is a rank for which more than one move is needed. The corresponding path is:")
-        for tree in path:
-            print(tree)
-    return (rank_count)
-
-
 def check_HSPR_moves_per_rank(num_leaves, num_tree_pairs):
     # simulate num_tree_pairs trees and check how moves are distributed across ranks in the trees on shortest path computed by bfs
     for i in range(0, num_tree_pairs):
