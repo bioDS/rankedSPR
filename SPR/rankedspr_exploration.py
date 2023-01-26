@@ -4,7 +4,6 @@ __author__ = 'Lena Collienne'
 from rankedSPR_seidel import *
 from SPR.rankedspr_adjacency import *
 from plots import *
-from spr_playground_functions import *
 import gc
 
 
