@@ -83,6 +83,10 @@ def rankedSPR_adjacency(num_leaves, hspr=False):
         current_tree = next_tree  # update current_tree
 
     # Save tree dict in file:
+    # create output folder if it does not exist yet
+    if not os.path.exists("output/"):
+        os.makedirs("output/")
+
     # open file for writing
     if hspr == True:
         f = open("output/tree_dict_" + str(num_leaves) + "_leaves_hspr.txt",
