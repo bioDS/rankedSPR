@@ -11,6 +11,3 @@ treeOclock:
 
 seidel:
 	make -C ../seidel
-
-queue.o: queue.c queue.h
-	gcc -fPIC -Wall -c -g -O2 queue.c
