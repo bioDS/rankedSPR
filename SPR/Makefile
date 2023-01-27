@@ -1,10 +1,10 @@
-default: spr_playground.so
+default: spr_path.so
 
-spr_playground.so: treeOclock seidel spr_playground.o queue.o
-	gcc -shared -o spr_playground.so queue.o ../treeOclock/tree.o ../treeOclock/rnni.o ../treeOclock/exploring_rnni.o ../treeOclock/spr.o ../seidel/libseidel.so spr_playground.o
+spr_path.so: treeOclock spr_path.o
+	gcc -shared -o spr_path.so ../treeOclock/tree.o ../treeOclock/rnni.o ../treeOclock/spr.o ../seidel/libseidel.so spr_path.o
 
-spr_playground.o: spr_playground.c spr_playground.h
-	gcc -fPIC -Wall -c -g -O2 spr_playground.c
+spr_path.o: spr_path.c spr_path.h
+	gcc -fPIC -Wall -c -g -O2 spr_path.c
 
 treeOclock:
 	make -C ../treeOclock
