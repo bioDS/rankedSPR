@@ -15,7 +15,7 @@ import math
 import ctypes
 
 
-_seidel = ctypes.CDLL('seidel/libseidel.so')
+_seidel = ctypes.CDLL('seidel_compressed/libseidel.so')
 _seidel.test_function.argtypes = (ndpointer(ctypes.c_int,
                                             flags="C_CONTIGUOUS"),
                                   ctypes.c_int32)
