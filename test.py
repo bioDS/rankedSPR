@@ -9,7 +9,7 @@ from spr_path_functions import *
 
 def get_diameter(num_leaves):
     d = get_distance_matrix(num_leaves, hspr=True)
-    print("diameter of HSPR for", num_leaves, "leaves is", np.amax(d[0]))
+    print("The diameter of HSPR space for", num_leaves, "leaves is", np.amax(d[0]))
 
 def check_approx_alg(num_leaves):
     (d, tree_dict, tree_index_dict) = get_distance_matrix(num_leaves,
@@ -21,11 +21,8 @@ def check_approx_alg(num_leaves):
             approx_path = rankedspr_path_bottom_up_hspr(tree1, tree2)
             approx_dist = approx_path.num_trees - 1
             if approx_dist != d[i][j]:
-                print("For the trees:")
-                print(tree_index_dict[i])
-                print(tree_index_dict[j])
-                print("the approximated distance is", approx_dist)
-                print("the exact distance is", d[i][j])
+                print("For the trees", tree_index_dict[i], "and", tree_index_dict[j], "the approximated HSPR distance is", approx_dist)
+                print("The exact distance is", d[i][j])
                 return(False)
     return(True)
 
