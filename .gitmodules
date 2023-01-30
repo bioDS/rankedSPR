@@ -2,3 +2,6 @@
 	path = treeOclock
 	url = git@github.com:bioDS/treeOclock.git
 	branch = dct_efficient_length
+[submodule "seidel_compressed"]
+	path = seidel_compressed
+	url = git@github.com:bioDS/seidel_compressed.git
