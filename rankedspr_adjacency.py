@@ -3,9 +3,8 @@ __author__ = 'Lena Collienne'
 
 import sys
 
-sys.path.append('../treeOclock/')
-sys.path.append('../treeOclock/tree_parser/')
-sys.path.append('..')
+sys.path.append('treeOclock/')
+sys.path.append('treeOclock/tree_parser/')
 
 from numpy.ctypeslib import ndpointer
 from os.path import exists
@@ -16,7 +15,7 @@ import math
 import ctypes
 
 
-_seidel = ctypes.CDLL('../seidel/libseidel.so')
+_seidel = ctypes.CDLL('seidel/libseidel.so')
 _seidel.test_function.argtypes = (ndpointer(ctypes.c_int,
                                             flags="C_CONTIGUOUS"),
                                   ctypes.c_int32)

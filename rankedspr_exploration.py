@@ -2,7 +2,7 @@ __author__ = 'Lena Collienne'
 # Exploring some properties of the RSPR and HSPR graph
 
 from rankedSPR_seidel import *
-from SPR.rankedspr_adjacency import *
+from rankedspr_adjacency import *
 from plots import *
 import gc
 

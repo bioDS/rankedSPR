@@ -1,5 +1,5 @@
 from os.path import exists
-from SPR.rankedspr_adjacency import *
+from rankedspr_adjacency import *
 import time
 from numpy.ctypeslib import ndpointer
 import numpy as np
@@ -9,10 +9,10 @@ __author__ = 'Lena Collienne'
 from pickle import FALSE
 import sys
 
-sys.path.append('../seidel/')
+sys.path.append('seidel/')
 
 
-_seidel = ctypes.CDLL("../seidel/libseidel.so")
+_seidel = ctypes.CDLL("seidel/libseidel.so")
 _seidel.test_function.argtypes = (ndpointer(ctypes.c_int,
                                             flags="C_CONTIGUOUS"),
                                   ctypes.c_int32)

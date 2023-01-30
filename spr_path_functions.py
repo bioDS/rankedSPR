@@ -2,7 +2,7 @@ __author__ = 'Lena Collienne'
 
 import sys
 from ctypes import *
-sys.path.append('../treeOclock')
+sys.path.append('treeOclock')
 from tree_functions import *
 
 lib = CDLL(f'{os.path.dirname(os.path.realpath(__file__))}/spr_path.so')

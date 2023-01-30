@@ -1,7 +1,6 @@
 __author__ = 'Lena Collienne'
-# Testing
+# Functions used for ranked SPR paper
 import sys
-sys.path.append('..')
 
 from rankedSPR_seidel import *
 from rankedspr_exploration import *

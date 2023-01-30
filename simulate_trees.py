@@ -4,7 +4,6 @@ __author__ = 'Lena Collienne'
 
 import sys
 
-sys.path.append('..')
 
 from treeOclock.tree_parser.tree_io import tree_to_cluster_string
 
