@@ -31,5 +31,9 @@ def main():
     get_diameter(n)
     check_approx_alg(n)
 
+    tree1 = read_from_cluster("[{4,5}:1,{1,2}:2,{1,2,3}:3,{1,2,3,4,5}:4]")
+    tree2 = read_from_cluster("[{1,2}:1,{4,5}:2,{1,2,3}:3,{1,2,3,4,5}:4]")
+    all_shortest_paths(tree1, tree2)
+
 if __name__ == "__main__":
     main()
