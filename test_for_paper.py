@@ -55,9 +55,9 @@ def check_cluster_property(tree1_str, tree2_str, cluster):
         + tree1_str + " and " + tree2_str)
 
 def main():
-    n = 4
-    get_diameter(n)
-    check_approx_alg(n)
+    num_leaves = 4
+    get_diameter(num_leaves)
+    check_approx_alg(num_leaves)
 
     tree1_str = "[{4,5}:1,{1,2}:2,{1,2,3}:3,{1,2,3,4,5}:4]"
     tree2_str = "[{1,2}:1,{4,5}:2,{1,2,3}:3,{1,2,3,4,5}:4]"
