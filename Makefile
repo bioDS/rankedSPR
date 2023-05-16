@@ -1,4 +1,7 @@
-default: spr_path.so
+default: all
+.PHONY: all treeOclock seidel
+
+all : spr_path.so treeOclock seidel
 
 spr_path.so: treeOclock seidel spr_path.o
 	gcc -shared -o spr_path.so treeOclock/tree.o treeOclock/rnni.o treeOclock/spr.o seidel_compressed/libseidel.so spr_path.o
