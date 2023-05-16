@@ -298,7 +298,7 @@ def rank_moves_distribution(num_leaves):
 
 
 # Compute all shortest path in HSPR (using the distance matrix for the whole tree space computed by SEIDEL)
-# Does not actually output those shortest paths, but prints predecessor list
+# Does not actually output those shortest paths, but returns predecessor dicitonary
 def all_shortest_paths(tree1, tree2):
     num_leaves = tree1.num_leaves
     if not exists("output/distance_matrix_" + str(num_leaves) + "_leaves_hspr.npy"):
@@ -330,7 +330,10 @@ def all_shortest_paths(tree1, tree2):
                     else:
                         pred[tree_index] = set([pred_index])
 
+    output_dict = {}
     for i in pred:
-        print("predecessors of ",tree_index_dict[i])
+        output_dict[tree_index_dict[i]] = []
         for k in pred[i]:
-            print(tree_index_dict[k])
+            output_dict[tree_index_dict[i]].append(tree_index_dict[k])
+
+    return output_dict
