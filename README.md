@@ -5,9 +5,10 @@ This repo contains computations in ranked SPR spaces HSPR and RSPR as defined in
 
 ## Compiling
 
-Download repository and compile C code (using gcc):
+Download repository, get all submodules, and compile C code (using gcc):
 
     git clone git@github.com:bioDS/rankedSPR.git
+    git submodule update --recursive --init
     cd rankedSPR
     make
 
